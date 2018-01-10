@@ -1,0 +1,3 @@
+# ShmupGame
+
+All kinds of awesomeness goes here...
