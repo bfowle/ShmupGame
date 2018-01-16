@@ -3,17 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
-//#include "Bullet.h"
 
-#include "bulletml/bulletmlparser.h"
-#include "bulletml/bulletmlparser-tinyxml.h"
 #include "bulletml/bulletmlrunner.h"
 
+class BulletMLParser;
+class BulletMLState;
 class Bullet;
 
 class SHMUPGAME_API EnemyBullet : public BulletMLRunner {
 public:
-    EnemyBullet(BulletMLParser *parser, Bullet *bullet);
+    EnemyBullet(BulletMLParser *parse, Bullet *bullet);
     EnemyBullet(BulletMLState *state, Bullet *bullet);
     
     ~EnemyBullet();

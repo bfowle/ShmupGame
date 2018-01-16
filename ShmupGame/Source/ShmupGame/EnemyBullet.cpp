@@ -7,12 +7,14 @@
 #include "bulletml/bulletmlparser-tinyxml.h"
 #include "bulletml/bulletmlrunner.h"
 
-EnemyBullet::EnemyBullet(BulletMLParser *parser, Bullet *bullet) : BulletMLRunner(parser) {
-    m_bullet = bullet;
+EnemyBullet::EnemyBullet(BulletMLParser *parser, Bullet *bullet) :
+    BulletMLRunner(parser),
+    m_bullet(bullet) {
 }
 
-EnemyBullet::EnemyBullet(BulletMLState *state, Bullet *bullet) : BulletMLRunner(state) {
-    m_bullet = bullet;
+EnemyBullet::EnemyBullet(BulletMLState *state, Bullet *bullet) :
+    BulletMLRunner(state),
+    m_bullet(bullet) {
 }
 
 EnemyBullet::~EnemyBullet() {
