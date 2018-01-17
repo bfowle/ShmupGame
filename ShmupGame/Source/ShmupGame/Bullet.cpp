@@ -5,5 +5,8 @@
 Bullet::Bullet() {
 }
 
+Bullet::Bullet(double x, double y, double d, double s) {
+}
+
 Bullet::~Bullet() {
 }

@@ -8,14 +8,16 @@
 
 class BulletMLParser;
 class BulletMLState;
+class BulletManager;
 class Bullet;
+class UMoverComponent;
 
-class SHMUPGAME_API EnemyBullet : public BulletMLRunner {
+class SHMUPGAME_API BulletCommand : public BulletMLRunner {
 public:
-    EnemyBullet(BulletMLParser *parse, Bullet *bullet);
-    EnemyBullet(BulletMLState *state, Bullet *bullet);
+    BulletCommand(BulletMLParser *parse, Bullet *bullet, UMoverComponent *target, BulletManager *owner);
+    BulletCommand(BulletMLState *state, Bullet *bullet, UMoverComponent *target, BulletManager *owner);
     
-    ~EnemyBullet();
+    ~BulletCommand();
 
 public:
     virtual double getBulletDirection();
@@ -37,4 +39,6 @@ public:
 
 private:
     Bullet *m_bullet;
+    UMoverComponent *m_target;
+    BulletManager *m_owner;
 };

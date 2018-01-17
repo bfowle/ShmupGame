@@ -6,6 +6,7 @@
 
 class SHMUPGAME_API Bullet {
 public:
-	Bullet();
-	~Bullet();
+    Bullet();
+    Bullet(double x, double y, double d, double s);
+    ~Bullet();
 };
