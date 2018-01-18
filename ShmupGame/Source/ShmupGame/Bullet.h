@@ -16,13 +16,13 @@ public:
     double getDirection() { return m_direction; };
     double getSpeed() { return m_speed; };
     double getRank() { return m_rank; }
-    double isDead() { return m_isDead; };
+    double isEnd() { return m_isEnd; };
 
     void setX(double x) { m_x = x; };
     void setY(double y) { m_y = y; };
     void setDirection(double direction) { m_direction = direction; };
     void setSpeed(double speed) { m_speed = speed; };
-    void setDead() { m_isDead = true;  }
+    void setEnd(bool isEnd) { m_isEnd = isEnd;  }
 
     void addNormalBullet(double direction, double speed);
 
@@ -32,5 +32,5 @@ private:
     double m_x, m_y;
     double m_direction, m_speed;
     double m_rank;
-    bool m_isDead;
+    bool m_isEnd;
 };

@@ -10,7 +10,7 @@
 
 class BulletMLState;
 class BulletMLParser;
-class BulletCommand;
+class EnemyCommand;
 class Bullet;
 
 extern int g_tick;
@@ -20,15 +20,15 @@ public:
 	BulletManager();
 	~BulletManager();
 
-    BulletCommand *createBullet(BulletMLParser *parser, Bullet *origin, UMoverComponent *target);
-    BulletCommand *createBullet(BulletMLState *state, double x, double y, double direction, double speed, UMoverComponent *target);
+    EnemyCommand *createBullet(BulletMLParser *parser, Bullet *origin, UMoverComponent *target);
+    EnemyCommand *createBullet(BulletMLState *state, double x, double y, double direction, double speed, UMoverComponent *target);
     Bullet *createProjectile(double x, double y, double direction, double speed);
     void destroyProjectile(Bullet *projectile);
 
     void tick();
 
 private:
-    std::vector<BulletCommand *> m_commands;
+    std::vector<EnemyCommand *> m_commands;
     std::vector<Bullet *> m_bullets;
     std::vector<Bullet *> m_pool;
 };

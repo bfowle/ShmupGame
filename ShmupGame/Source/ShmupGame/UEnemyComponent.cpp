@@ -4,6 +4,7 @@
 
 #include "BulletManager.h"
 #include "Bullet.h"
+#include "EnemyCommand.h"
 
 #include "bulletml/bulletmlparser.h"
 #include "bulletml/bulletmlparser-tinyxml.h"
@@ -32,9 +33,10 @@ void UEnemyComponent::BeginPlay() {
     FString sourcePath = FPaths::GameSourceDir();
     string srcPath = TCHAR_TO_UTF8(*sourcePath);
 
-    m_bulletParsers.push_back(new BulletMLParserTinyXML(srcPath + "xml/move.xml"));
-    m_bulletParsers.push_back(new BulletMLParserTinyXML(srcPath + "xml/basic.xml"));
+    //m_bulletParsers.push_back(new BulletMLParserTinyXML(srcPath + "xml/move.xml"));
+    //m_bulletParsers.push_back(new BulletMLParserTinyXML(srcPath + "xml/basic.xml"));
     m_bulletParsers.push_back(new BulletMLParserTinyXML(srcPath + "xml/10way.xml"));
+    //m_bulletParsers.push_back(new BulletMLParserTinyXML(srcPath + "xml/round_1_boss.xml"));
 
     for (size_t i = 0; i < m_bulletParsers.size(); ++i) {
         m_bulletParsers[i]->build();
