@@ -6,6 +6,10 @@
 
 #include "bulletml/bulletmlrunner.h"
 
+#define DIV 1024
+#define SCREEN_SPEED_RATE 512
+#define SCREEN_VELOCITY_RATE 512
+
 class BulletMLParser;
 class BulletMLState;
 class BulletManager;

@@ -20,4 +20,4 @@ void UMoverComponent::BeginPlay() {
 
 void UMoverComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *TickFunction) {
     Super::TickComponent(DeltaTime, TickType, TickFunction);
-}
+ }

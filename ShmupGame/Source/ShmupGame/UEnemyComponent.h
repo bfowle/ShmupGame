@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 
+#include "bulletml/bulletmlparser.h"
+
 #include "UEnemyComponent.generated.h"
 
 class BulletManager;
@@ -27,4 +29,5 @@ public:
 private:
     BulletManager *m_bulletManager;
     UMoverComponent *m_moverComponent;
+    std::vector<BulletMLParser *> m_bulletParsers;
 };

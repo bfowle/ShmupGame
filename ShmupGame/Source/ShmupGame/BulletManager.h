@@ -13,14 +13,16 @@ class BulletMLParser;
 class BulletCommand;
 class Bullet;
 
+extern int g_tick;
+
 class SHMUPGAME_API BulletManager {
 public:
 	BulletManager();
 	~BulletManager();
 
     BulletCommand *createBullet(BulletMLParser *parser, Bullet *origin, UMoverComponent *target);
-    BulletCommand *createBullet(BulletMLState *state, double x, double y, double d, double s, UMoverComponent *target);
-    Bullet *createProjectile(double x, double y, double d, double s);
+    BulletCommand *createBullet(BulletMLState *state, double x, double y, double direction, double speed, UMoverComponent *target);
+    Bullet *createProjectile(double x, double y, double direction, double speed);
     void destroyProjectile(Bullet *projectile);
 
     void tick();

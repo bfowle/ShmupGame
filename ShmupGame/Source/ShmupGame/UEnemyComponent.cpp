@@ -8,6 +8,8 @@
 #include "bulletml/bulletmlparser.h"
 #include "bulletml/bulletmlparser-tinyxml.h"
 
+using namespace std;
+
 UEnemyComponent::UEnemyComponent() :
     m_bulletManager(new BulletManager()),
     m_moverComponent(CreateDefaultSubobject<UMoverComponent>(TEXT("MoverComponent"))) {
@@ -28,14 +30,25 @@ void UEnemyComponent::BeginPlay() {
      * via the editor as exposed public property
      */
     FString sourcePath = FPaths::GameSourceDir();
-    FString filePath = sourcePath + "Bullets/test.xml";
-    UE_LOG(LogTemp, Warning, TEXT("%s"), *filePath);
+    string srcPath = TCHAR_TO_UTF8(*sourcePath);
 
-    BulletMLParser *parser = new BulletMLParserTinyXML(TCHAR_TO_UTF8(*filePath));
-    parser->build();
+    m_bulletParsers.push_back(new BulletMLParserTinyXML(srcPath + "xml/move.xml"));
+    m_bulletParsers.push_back(new BulletMLParserTinyXML(srcPath + "xml/basic.xml"));
+    m_bulletParsers.push_back(new BulletMLParserTinyXML(srcPath + "xml/10way.xml"));
 
-    Bullet *bullet = new Bullet();
-    m_bulletManager->createBullet(parser, bullet, m_moverComponent);
+    for (size_t i = 0; i < m_bulletParsers.size(); ++i) {
+        m_bulletParsers[i]->build();
+
+        Bullet *bullet = new Bullet();
+        // @TODO: replace bullet[target] with player ship
+        m_bulletManager->createBullet(m_bulletParsers[i], bullet, m_moverComponent);
+    }
+
+    //BulletMLParser *parser = new BulletMLParserTinyXML(TCHAR_TO_UTF8(*filePath));
+    //parser->build();
+
+    //Bullet *bullet = new Bullet();
+    //m_bulletManager->createBullet(parser, bullet, m_moverComponent);
 }
 
 void UEnemyComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *TickFunction) {
