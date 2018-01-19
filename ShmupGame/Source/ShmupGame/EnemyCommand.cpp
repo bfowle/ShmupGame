@@ -51,12 +51,12 @@ double EnemyCommand::getRank() {
 }
 
 void EnemyCommand::createSimpleBullet(double direction, double speed) {
-    UE_LOG(LogTemp, Warning, TEXT(" ][ CREATE SIMPLE BULLET | (%f, %f) ][ "), dtor(direction), speed);
+    //UE_LOG(LogTemp, Warning, TEXT(" ][ CREATE SIMPLE BULLET | (%f, %f) ][ "), dtor(direction), speed);
     m_owner->createProjectile(m_bullet->getX(), m_bullet->getY(), dtor(direction), speed);
 }
 
 void EnemyCommand::createBullet(BulletMLState *state, double direction, double speed) {
-    UE_LOG(LogTemp, Warning, TEXT(" ][ CREATE BULLET | (%f, %f) | (%s) ][ "), dtor(direction), speed, state);
+    //UE_LOG(LogTemp, Warning, TEXT(" ][ CREATE BULLET | (%f, %f) | (%s) ][ "), dtor(direction), speed, state);
     m_owner->createBullet(state, m_bullet->getX(), m_bullet->getY(), dtor(direction), speed, m_target);
 }
 

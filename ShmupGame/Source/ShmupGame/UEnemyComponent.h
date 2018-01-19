@@ -30,10 +30,11 @@ public:
     ABulletActor *spawnBulletActor(float x, float y, float direction, float speed);
 
 public:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    UObject *bp_projectileType;
-
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "BP Classes")
+    UClass *bp_projectileType;
+    
 private:
+    AActor *m_owner;
     BulletManager *m_bulletManager;
     ABulletActor *m_bulletActor;
     std::vector<BulletMLParser *> m_bulletParsers;

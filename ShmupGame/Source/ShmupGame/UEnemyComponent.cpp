@@ -12,6 +12,7 @@
 using namespace std;
 
 UEnemyComponent::UEnemyComponent() :
+    m_owner(GetOwner()),
     m_bulletManager(new BulletManager(this)),
     m_bulletActor(CreateDefaultSubobject<ABulletActor>(TEXT("ABulletActor"))) {
     // Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
@@ -24,6 +25,8 @@ UEnemyComponent::~UEnemyComponent() {
 
 void UEnemyComponent::BeginPlay() {
     Super::BeginPlay();
+
+    FVector location = m_owner->GetActorLocation();
 
     /**
      * @TODO load/parse all relevant enemy xml files elsewhere
@@ -40,9 +43,8 @@ void UEnemyComponent::BeginPlay() {
 
     for (size_t i = 0; i < m_bulletParsers.size(); ++i) {
         m_bulletParsers[i]->build();
-
-        // @TODO: replace 2nd param with player ship
-        m_bulletManager->createBullet(m_bulletParsers[i], spawnBulletActor(0,0,0,0), m_bulletActor);
+        // @TODO: replace target with player ship
+        m_bulletManager->createBullet(m_bulletParsers[i], spawnBulletActor(location.X, location.Z, 0, 0), m_bulletActor);
     }
 }
 
@@ -53,12 +55,13 @@ void UEnemyComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 }
 
 ABulletActor *UEnemyComponent::spawnBulletActor(float x, float y, float direction, float speed) {
-    ABulletActor *mover = GetWorld()->SpawnActor<ABulletActor>(ABulletActor::StaticClass(),
+    ABulletActor *actor = GetWorld()->SpawnActor<ABulletActor>(ABulletActor::StaticClass(),
         FVector::ZeroVector, FRotator::ZeroRotator);
-    mover->SetOwner(GetOwner());
-    mover->setX(x);
-    mover->setY(y);
-    mover->setDirection(direction);
-    mover->setSpeed(speed);
-    return mover;
+    actor->SetOwner(m_owner);
+    //actor->setProjectileType(bp_projectileType);
+    actor->setX(x);
+    actor->setY(y);
+    actor->setDirection(direction);
+    actor->setSpeed(speed);
+    return actor;
 }
