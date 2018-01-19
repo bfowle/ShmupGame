@@ -23,9 +23,10 @@ protected:
 public:
     virtual void Tick(float DeltaTime) override;
 
-    //UFUNCTION(BlueprintCallable, Category = "Objects", meta = (DeterminesOutputType = "projectileType"))
-    //void setProjectileType(UClass *projectileType);
+    UFUNCTION(BlueprintCallable, Category = "Objects", meta = (DeterminesOutputType = "projectileType"))
+    void setProjectileType(UClass *projectileType);
 
 private:
     //UStaticMeshComponent *m_staticMesh;
+    AActor *m_projectile;
 };

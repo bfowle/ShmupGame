@@ -10,7 +10,6 @@ ABulletActor::ABulletActor() {
 
     //m_staticMesh->SetupAttachment(RootComponent);
     //m_staticMesh->SetStaticMesh(m_bpStaticMesh);
-    
 }
 
 ABulletActor::~ABulletActor() {
@@ -23,16 +22,17 @@ void ABulletActor::BeginPlay() {
 void ABulletActor::Tick(float DeltaTime) {
     Super::Tick(DeltaTime);
 
-    //m_staticMesh->SetRelativeLocation(FVector(m_x, m_staticMesh->RelativeLocation.Y, m_y));
+    m_projectile->SetActorLocation(FVector(m_x, 100.0, m_y));
 
     //UE_LOG(LogTemp, Warning, TEXT(" [%s] ABulletActor::TickComponent() (%f, %f) | [%f, %f] "), *GetName(),
     //    m_x, m_y, m_direction, m_speed);
 }
 
-/*
 void ABulletActor::setProjectileType(UClass *projectileType) {
-    UObject *projectile = NewObject<UObject>(this, projectileType);
-    UE_LOG(LogTemp, Warning, TEXT(" -- set projectile type -- %s [%s]"), *projectile->GetName(), *projectileType->GetName());
-    //projectile->SetOwner(GetOwner());
+    //BlueprintGeneratedClass'/Game/Blueprints/Projectiles/BP_ProjectileEnemy_Grunt.BP_ProjectileEnemy_Grunt_C'//
+    //UObject *projectile = NewObject<UObject>(this, projectileType);
+    m_projectile = GetWorld()->SpawnActor<AActor>(projectileType, FVector::ZeroVector, FRotator::ZeroRotator);
+    m_projectile->SetOwner(GetOwner());
+
+    UE_LOG(LogTemp, Warning, TEXT(" -- set projectile type -- %s [%s]"), *m_projectile->GetName(), *projectileType->GetName());
 }
-*/

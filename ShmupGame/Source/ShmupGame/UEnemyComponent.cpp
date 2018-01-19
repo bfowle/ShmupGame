@@ -44,7 +44,10 @@ void UEnemyComponent::BeginPlay() {
     for (size_t i = 0; i < m_bulletParsers.size(); ++i) {
         m_bulletParsers[i]->build();
         // @TODO: replace target with player ship
-        m_bulletManager->createBullet(m_bulletParsers[i], spawnBulletActor(location.X, location.Z, 0, 0), m_bulletActor);
+        m_bulletManager->createBullet(m_bulletParsers[i],
+            new Bullet(location.X, location.Z, 0, 0),
+            /*spawnBulletActor(location.X, location.Z, 0, 0),*/
+            m_bulletActor);
     }
 }
 
@@ -58,7 +61,7 @@ ABulletActor *UEnemyComponent::spawnBulletActor(float x, float y, float directio
     ABulletActor *actor = GetWorld()->SpawnActor<ABulletActor>(ABulletActor::StaticClass(),
         FVector::ZeroVector, FRotator::ZeroRotator);
     actor->SetOwner(m_owner);
-    //actor->setProjectileType(bp_projectileType);
+    actor->setProjectileType(bp_projectileType);
     actor->setX(x);
     actor->setY(y);
     actor->setDirection(direction);
