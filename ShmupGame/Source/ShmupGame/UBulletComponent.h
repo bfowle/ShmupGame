@@ -9,7 +9,7 @@
 
 #include "UBulletComponent.generated.h"
 
-UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class SHMUPGAME_API UBulletComponent : public UActorComponent, public Bullet {
     GENERATED_BODY()
 

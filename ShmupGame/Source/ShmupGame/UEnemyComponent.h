@@ -27,16 +27,20 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *TickFunction) override;	
 
-    UBulletComponent *spawnBulletActor(float x, float y, float direction, float speed);
+    Bullet *spawnBulletActor(float x, float y, float direction, float speed);
 
 public:
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile Settings")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile")
     UClass *bp_projectileType;
+
+    //UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Target")
+    //UObject *bp_target;
     
 private:
     AActor *m_owner;
     BulletManager *m_bulletManager;
     // @TODO: replace this with a common class both [Enemy|Bullet]Components can inherit from -- and use as targets; tickers
-    UBulletComponent *m_bulletComponent;
+    //UBulletComponent *m_bulletComponent;
+    Bullet *m_playerComponent;
     std::vector<BulletMLParser *> m_bulletParsers;
 };

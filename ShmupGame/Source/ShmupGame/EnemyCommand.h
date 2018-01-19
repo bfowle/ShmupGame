@@ -20,12 +20,11 @@ class BulletMLParser;
 class BulletMLState;
 class BulletManager;
 class Bullet;
-class UBulletComponent;
 
 class SHMUPGAME_API EnemyCommand : public BulletMLRunner {
 public:
-    EnemyCommand(BulletMLParser *parser, Bullet *bullet, UBulletComponent *target, BulletManager *owner);
-    EnemyCommand(BulletMLState *state, Bullet *bullet, UBulletComponent *target, BulletManager *owner);
+    EnemyCommand(BulletMLParser *parser, Bullet *bullet, Bullet *target, BulletManager *owner);
+    EnemyCommand(BulletMLState *state, Bullet *bullet, Bullet *target, BulletManager *owner);
     
     ~EnemyCommand();
 
@@ -51,7 +50,7 @@ private:
     BulletMLParser *m_parser;
     BulletMLState *m_state;
     Bullet *m_bullet;
-    UBulletComponent *m_target;
+    Bullet *m_target;
     BulletManager *m_owner;
 
     inline double dtor(double d) { return d * M_PI / 180; };

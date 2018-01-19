@@ -8,7 +8,7 @@
 #include "bulletml/bulletmlparser-tinyxml.h"
 #include "bulletml/bulletmlrunner.h"
 
-EnemyCommand::EnemyCommand(BulletMLParser *parser, Bullet *bullet, UBulletComponent *target, BulletManager *owner) :
+EnemyCommand::EnemyCommand(BulletMLParser *parser, Bullet *bullet, Bullet *target, BulletManager *owner) :
     BulletMLRunner(parser),
     m_parser(parser),
     m_bullet(bullet),
@@ -16,7 +16,7 @@ EnemyCommand::EnemyCommand(BulletMLParser *parser, Bullet *bullet, UBulletCompon
     m_owner(owner) {
 }
 
-EnemyCommand::EnemyCommand(BulletMLState *state, Bullet *bullet, UBulletComponent *target, BulletManager *owner) :
+EnemyCommand::EnemyCommand(BulletMLState *state, Bullet *bullet, Bullet *target, BulletManager *owner) :
     BulletMLRunner(state),
     m_state(state),
     m_bullet(bullet),
@@ -33,9 +33,8 @@ double EnemyCommand::getBulletDirection() {
 }
 
 double EnemyCommand::getAimDirection() {
-    UE_LOG(LogTemp, Warning, TEXT(" ===> getAimDirection() "));
-    //return rtod(M_PI - atan2(mTarget->x - mMover->x, mTarget->y - mMover->y));
-    return -1.0;
+    //UE_LOG(LogTemp, Warning, TEXT(" ===> getAimDirection() "));
+    return rtod(M_PI - atan2(m_target->getX() - m_bullet->getX(), m_target->getY() - m_bullet->getY()));
 }
 
 double EnemyCommand::getBulletSpeed() {

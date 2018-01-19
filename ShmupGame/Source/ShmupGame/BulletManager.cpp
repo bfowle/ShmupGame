@@ -15,7 +15,7 @@ BulletManager::BulletManager(UEnemyComponent *enemyComponent) :
 BulletManager::~BulletManager() {
 }
 
-EnemyCommand *BulletManager::createBullet(BulletMLParser *parser, Bullet *origin, UBulletComponent *target) {
+EnemyCommand *BulletManager::createBullet(BulletMLParser *parser, Bullet *origin, Bullet *target) {
     //UE_LOG(LogTemp, Warning, TEXT(" ][ create bullet (parser) ][ (%f, %f) (%f, %f) "), origin->getX(), origin->getY(), origin->getDirection(), origin->getSpeed());
     EnemyCommand *bc;
     bc = new EnemyCommand(parser, origin, target, this);
@@ -23,7 +23,7 @@ EnemyCommand *BulletManager::createBullet(BulletMLParser *parser, Bullet *origin
     return bc;
 }
 
-EnemyCommand *BulletManager::createBullet(BulletMLState *state, double x, double y, double direction, double speed, UBulletComponent *target) {
+EnemyCommand *BulletManager::createBullet(BulletMLState *state, double x, double y, double direction, double speed, Bullet *target) {
     //UE_LOG(LogTemp, Warning, TEXT(" ][ create bullet (state) => %s ][ (%f, %f) (%f, %f) "), state, x, y, direction, speed);
     Bullet *projectile = createProjectile(x, y, direction, speed);
     EnemyCommand *bc;
