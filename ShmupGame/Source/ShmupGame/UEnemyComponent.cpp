@@ -14,7 +14,7 @@ using namespace std;
 UEnemyComponent::UEnemyComponent() :
     m_owner(GetOwner()),
     m_bulletManager(new BulletManager(this)),
-    m_bulletActor(CreateDefaultSubobject<ABulletActor>(TEXT("ABulletActor"))) {
+    m_bulletComponent(CreateDefaultSubobject<UBulletComponent>(TEXT("UBulletComponent"))) {
     // Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
     // off to improve performance if you don't need them.
     PrimaryComponentTick.bCanEverTick = true;
@@ -48,8 +48,8 @@ void UEnemyComponent::BeginPlay() {
         // @TODO: replace target with player ship
         m_bulletManager->createBullet(m_bulletParsers[i],
             new Bullet(location.X, location.Z, 0, 0),
-            /*spawnBulletActor(location.X, location.Z, 0, 0),*/
-            m_bulletActor);
+            //spawnBulletActor(location.X, location.Z, 0, 0),
+            m_bulletComponent);
     }
 }
 
@@ -59,14 +59,17 @@ void UEnemyComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
     m_bulletManager->tick();
 }
 
-ABulletActor *UEnemyComponent::spawnBulletActor(float x, float y, float direction, float speed) {
-    ABulletActor *actor = GetWorld()->SpawnActor<ABulletActor>(ABulletActor::StaticClass(),
+UBulletComponent *UEnemyComponent::spawnBulletActor(float x, float y, float direction, float speed) {
+    AActor *actor = GetWorld()->SpawnActor<AActor>(bp_projectileType,
         FVector::ZeroVector, FRotator::ZeroRotator);
-    actor->SetOwner(m_owner);
-    actor->setProjectileType(bp_projectileType);
-    actor->setX(x);
-    actor->setY(y);
-    actor->setDirection(direction);
-    actor->setSpeed(speed);
-    return actor;
+    actor->AttachToActor(m_owner, FAttachmentTransformRules::KeepRelativeTransform, TEXT("Bullets"));
+    //actor->SetOwner(m_owner);
+
+    UBulletComponent *bullet = actor->FindComponentByClass<UBulletComponent>();
+    bullet->setX(x);
+    bullet->setY(y);
+    bullet->setDirection(direction);
+    bullet->setSpeed(speed);
+
+    return bullet;
 }

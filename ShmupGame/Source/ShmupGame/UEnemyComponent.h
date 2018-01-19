@@ -11,7 +11,7 @@
 
 class BulletManager;
 class Bullet;
-class ABulletActor;
+class UBulletComponent;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class SHMUPGAME_API UEnemyComponent : public UActorComponent {
@@ -27,15 +27,16 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *TickFunction) override;	
 
-    ABulletActor *spawnBulletActor(float x, float y, float direction, float speed);
+    UBulletComponent *spawnBulletActor(float x, float y, float direction, float speed);
 
 public:
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "BP Classes")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile Settings")
     UClass *bp_projectileType;
     
 private:
     AActor *m_owner;
     BulletManager *m_bulletManager;
-    ABulletActor *m_bulletActor;
+    // @TODO: replace this with a common class both [Enemy|Bullet]Components can inherit from -- and use as targets; tickers
+    UBulletComponent *m_bulletComponent;
     std::vector<BulletMLParser *> m_bulletParsers;
 };

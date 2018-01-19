@@ -8,7 +8,7 @@
 #include "bulletml/bulletmlparser-tinyxml.h"
 #include "bulletml/bulletmlrunner.h"
 
-EnemyCommand::EnemyCommand(BulletMLParser *parser, Bullet *bullet, ABulletActor *target, BulletManager *owner) :
+EnemyCommand::EnemyCommand(BulletMLParser *parser, Bullet *bullet, UBulletComponent *target, BulletManager *owner) :
     BulletMLRunner(parser),
     m_parser(parser),
     m_bullet(bullet),
@@ -16,7 +16,7 @@ EnemyCommand::EnemyCommand(BulletMLParser *parser, Bullet *bullet, ABulletActor 
     m_owner(owner) {
 }
 
-EnemyCommand::EnemyCommand(BulletMLState *state, Bullet *bullet, ABulletActor *target, BulletManager *owner) :
+EnemyCommand::EnemyCommand(BulletMLState *state, Bullet *bullet, UBulletComponent *target, BulletManager *owner) :
     BulletMLRunner(state),
     m_state(state),
     m_bullet(bullet),

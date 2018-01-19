@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 
-#include "ABulletActor.h"
+#include "UBulletComponent.h"
 
 #include <vector>
 
@@ -21,8 +21,8 @@ public:
 	BulletManager(UEnemyComponent *enemyComponent);
 	~BulletManager();
 
-    EnemyCommand *createBullet(BulletMLParser *parser, Bullet *origin, ABulletActor *target);
-    EnemyCommand *createBullet(BulletMLState *state, double x, double y, double direction, double speed, ABulletActor *target);
+    EnemyCommand *createBullet(BulletMLParser *parser, Bullet *origin, UBulletComponent *target);
+    EnemyCommand *createBullet(BulletMLState *state, double x, double y, double direction, double speed, UBulletComponent *target);
     Bullet *createProjectile(double x, double y, double direction, double speed);
     void destroyProjectile(Bullet *projectile);
 
