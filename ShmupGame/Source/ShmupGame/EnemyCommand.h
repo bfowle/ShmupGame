@@ -6,20 +6,26 @@
 
 #include "bulletml/bulletmlrunner.h"
 
-#define DIV 1024
-#define SCREEN_SPEED_RATE 512
-#define SCREEN_VELOCITY_RATE 512
+#include <math.h>
+
+//#define DIV 1024
+//#define SCREEN_SPEED_RATE 512
+//#define SCREEN_VELOCITY_RATE 512
+
+#ifndef M_PI
+#define M_PI 3.141592653
+#endif
 
 class BulletMLParser;
 class BulletMLState;
 class BulletManager;
 class Bullet;
-class UMoverComponent;
+class ABulletActor;
 
 class SHMUPGAME_API EnemyCommand : public BulletMLRunner {
 public:
-    EnemyCommand(BulletMLParser *parser, Bullet *bullet, UMoverComponent *target, BulletManager *owner);
-    EnemyCommand(BulletMLState *state, Bullet *bullet, UMoverComponent *target, BulletManager *owner);
+    EnemyCommand(BulletMLParser *parser, Bullet *bullet, ABulletActor *target, BulletManager *owner);
+    EnemyCommand(BulletMLState *state, Bullet *bullet, ABulletActor *target, BulletManager *owner);
     
     ~EnemyCommand();
 
@@ -45,6 +51,9 @@ private:
     BulletMLParser *m_parser;
     BulletMLState *m_state;
     Bullet *m_bullet;
-    UMoverComponent *m_target;
+    ABulletActor *m_target;
     BulletManager *m_owner;
+
+    inline double dtor(double d) { return d * M_PI / 180; };
+    inline double rtod(double r) { return r * 180 / M_PI; };
 };

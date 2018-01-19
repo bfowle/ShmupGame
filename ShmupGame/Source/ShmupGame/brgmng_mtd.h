@@ -1,2 +1,0 @@
-void initBarrageManager();
-void closeBarrageManager();

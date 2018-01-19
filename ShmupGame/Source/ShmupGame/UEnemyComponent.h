@@ -10,7 +10,8 @@
 #include "UEnemyComponent.generated.h"
 
 class BulletManager;
-class UMoverComponent;
+class Bullet;
+class ABulletActor;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class SHMUPGAME_API UEnemyComponent : public UActorComponent {
@@ -26,8 +27,14 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *TickFunction) override;	
 
+    ABulletActor *spawnBulletActor(float x, float y, float direction, float speed);
+
+public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UObject *bp_projectileType;
+
 private:
     BulletManager *m_bulletManager;
-    UMoverComponent *m_moverComponent;
+    ABulletActor *m_bulletActor;
     std::vector<BulletMLParser *> m_bulletParsers;
 };

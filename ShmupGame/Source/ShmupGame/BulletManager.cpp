@@ -1,19 +1,21 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "BulletManager.h"
-#include "EnemyCommand.h"
 #include "Bullet.h"
+#include "EnemyCommand.h"
+#include "UEnemyComponent.h"
 
 int g_tick;
 
-BulletManager::BulletManager() {
+BulletManager::BulletManager(UEnemyComponent *enemyComponent) :
+    m_enemyComponent(enemyComponent) {
     g_tick = 0;
 }
 
 BulletManager::~BulletManager() {
 }
 
-EnemyCommand *BulletManager::createBullet(BulletMLParser *parser, Bullet *origin, UMoverComponent *target) {
+EnemyCommand *BulletManager::createBullet(BulletMLParser *parser, Bullet *origin, ABulletActor *target) {
     UE_LOG(LogTemp, Warning, TEXT(" ][ create bullet (parser) ][ (%f, %f) (%f, %f) "), origin->getX(), origin->getY(), origin->getDirection(), origin->getSpeed());
     EnemyCommand *bc;
     bc = new EnemyCommand(parser, origin, target, this);
@@ -21,7 +23,7 @@ EnemyCommand *BulletManager::createBullet(BulletMLParser *parser, Bullet *origin
     return bc;
 }
 
-EnemyCommand *BulletManager::createBullet(BulletMLState *state, double x, double y, double direction, double speed, UMoverComponent *target) {
+EnemyCommand *BulletManager::createBullet(BulletMLState *state, double x, double y, double direction, double speed, ABulletActor *target) {
     UE_LOG(LogTemp, Warning, TEXT(" ][ create bullet (state) ][ (%f, %f) (%f, %f) "), x, y, direction, speed);
     Bullet *projectile = createProjectile(x, y, direction, speed);
     EnemyCommand *bc;
@@ -34,7 +36,8 @@ Bullet *BulletManager::createProjectile(double x, double y, double direction, do
     UE_LOG(LogTemp, Warning, TEXT(" ][ create projectile ][ (%f, %f) (%f, %f) "), x, y, direction, speed);
     Bullet *bullet;
     if (m_pool.empty()) {
-        bullet = new Bullet(x, y, direction, speed);
+        //bullet = new Bullet(x, y, direction, speed);
+        bullet = m_enemyComponent->spawnBulletActor(x, y, direction, speed);
     } else {
         bullet = m_pool.back();
         bullet->setX(x);
@@ -57,7 +60,7 @@ void BulletManager::tick() {
 
     size_t size = m_bullets.size();
     if (size) {
-        UE_LOG(LogTemp, Warning, TEXT(" ::tick -> bullets(%d)"), size);
+        //UE_LOG(LogTemp, Warning, TEXT(" ::tick -> bullets(%d)"), size);
     }
     for (size_t i = 0; i < size; ++i) {
         if (m_bullets[i]->isEnd()) {
@@ -73,7 +76,7 @@ void BulletManager::tick() {
 
     size = m_commands.size();
     if (size) {
-        UE_LOG(LogTemp, Warning, TEXT(" ::tick -> commands(%d)"), size);
+        //UE_LOG(LogTemp, Warning, TEXT(" ::tick -> commands(%d)"), size);
     }
     for (size_t i = 0; i < size; ++i) {
         if (m_commands[i]->isEnd()) {
@@ -84,7 +87,7 @@ void BulletManager::tick() {
         }
         if (i < size) {
             m_commands[i]->run();
-            UE_LOG(LogTemp, Warning, TEXT(" ::tick -> m_commands[%d]->run() => %d "), i, m_commands[i]->getTurn());
+            //UE_LOG(LogTemp, Warning, TEXT(" ::tick -> m_commands[%d]->run() => %d "), i, m_commands[i]->getTurn());
         }
     }
 }

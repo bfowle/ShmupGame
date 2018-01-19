@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 
-#include "UMoverComponent.h"
+#include "ABulletActor.h"
 
 #include <vector>
 
@@ -12,22 +12,26 @@ class BulletMLState;
 class BulletMLParser;
 class EnemyCommand;
 class Bullet;
+class UEnemyComponent;
 
 extern int g_tick;
 
 class SHMUPGAME_API BulletManager {
 public:
-	BulletManager();
+	BulletManager(UEnemyComponent *enemyComponent);
 	~BulletManager();
 
-    EnemyCommand *createBullet(BulletMLParser *parser, Bullet *origin, UMoverComponent *target);
-    EnemyCommand *createBullet(BulletMLState *state, double x, double y, double direction, double speed, UMoverComponent *target);
+    EnemyCommand *createBullet(BulletMLParser *parser, Bullet *origin, ABulletActor *target);
+    EnemyCommand *createBullet(BulletMLState *state, double x, double y, double direction, double speed, ABulletActor *target);
     Bullet *createProjectile(double x, double y, double direction, double speed);
     void destroyProjectile(Bullet *projectile);
+
+    int getBulletCount() const { return m_bullets.size(); };
 
     void tick();
 
 private:
+    UEnemyComponent *m_enemyComponent;
     std::vector<EnemyCommand *> m_commands;
     std::vector<Bullet *> m_bullets;
     std::vector<Bullet *> m_pool;

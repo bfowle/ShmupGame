@@ -12,8 +12,8 @@
 using namespace std;
 
 UEnemyComponent::UEnemyComponent() :
-    m_bulletManager(new BulletManager()),
-    m_moverComponent(CreateDefaultSubobject<UMoverComponent>(TEXT("MoverComponent"))) {
+    m_bulletManager(new BulletManager(this)),
+    m_bulletActor(CreateDefaultSubobject<ABulletActor>(TEXT("ABulletActor"))) {
     // Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
     // off to improve performance if you don't need them.
     PrimaryComponentTick.bCanEverTick = true;
@@ -41,20 +41,24 @@ void UEnemyComponent::BeginPlay() {
     for (size_t i = 0; i < m_bulletParsers.size(); ++i) {
         m_bulletParsers[i]->build();
 
-        Bullet *bullet = new Bullet();
-        // @TODO: replace bullet[target] with player ship
-        m_bulletManager->createBullet(m_bulletParsers[i], bullet, m_moverComponent);
+        // @TODO: replace 2nd param with player ship
+        m_bulletManager->createBullet(m_bulletParsers[i], spawnBulletActor(0,0,0,0), m_bulletActor);
     }
-
-    //BulletMLParser *parser = new BulletMLParserTinyXML(TCHAR_TO_UTF8(*filePath));
-    //parser->build();
-
-    //Bullet *bullet = new Bullet();
-    //m_bulletManager->createBullet(parser, bullet, m_moverComponent);
 }
 
 void UEnemyComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *TickFunction) {
     Super::TickComponent(DeltaTime, TickType, TickFunction);
 
     m_bulletManager->tick();
+}
+
+ABulletActor *UEnemyComponent::spawnBulletActor(float x, float y, float direction, float speed) {
+    ABulletActor *mover = GetWorld()->SpawnActor<ABulletActor>(ABulletActor::StaticClass(),
+        FVector::ZeroVector, FRotator::ZeroRotator);
+    mover->SetOwner(GetOwner());
+    mover->setX(x);
+    mover->setY(y);
+    mover->setDirection(direction);
+    mover->setSpeed(speed);
+    return mover;
 }

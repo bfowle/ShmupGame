@@ -25,9 +25,9 @@ Bullet::Bullet(double x, double y, double direction, double speed) :
 Bullet::~Bullet() {
 }
 
-void Bullet::addNormalBullet(double direction, double speed) {
-}
-
 void Bullet::tick() {
-    UE_LOG(LogTemp, Warning, TEXT(" Bullet::tick() [%f, %f] "), m_direction, m_speed);
+    m_x += m_speed * sin(m_direction);
+    m_y -= m_speed * cos(m_direction);
+
+    //UE_LOG(LogTemp, Warning, TEXT(" Bullet::tick() (%f, %f) | [%f, %f] "), m_x, m_y, m_direction, m_speed);
 }
