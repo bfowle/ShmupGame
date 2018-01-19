@@ -40,6 +40,8 @@ void UEnemyComponent::BeginPlay() {
     //m_bulletParsers.push_back(new BulletMLParserTinyXML(srcPath + "xml/basic.xml"));
     m_bulletParsers.push_back(new BulletMLParserTinyXML(srcPath + "xml/10way.xml"));
     //m_bulletParsers.push_back(new BulletMLParserTinyXML(srcPath + "xml/round_1_boss.xml"));
+    //m_bulletParsers.push_back(new BulletMLParserTinyXML(srcPath + "xml/hibachi_4.xml"));
+    //m_bulletParsers.push_back(new BulletMLParserTinyXML(srcPath + "xml/kitiku_3.xml"));
 
     for (size_t i = 0; i < m_bulletParsers.size(); ++i) {
         m_bulletParsers[i]->build();

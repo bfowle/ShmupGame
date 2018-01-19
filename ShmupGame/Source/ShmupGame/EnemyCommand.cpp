@@ -28,17 +28,18 @@ EnemyCommand::~EnemyCommand() {
 }
 
 double EnemyCommand::getBulletDirection() {
-    UE_LOG(LogTemp, Warning, TEXT(" ===> getBulletDirection(%f) "), m_bullet->getDirection());
+    //UE_LOG(LogTemp, Warning, TEXT(" ===> getBulletDirection(%f) "), m_bullet->getDirection());
     return m_bullet->getDirection();
 }
 
 double EnemyCommand::getAimDirection() {
+    UE_LOG(LogTemp, Warning, TEXT(" ===> getAimDirection() "));
     //return rtod(M_PI - atan2(mTarget->x - mMover->x, mTarget->y - mMover->y));
-    return 0.0;
+    return -1.0;
 }
 
 double EnemyCommand::getBulletSpeed() {
-    UE_LOG(LogTemp, Warning, TEXT(" ===> getBulletSpeed(%f) "), m_bullet->getSpeed());
+    //UE_LOG(LogTemp, Warning, TEXT(" ===> getBulletSpeed(%f) "), m_bullet->getSpeed());
     return m_bullet->getSpeed();
 }
 
@@ -65,17 +66,17 @@ int EnemyCommand::getTurn() {
 }
 
 void EnemyCommand::doVanish() {
-    UE_LOG(LogTemp, Warning, TEXT(" => doVanish "));
+    //UE_LOG(LogTemp, Warning, TEXT(" => doVanish "));
 }
 
 void EnemyCommand::doChangeDirection(double direction) {
     m_bullet->setDirection(dtor(direction));
-    UE_LOG(LogTemp, Warning, TEXT(" => doChangeDirection(%f) [%f] "), direction, m_bullet->getDirection());
+    //UE_LOG(LogTemp, Warning, TEXT(" => doChangeDirection(%f) [%f] "), direction, m_bullet->getDirection());
 }
 
 void EnemyCommand::doChangeSpeed(double speed) {
     m_bullet->setSpeed(speed);
-    UE_LOG(LogTemp, Warning, TEXT(" => doChangeSpeed(%f) [%f] "), speed, m_bullet->getSpeed());
+    //UE_LOG(LogTemp, Warning, TEXT(" => doChangeSpeed(%f) [%f] "), speed, m_bullet->getSpeed());
 }
 
 void EnemyCommand::doAccelX(double accelX) {

@@ -34,5 +34,5 @@ void ABulletActor::setProjectileType(UClass *projectileType) {
     m_projectile = GetWorld()->SpawnActor<AActor>(projectileType, FVector::ZeroVector, FRotator::ZeroRotator);
     m_projectile->SetOwner(GetOwner());
 
-    UE_LOG(LogTemp, Warning, TEXT(" -- set projectile type -- %s [%s]"), *m_projectile->GetName(), *projectileType->GetName());
+    //UE_LOG(LogTemp, Warning, TEXT(" -- set projectile type -- %s [%s]"), *m_projectile->GetName(), *projectileType->GetName());
 }

@@ -24,7 +24,7 @@ EnemyCommand *BulletManager::createBullet(BulletMLParser *parser, Bullet *origin
 }
 
 EnemyCommand *BulletManager::createBullet(BulletMLState *state, double x, double y, double direction, double speed, ABulletActor *target) {
-    UE_LOG(LogTemp, Warning, TEXT(" ][ create bullet (state) => %s ][ (%f, %f) (%f, %f) "), state, x, y, direction, speed);
+    //UE_LOG(LogTemp, Warning, TEXT(" ][ create bullet (state) => %s ][ (%f, %f) (%f, %f) "), state, x, y, direction, speed);
     Bullet *projectile = createProjectile(x, y, direction, speed);
     EnemyCommand *bc;
     bc = new EnemyCommand(state, projectile, target, this);
@@ -37,7 +37,6 @@ Bullet *BulletManager::createProjectile(double x, double y, double direction, do
     Bullet *bullet;
     if (m_pool.empty()) {
         //bullet = new Bullet(x, y, direction, speed);
-        UE_LOG(LogTemp, Warning, TEXT(" !!!!!!! "));
         bullet = m_enemyComponent->spawnBulletActor(x, y, direction, speed);
     } else {
         bullet = m_pool.back();
