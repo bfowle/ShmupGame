@@ -5,12 +5,12 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 
-#include "Bullet.h"
+#include "Movable.h"
 
 #include "UPlayerComponent.generated.h"
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class SHMUPGAME_API UPlayerComponent : public UActorComponent, public Bullet {
+class SHMUPGAME_API UPlayerComponent : public UActorComponent, public Movable {
 	GENERATED_BODY()
 
 public:

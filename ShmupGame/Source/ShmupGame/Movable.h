@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 
-class SHMUPGAME_API Bullet {
+class SHMUPGAME_API Movable {
 public:
-    Bullet();
-    Bullet(double x, double y, double direction, double speed);
-    ~Bullet();
+    Movable();
+    Movable(double x, double y, double direction, double speed);
+    ~Movable();
 
 public:
     double getX() const { return m_x; };

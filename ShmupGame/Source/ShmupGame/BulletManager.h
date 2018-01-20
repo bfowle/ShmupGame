@@ -9,28 +9,28 @@
 class BulletMLState;
 class BulletMLParser;
 class EnemyCommand;
-class Bullet;
-class UEnemyComponent;
+class Movable;
+class UMovableComponentBase;
 
 extern int g_tick;
 
 class SHMUPGAME_API BulletManager {
 public:
-	BulletManager(UEnemyComponent *enemyComponent);
+	BulletManager(UMovableComponentBase *owner);
 	~BulletManager();
 
-    EnemyCommand *createBullet(BulletMLParser *parser, Bullet *origin, Bullet *target);
-    EnemyCommand *createBullet(BulletMLState *state, double x, double y, double direction, double speed, Bullet *target);
-    Bullet *createProjectile(double x, double y, double direction, double speed);
-    void destroyProjectile(Bullet *projectile);
+    EnemyCommand *createBullet(BulletMLParser *parser, Movable *origin, Movable *target);
+    EnemyCommand *createBullet(BulletMLState *state, double x, double y, double direction, double speed, Movable *target);
+    Movable *createProjectile(double x, double y, double direction, double speed);
+    void destroyProjectile(Movable *projectile);
 
     int getBulletCount() const { return m_bullets.size(); };
 
     void tick();
 
 private:
-    UEnemyComponent *m_enemyComponent;
+    UMovableComponentBase *m_owner;
     std::vector<EnemyCommand *> m_commands;
-    std::vector<Bullet *> m_bullets;
-    std::vector<Bullet *> m_pool;
+    std::vector<Movable *> m_bullets;
+    std::vector<Movable *> m_pool;
 };

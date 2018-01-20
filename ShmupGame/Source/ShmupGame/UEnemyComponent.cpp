@@ -3,7 +3,7 @@
 #include "UEnemyComponent.h"
 
 #include "BulletManager.h"
-#include "Bullet.h"
+#include "Movable.h"
 #include "UBulletComponent.h"
 #include "UPlayerComponent.h"
 
@@ -15,9 +15,7 @@
 
 using namespace std;
 
-UEnemyComponent::UEnemyComponent() :
-    m_owner(GetOwner()),
-    m_bulletManager(new BulletManager(this)) {
+UEnemyComponent::UEnemyComponent() {
     //m_bulletComponent(CreateDefaultSubobject<UBulletComponent>(TEXT("UBulletComponent"))) {
     // Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
     // off to improve performance if you don't need them.
@@ -30,10 +28,8 @@ UEnemyComponent::~UEnemyComponent() {
 void UEnemyComponent::BeginPlay() {
     Super::BeginPlay();
 
-    FVector location = m_owner->GetActorLocation();
-    // @TODO: temporary fix
-    //m_bulletComponent->setX(location.X);
-    //m_bulletComponent->setY(location.Z);
+    m_x = m_owner->GetActorLocation().X;
+    m_y = m_owner->GetActorLocation().Z;
 
     /**
      * @TODO load/parse all relevant enemy xml files elsewhere
@@ -45,10 +41,13 @@ void UEnemyComponent::BeginPlay() {
 
     //m_bulletParsers.push_back(new BulletMLParserTinyXML(srcPath + "xml/move.xml"));
     //m_bulletParsers.push_back(new BulletMLParserTinyXML(srcPath + "xml/basic.xml"));
-    m_bulletParsers.push_back(new BulletMLParserTinyXML(srcPath + "xml/10way.xml"));
-    //m_bulletParsers.push_back(new BulletMLParserTinyXML(srcPath + "xml/round_1_boss.xml"));
+    //m_bulletParsers.push_back(new BulletMLParserTinyXML(srcPath + "xml/10way.xml"));
+    m_bulletParsers.push_back(new BulletMLParserTinyXML(srcPath + "xml/all_around.xml"));
+    //m_bulletParsers.push_back(new BulletMLParserTinyXML(srcPath + "xml/homing_laser.xml"));
     //m_bulletParsers.push_back(new BulletMLParserTinyXML(srcPath + "xml/hibachi_4.xml"));
     //m_bulletParsers.push_back(new BulletMLParserTinyXML(srcPath + "xml/kitiku_3.xml"));
+    //m_bulletParsers.push_back(new BulletMLParserTinyXML(srcPath + "xml/round_1_boss.xml"));
+    //m_bulletParsers.push_back(new BulletMLParserTinyXML(srcPath + "xml/round_5_boss_gara_3.xml"));
 
     APawn *player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
     if (player != nullptr) {
@@ -57,10 +56,10 @@ void UEnemyComponent::BeginPlay() {
 
     for (size_t i = 0; i < m_bulletParsers.size(); ++i) {
         m_bulletParsers[i]->build();
-        // @TODO: replace target with player ship
+
+        // @TODO: sequence of firing bullets, not just all at once
         m_bulletManager->createBullet(m_bulletParsers[i],
-            new Bullet(location.X, location.Z, 0, 0),
-            //spawnBulletActor(location.X, location.Z, 0, 0),
+            new Movable(m_owner->GetActorLocation().X, m_owner->GetActorLocation().Z, 0, 0),
             m_playerComponent);
     }
 }
@@ -69,19 +68,9 @@ void UEnemyComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
     Super::TickComponent(DeltaTime, TickType, TickFunction);
 
     m_bulletManager->tick();
-}
 
-Bullet *UEnemyComponent::spawnBulletActor(float x, float y, float direction, float speed) {
-    AActor *actor = GetWorld()->SpawnActor<AActor>(bp_projectileType,
-        FVector::ZeroVector, FRotator::ZeroRotator);
-    actor->AttachToActor(m_owner, FAttachmentTransformRules::KeepRelativeTransform, TEXT("Bullets"));
-    actor->SetOwner(m_owner);
+    tick();
+    GetOwner()->SetActorLocation(FVector(m_x, 100.0, m_y));
 
-    UBulletComponent *bullet = actor->FindComponentByClass<UBulletComponent>();
-    bullet->setX(x);
-    bullet->setY(y);
-    bullet->setDirection(direction);
-    bullet->setSpeed(speed);
-
-    return bullet;
+    //UE_LOG(LogTemp, Warning, TEXT(" TICK: %s [%f, %f] (d: %f, s: %f) ... "), *GetName(), m_x, m_y, m_direction, m_speed);
 }

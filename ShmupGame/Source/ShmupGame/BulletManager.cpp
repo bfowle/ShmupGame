@@ -1,43 +1,42 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "BulletManager.h"
-#include "Bullet.h"
-#include "EnemyCommand.h"
-#include "UEnemyComponent.h"
 
+#include "Movable.h"
+#include "EnemyCommand.h"
+#include "UMovableComponentBase.h"
+
+// @TODO: put this elsewhere
 int g_tick;
 
-BulletManager::BulletManager(UEnemyComponent *enemyComponent) :
-    m_enemyComponent(enemyComponent) {
+BulletManager::BulletManager(UMovableComponentBase *owner) :
+    m_owner(owner) {
     g_tick = 0;
 }
 
 BulletManager::~BulletManager() {
 }
 
-EnemyCommand *BulletManager::createBullet(BulletMLParser *parser, Bullet *origin, Bullet *target) {
+EnemyCommand *BulletManager::createBullet(BulletMLParser *parser, Movable *origin, Movable *target) {
     //UE_LOG(LogTemp, Warning, TEXT(" ][ create bullet (parser) ][ (%f, %f) (%f, %f) "), origin->getX(), origin->getY(), origin->getDirection(), origin->getSpeed());
-    EnemyCommand *bc;
-    bc = new EnemyCommand(parser, origin, target, this);
+    EnemyCommand *bc = new EnemyCommand(parser, origin, target, this);
     m_commands.push_back(bc);
     return bc;
 }
 
-EnemyCommand *BulletManager::createBullet(BulletMLState *state, double x, double y, double direction, double speed, Bullet *target) {
+EnemyCommand *BulletManager::createBullet(BulletMLState *state, double x, double y, double direction, double speed, Movable *target) {
     //UE_LOG(LogTemp, Warning, TEXT(" ][ create bullet (state) => %s ][ (%f, %f) (%f, %f) "), state, x, y, direction, speed);
-    Bullet *projectile = createProjectile(x, y, direction, speed);
-    EnemyCommand *bc;
-    bc = new EnemyCommand(state, projectile, target, this);
+    Movable *projectile = createProjectile(x, y, direction, speed);
+    EnemyCommand *bc = new EnemyCommand(state, projectile, target, this);
     m_commands.push_back(bc);
     return bc;
 }
 
-Bullet *BulletManager::createProjectile(double x, double y, double direction, double speed) {
+Movable *BulletManager::createProjectile(double x, double y, double direction, double speed) {
     //UE_LOG(LogTemp, Warning, TEXT(" ][ create projectile ][ (%f, %f) (%f, %f) "), x, y, direction, speed);
-    Bullet *bullet;
+    Movable *bullet;
     if (m_pool.empty()) {
-        //bullet = new Bullet(x, y, direction, speed);
-        bullet = m_enemyComponent->spawnBulletActor(x, y, direction, speed);
+        bullet = m_owner->spawnBulletActor(x, y, direction, speed);
     } else {
         bullet = m_pool.back();
         bullet->setX(x);
@@ -51,7 +50,7 @@ Bullet *BulletManager::createProjectile(double x, double y, double direction, do
     return bullet;
 }
 
-void BulletManager::destroyProjectile(Bullet *projectile) {
+void BulletManager::destroyProjectile(Movable *projectile) {
     projectile->setEnd(true);
 }
 
@@ -86,8 +85,8 @@ void BulletManager::tick() {
             --size;
         }
         if (i < size) {
-            m_commands[i]->run();
             //UE_LOG(LogTemp, Warning, TEXT(" ::tick -> m_commands[%d]->run() => %d "), i, m_commands[i]->getTurn());
+            m_commands[i]->run();
         }
     }
 }

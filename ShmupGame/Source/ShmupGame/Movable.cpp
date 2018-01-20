@@ -1,31 +1,31 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Bullet.h"
+#include "Movable.h"
 
 /**
  * @TODO: rename to something like Enemy inherit from Movable superclass
 */
 
-Bullet::Bullet() :
+Movable::Movable() :
     m_x(0.0),
     m_y(0.0),
     m_direction(0.0),
     m_speed(0.0),
-    m_rank(0.0) {
+    m_rank(1.0) {
 }
 
-Bullet::Bullet(double x, double y, double direction, double speed) :
+Movable::Movable(double x, double y, double direction, double speed) :
     m_x(x),
     m_y(y),
     m_direction(direction),
     m_speed(speed),
-    m_rank(0.0) {
+    m_rank(1.0) {
 }
 
-Bullet::~Bullet() {
+Movable::~Movable() {
 }
 
-void Bullet::tick() {
+void Movable::tick() {
     m_x += m_speed * sin(m_direction);
     m_y -= m_speed * cos(m_direction);
 
