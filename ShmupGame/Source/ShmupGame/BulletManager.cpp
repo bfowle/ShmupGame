@@ -3,7 +3,7 @@
 #include "BulletManager.h"
 
 #include "Movable.h"
-#include "EnemyCommand.h"
+#include "BulletCommand.h"
 #include "UMovableComponentBase.h"
 
 // @TODO: put this elsewhere
@@ -17,17 +17,17 @@ BulletManager::BulletManager(UMovableComponentBase *owner) :
 BulletManager::~BulletManager() {
 }
 
-EnemyCommand *BulletManager::createBullet(BulletMLParser *parser, Movable *origin, Movable *target) {
+BulletCommand *BulletManager::createBullet(BulletMLParser *parser, Movable *origin, Movable *target) {
     //UE_LOG(LogTemp, Warning, TEXT(" ][ create bullet (parser) ][ (%f, %f) (%f, %f) "), origin->getX(), origin->getY(), origin->getDirection(), origin->getSpeed());
-    EnemyCommand *bc = new EnemyCommand(parser, origin, target, this);
+    BulletCommand *bc = new BulletCommand(parser, origin, target, this);
     m_commands.push_back(bc);
     return bc;
 }
 
-EnemyCommand *BulletManager::createBullet(BulletMLState *state, double x, double y, double direction, double speed, Movable *target) {
+BulletCommand *BulletManager::createBullet(BulletMLState *state, double x, double y, double direction, double speed, Movable *target) {
     //UE_LOG(LogTemp, Warning, TEXT(" ][ create bullet (state) => %s ][ (%f, %f) (%f, %f) "), state, x, y, direction, speed);
     Movable *projectile = createProjectile(x, y, direction, speed);
-    EnemyCommand *bc = new EnemyCommand(state, projectile, target, this);
+    BulletCommand *bc = new BulletCommand(state, projectile, target, this);
     m_commands.push_back(bc);
     return bc;
 }
@@ -58,9 +58,6 @@ void BulletManager::tick() {
     g_tick++;
 
     size_t size = m_bullets.size();
-    if (size) {
-        //UE_LOG(LogTemp, Warning, TEXT(" ::tick -> bullets(%d)"), size);
-    }
     for (size_t i = 0; i < size; ++i) {
         if (m_bullets[i]->isEnd()) {
             m_pool.push_back(m_bullets[i]);
@@ -69,14 +66,12 @@ void BulletManager::tick() {
             --size;
         }
         if (i < size) {
+            //UE_LOG(LogTemp, Warning, TEXT(" ::tick -> m_bullets[%d]->tick() "), i);
             m_bullets[i]->tick();
         }
     }
 
     size = m_commands.size();
-    if (size) {
-        //UE_LOG(LogTemp, Warning, TEXT(" ::tick -> commands(%d)"), size);
-    }
     for (size_t i = 0; i < size; ++i) {
         if (m_commands[i]->isEnd()) {
             delete m_commands[i];

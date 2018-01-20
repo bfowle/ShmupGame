@@ -8,7 +8,7 @@
 
 class BulletMLState;
 class BulletMLParser;
-class EnemyCommand;
+class BulletCommand;
 class Movable;
 class UMovableComponentBase;
 
@@ -19,8 +19,8 @@ public:
 	BulletManager(UMovableComponentBase *owner);
 	~BulletManager();
 
-    EnemyCommand *createBullet(BulletMLParser *parser, Movable *origin, Movable *target);
-    EnemyCommand *createBullet(BulletMLState *state, double x, double y, double direction, double speed, Movable *target);
+    BulletCommand *createBullet(BulletMLParser *parser, Movable *origin, Movable *target);
+    BulletCommand *createBullet(BulletMLState *state, double x, double y, double direction, double speed, Movable *target);
     Movable *createProjectile(double x, double y, double direction, double speed);
     void destroyProjectile(Movable *projectile);
 
@@ -30,7 +30,7 @@ public:
 
 private:
     UMovableComponentBase *m_owner;
-    std::vector<EnemyCommand *> m_commands;
+    std::vector<BulletCommand *> m_commands;
     std::vector<Movable *> m_bullets;
     std::vector<Movable *> m_pool;
 };

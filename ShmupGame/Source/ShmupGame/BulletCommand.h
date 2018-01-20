@@ -6,27 +6,25 @@
 
 #include "bulletml/bulletmlrunner.h"
 
+#define _USE_MATH_DEFINES
 #include <math.h>
 
+// @TODO: put these elsewhere
 //#define DIV 1024
 //#define SCREEN_SPEED_RATE 512
 //#define SCREEN_VELOCITY_RATE 512
-
-#ifndef M_PI
-#define M_PI 3.141592653
-#endif
 
 class BulletMLParser;
 class BulletMLState;
 class BulletManager;
 class Movable;
 
-class SHMUPGAME_API EnemyCommand : public BulletMLRunner {
+class SHMUPGAME_API BulletCommand : public BulletMLRunner {
 public:
-    EnemyCommand(BulletMLParser *parser, Movable *bullet, Movable *target, BulletManager *owner);
-    EnemyCommand(BulletMLState *state, Movable *bullet, Movable *target, BulletManager *owner);
+    BulletCommand(BulletMLParser *parser, Movable *bullet, Movable *target, BulletManager *owner);
+    BulletCommand(BulletMLState *state, Movable *bullet, Movable *target, BulletManager *owner);
     
-    ~EnemyCommand();
+    ~BulletCommand();
 
 public:
     virtual double getBulletDirection();

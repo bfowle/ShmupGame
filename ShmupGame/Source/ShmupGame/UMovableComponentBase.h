@@ -32,11 +32,14 @@ public:
     Movable *spawnBulletActor(float x, float y, float direction, float speed);
 
 public:
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile")
-        UClass *bp_projectileType;
+    UPROPERTY(EditDefaultsOnly, Category="Projectile", meta=(FilePathFilter="*xml"))
+    TArray<FFilePath> m_bulletFiles;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Projectile")
+    UClass *bp_projectileType;
 
 protected:
     AActor *m_owner;
-    BulletManager *m_bulletManager;
+    BulletManager *m_bulletManager;    
     std::vector<BulletMLParser *> m_bulletParsers;
 };

@@ -22,7 +22,4 @@ protected:
 
 public:
     virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *TickFunction) override;
-
-private:
-    UStaticMeshComponent *m_staticMesh;
 };

@@ -13,6 +13,8 @@
 #include "bulletml/bulletmlparser.h"
 #include "bulletml/bulletmlparser-tinyxml.h"
 
+using namespace std;
+
 UMovableComponentBase::UMovableComponentBase() :
     m_owner(GetOwner()),
     m_bulletManager(new BulletManager(this)) {
@@ -23,10 +25,25 @@ UMovableComponentBase::UMovableComponentBase() :
 
 void UMovableComponentBase::BeginPlay() {
 	Super::BeginPlay();
+
+    FString sourcePath = FPaths::GameSourceDir();
+
+    for (auto &file : m_bulletFiles) {
+        file.FilePath.RemoveFromStart(sourcePath);
+        if (FPaths::FileExists(sourcePath + file.FilePath)) {
+            m_bulletParsers.push_back(new BulletMLParserTinyXML(TCHAR_TO_UTF8(*(sourcePath + file.FilePath))));
+        }
+    }
+
+    for (size_t i = 0; i < m_bulletParsers.size(); ++i) {
+        m_bulletParsers[i]->build();
+    }
 }
 
 void UMovableComponentBase::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+    //tick();
 }
 
 Movable *UMovableComponentBase::spawnBulletActor(float x, float y, float direction, float speed) {

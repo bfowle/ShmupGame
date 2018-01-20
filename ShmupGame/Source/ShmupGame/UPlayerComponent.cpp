@@ -18,6 +18,6 @@ void UPlayerComponent::BeginPlay() {
 void UPlayerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-    m_x = GetOwner()->GetActorLocation().X;
-    m_y = GetOwner()->GetActorLocation().Z;
+    m_x = m_owner->GetActorLocation().X;
+    m_y = m_owner->GetActorLocation().Z;
 }

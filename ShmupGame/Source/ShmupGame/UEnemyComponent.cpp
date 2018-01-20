@@ -13,8 +13,6 @@
 #include "bulletml/bulletmlparser.h"
 #include "bulletml/bulletmlparser-tinyxml.h"
 
-using namespace std;
-
 UEnemyComponent::UEnemyComponent() {
     //m_bulletComponent(CreateDefaultSubobject<UBulletComponent>(TEXT("UBulletComponent"))) {
     // Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
@@ -31,11 +29,7 @@ void UEnemyComponent::BeginPlay() {
     m_x = m_owner->GetActorLocation().X;
     m_y = m_owner->GetActorLocation().Z;
 
-    /**
-     * @TODO load/parse all relevant enemy xml files elsewhere
-     * configure relevant xml files for this particular enemy instance
-     * via the editor as exposed public property
-     */
+    /*
     FString sourcePath = FPaths::GameSourceDir();
     string srcPath = TCHAR_TO_UTF8(*sourcePath);
 
@@ -48,6 +42,7 @@ void UEnemyComponent::BeginPlay() {
     //m_bulletParsers.push_back(new BulletMLParserTinyXML(srcPath + "xml/kitiku_3.xml"));
     //m_bulletParsers.push_back(new BulletMLParserTinyXML(srcPath + "xml/round_1_boss.xml"));
     //m_bulletParsers.push_back(new BulletMLParserTinyXML(srcPath + "xml/round_5_boss_gara_3.xml"));
+    */
 
     APawn *player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
     if (player != nullptr) {
@@ -55,8 +50,6 @@ void UEnemyComponent::BeginPlay() {
     }
 
     for (size_t i = 0; i < m_bulletParsers.size(); ++i) {
-        m_bulletParsers[i]->build();
-
         // @TODO: sequence of firing bullets, not just all at once
         m_bulletManager->createBullet(m_bulletParsers[i],
             new Movable(m_owner->GetActorLocation().X, m_owner->GetActorLocation().Z, 0, 0),
@@ -69,8 +62,7 @@ void UEnemyComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
     m_bulletManager->tick();
 
-    tick();
-    GetOwner()->SetActorLocation(FVector(m_x, 100.0, m_y));
+    //m_owner->SetActorLocation(FVector(m_x, 100.0, m_y));
 
     //UE_LOG(LogTemp, Warning, TEXT(" TICK: %s [%f, %f] (d: %f, s: %f) ... "), *GetName(), m_x, m_y, m_direction, m_speed);
 }
