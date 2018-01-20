@@ -7,6 +7,6 @@ public class ShmupGameEditorTarget : TargetRules {
 	public ShmupGameEditorTarget(TargetInfo Target) : base(Target) {
 		Type = TargetType.Editor;
 
-		ExtraModuleNames.AddRange(new string[] { "ShmupGame" });
+		ExtraModuleNames.AddRange(new string[] {"ShmupGame"});
 	}
 }

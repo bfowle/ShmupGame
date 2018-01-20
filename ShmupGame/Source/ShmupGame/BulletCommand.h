@@ -44,12 +44,16 @@ public:
     virtual double getBulletSpeedX();
     virtual double getBulletSpeedY();
 
+    bool isDead() { return m_isDead || isEnd(); };
+
 private:
     BulletMLParser *m_parser;
     BulletMLState *m_state;
-    Movable *m_bullet;
+    Movable *m_movable;
     Movable *m_target;
     BulletManager *m_owner;
+
+    bool m_isDead;
 
     inline double dtor(double d) { return d * M_PI / 180.0; };
     inline double rtod(double r) { return r * 180.0 / M_PI; };

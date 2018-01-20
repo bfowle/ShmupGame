@@ -58,6 +58,7 @@ void BulletManager::tick() {
     g_tick++;
 
     size_t size = m_bullets.size();
+    //UE_LOG(LogTemp, Warning, TEXT(" ::tick -> m_bullets.size() == %d"), m_bullets.size());
     for (size_t i = 0; i < size; ++i) {
         if (m_bullets[i]->isEnd()) {
             m_pool.push_back(m_bullets[i]);
@@ -72,8 +73,9 @@ void BulletManager::tick() {
     }
 
     size = m_commands.size();
+    //UE_LOG(LogTemp, Warning, TEXT(" ::tick -> m_commands.size() == %d"), m_commands.size());
     for (size_t i = 0; i < size; ++i) {
-        if (m_commands[i]->isEnd()) {
+        if (m_commands[i]->isDead()) {
             delete m_commands[i];
             m_commands[i] = m_commands.back();
             m_commands.pop_back();

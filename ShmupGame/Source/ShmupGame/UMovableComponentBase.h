@@ -25,6 +25,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+    virtual void OnComponentDestroyed(bool bDestroyingHierarchy);
 
 public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
@@ -42,4 +43,5 @@ protected:
     AActor *m_owner;
     BulletManager *m_bulletManager;    
     std::vector<BulletMLParser *> m_bulletParsers;
+    std::vector<AActor *> m_spawnedActors;
 };

@@ -8,40 +8,38 @@
 #include "bulletml/bulletmlparser-tinyxml.h"
 #include "bulletml/bulletmlrunner.h"
 
-BulletCommand::BulletCommand(BulletMLParser *parser, Movable *bullet, Movable *target, BulletManager *owner) :
+BulletCommand::BulletCommand(BulletMLParser *parser, Movable *movable, Movable *target, BulletManager *owner) :
     BulletMLRunner(parser),
     m_parser(parser),
-    m_bullet(bullet),
+    m_movable(movable),
     m_target(target),
-    m_owner(owner) {
+    m_owner(owner),
+    m_isDead(false) {
 }
 
-BulletCommand::BulletCommand(BulletMLState *state, Movable *bullet, Movable *target, BulletManager *owner) :
+BulletCommand::BulletCommand(BulletMLState *state, Movable *movable, Movable *target, BulletManager *owner) :
     BulletMLRunner(state),
     m_state(state),
-    m_bullet(bullet),
+    m_movable(movable),
     m_target(target),
-    m_owner(owner) {
+    m_owner(owner),
+    m_isDead(false) {
 }
 
 BulletCommand::~BulletCommand() {
 }
 
 double BulletCommand::getBulletDirection() {
-    //UE_LOG(LogTemp, Warning, TEXT(" ===> getBulletDirection(%f) "), m_bullet->getDirection());
-    return m_bullet->getDirection();
+    return m_movable->getDirection();
 }
 
 double BulletCommand::getAimDirection() {
-    //UE_LOG(LogTemp, Warning, TEXT(" ===> getAimDirection() [t: %f, %f] == %f"), m_target->getX(), m_target->getY(),
-    //  rtod(M_PI - atan2(m_target->getX() - m_bullet->getX(), m_target->getY() - m_bullet->getY())));
-    return rtod(M_PI - atan2(m_target->getX() - m_bullet->getX(),
-        m_target->getY() - m_bullet->getY()));
+    return rtod(M_PI - atan2(m_target->getX() - m_movable->getX(),
+        m_target->getY() - m_movable->getY()));
 }
 
 double BulletCommand::getBulletSpeed() {
-    //UE_LOG(LogTemp, Warning, TEXT(" ===> getBulletSpeed(%f) "), m_bullet->getSpeed());
-    return m_bullet->getSpeed();
+    return m_movable->getSpeed();
 }
 
 double BulletCommand::getDefaultSpeed() {
@@ -49,17 +47,17 @@ double BulletCommand::getDefaultSpeed() {
 }
 
 double BulletCommand::getRank() {
-    return m_bullet->getRank();
+    return m_movable->getRank();
 }
 
 void BulletCommand::createSimpleBullet(double direction, double speed) {
-    //UE_LOG(LogTemp, Warning, TEXT(" ][ CREATE SIMPLE BULLET | (%f, %f) ][ "), dtor(direction), speed);
-    m_owner->createProjectile(m_bullet->getX(), m_bullet->getY(), dtor(direction), speed);
+    m_owner->createProjectile(m_movable->getX(), m_movable->getY(),
+        dtor(direction), speed);
 }
 
 void BulletCommand::createBullet(BulletMLState *state, double direction, double speed) {
-    //UE_LOG(LogTemp, Warning, TEXT(" ][ CREATE BULLET | (%f, %f) | (%s) ][ "), dtor(direction), speed, state);
-    m_owner->createBullet(state, m_bullet->getX(), m_bullet->getY(), dtor(direction), speed, m_target);
+    m_owner->createBullet(state, m_movable->getX(), m_movable->getY(),
+        dtor(direction), speed, m_target);
 }
 
 int BulletCommand::getTurn() {
@@ -67,43 +65,39 @@ int BulletCommand::getTurn() {
 }
 
 void BulletCommand::doVanish() {
-    //UE_LOG(LogTemp, Warning, TEXT(" => doVanish "));
+    m_isDead = true;
 }
 
 void BulletCommand::doChangeDirection(double direction) {
-    m_bullet->setDirection(dtor(direction));
-    //UE_LOG(LogTemp, Warning, TEXT(" => doChangeDirection(%f) [%f] "), direction, m_bullet->getDirection());
+    m_movable->setDirection(dtor(direction));
 }
 
 void BulletCommand::doChangeSpeed(double speed) {
-    m_bullet->setSpeed(speed);
-    //UE_LOG(LogTemp, Warning, TEXT(" => doChangeSpeed(%f) [%f] "), speed, m_bullet->getSpeed());
+    m_movable->setSpeed(speed);
 }
 
 void BulletCommand::doAccelX(double accelX) {
-    //UE_LOG(LogTemp, Warning, TEXT(" => doAccelX(%f) "), accelX);
     double sx = getBulletSpeedX();
     double sy = getBulletSpeedY();
     sx = accelX;
-    m_bullet->setDirection(atan2(sy, sx));
-    m_bullet->setSpeed(sqrt(sx*sx + sy * sy));
+    m_movable->setDirection(atan2(sy, sx));
+    m_movable->setSpeed(sqrt(sx * sx + sy * sy));
 }
 
 void BulletCommand::doAccelY(double accelY) {
-    //UE_LOG(LogTemp, Warning, TEXT(" => doAccelY(%f) "), accelY);
     double sx = getBulletSpeedX();
     double sy = getBulletSpeedY();
     sy = accelY;
-    m_bullet->setDirection(atan2(sy, sx));
-    m_bullet->setSpeed(sqrt(sx*sx + sy * sy));
+    m_movable->setDirection(atan2(sy, sx));
+    m_movable->setSpeed(sqrt(sx * sx + sy * sy));
 }
 
 double BulletCommand::getBulletSpeedX() {
-    //UE_LOG(LogTemp, Warning, TEXT(" => getBulletSpeedX() "));
-    return m_bullet->getSpeed() * sin(m_bullet->getDirection());
+    return m_movable->getSpeed() *
+        sin(m_movable->getDirection());
 }
 
 double BulletCommand::getBulletSpeedY() {
-    //UE_LOG(LogTemp, Warning, TEXT(" => getBulletSpeedY() "));
-    return -m_bullet->getSpeed() * cos(m_bullet->getDirection());
+    return -m_movable->getSpeed() *
+        cos(m_movable->getDirection());
 }

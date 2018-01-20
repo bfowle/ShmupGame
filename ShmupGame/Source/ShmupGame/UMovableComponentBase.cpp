@@ -28,6 +28,7 @@ void UMovableComponentBase::BeginPlay() {
 
     FString sourcePath = FPaths::GameSourceDir();
 
+    // @TODO: is this the proper place to parse these...?
     for (auto &file : m_bulletFiles) {
         file.FilePath.RemoveFromStart(sourcePath);
         if (FPaths::FileExists(sourcePath + file.FilePath)) {
@@ -40,17 +41,26 @@ void UMovableComponentBase::BeginPlay() {
     }
 }
 
+void UMovableComponentBase::OnComponentDestroyed(bool bDestroyingHierarchy) {
+    for (AActor *actor : m_spawnedActors) {
+        actor->Destroy();
+    }
+
+    Super::OnComponentDestroyed(bDestroyingHierarchy);
+}
+
 void UMovableComponentBase::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-    //tick();
+    // @NOTE: each class that inherits from this should handle its own TickComponent
 }
 
 Movable *UMovableComponentBase::spawnBulletActor(float x, float y, float direction, float speed) {
     AActor *actor = GetWorld()->SpawnActor<AActor>(bp_projectileType,
         FVector::ZeroVector, FRotator::ZeroRotator);
-    actor->AttachToActor(m_owner, FAttachmentTransformRules::KeepRelativeTransform, TEXT("Bullets"));
+    actor->AttachToActor(m_owner, FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("Bullets"));
     actor->SetOwner(m_owner);
+    m_spawnedActors.push_back(actor);
 
     UBulletComponent *bullet = actor->FindComponentByClass<UBulletComponent>();
     bullet->setX(x);

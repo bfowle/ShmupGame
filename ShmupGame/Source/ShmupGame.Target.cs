@@ -7,6 +7,6 @@ public class ShmupGameTarget : TargetRules {
 	public ShmupGameTarget(TargetInfo Target) : base(Target) {
 		Type = TargetType.Game;
 
-        ExtraModuleNames.AddRange(new string[] {"ShmupGame" });
+        ExtraModuleNames.AddRange(new string[] {"ShmupGame"});
 	}
 }
