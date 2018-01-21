@@ -57,6 +57,8 @@ void BulletManager::destroyProjectile(Movable *projectile) {
 void BulletManager::tick() {
     g_tick++;
 
+    // add: enemies pool/tick
+
     size_t size = m_bullets.size();
     //UE_LOG(LogTemp, Warning, TEXT(" ::tick -> m_bullets.size() == %d"), m_bullets.size());
     for (size_t i = 0; i < size; ++i) {

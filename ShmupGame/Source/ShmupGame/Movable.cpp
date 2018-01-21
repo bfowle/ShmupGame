@@ -2,10 +2,6 @@
 
 #include "Movable.h"
 
-/**
- * @TODO: rename to something like Enemy inherit from Movable superclass
-*/
-
 Movable::Movable() :
     m_x(0.0),
     m_y(0.0),

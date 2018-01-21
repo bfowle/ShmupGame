@@ -34,9 +34,7 @@ void UEnemyComponent::BeginPlay() {
 
         for (size_t i = 0; i < m_bulletParsers.size(); ++i) {
             // @TODO: sequence of firing bullets, not just all at once
-            m_bulletManager->createBullet(m_bulletParsers[i],
-                new Movable(m_owner->GetActorLocation().X, m_owner->GetActorLocation().Z, 0, 0),
-                m_playerComponent);
+            m_bulletManager->createBullet(m_bulletParsers[i], this, m_playerComponent);
         }
     }
 }
@@ -46,7 +44,8 @@ void UEnemyComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
     m_bulletManager->tick();
 
-    //m_owner->SetActorLocation(FVector(m_x, 100.0, m_y));
+    tick();
+    m_owner->SetActorLocation(FVector(m_x, 100.0, m_y));
 
     //UE_LOG(LogTemp, Warning, TEXT(" TICK: %s [%f, %f] (d: %f, s: %f) ... "), *GetName(), m_x, m_y, m_direction, m_speed);
 }
