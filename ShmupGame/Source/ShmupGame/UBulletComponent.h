@@ -23,6 +23,8 @@ protected:
 public:
     virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *TickFunction) override;
 
+    void hide();
+
 private:
     AActor *m_owner;
 };

@@ -17,10 +17,21 @@ void UBulletComponent::BeginPlay() {
 }
 
 void UBulletComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *TickFunction) {
+    if (isEnd()) {
+        return;
+    }
+
     Super::TickComponent(DeltaTime, TickType, TickFunction);
 
     m_owner->SetActorLocation(FVector(m_x, 100.0, m_y));
 
     //UE_LOG(LogTemp, Warning, TEXT(" [%s] UBulletComponent::TickComponent() (%f, %f) | [%f, %f] "), *GetName(),
     //    m_x, m_y, m_direction, m_speed);
+}
+
+void UBulletComponent::hide() {
+    if (m_owner != nullptr) {
+        //m_owner->DestroyConstructedComponents();
+        m_owner->Destroy(true, true);
+    }
 }

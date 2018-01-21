@@ -60,11 +60,7 @@ void BulletManager::tick() {
     //UE_LOG(LogTemp, Warning, TEXT(" ::tick -> m_bullets.size() == %d"), m_bullets.size());
     for (size_t i = 0; i < size; ++i) {
         if (m_bullets[i]->isEnd()) {
-            if (m_bullets[i]->GetOwner() != nullptr) {
-                //m_bullets[i]->GetOwner()->DestroyConstructedComponents();
-                m_bullets[i]->GetOwner()->Destroy(true, true);
-            }
-
+            m_bullets[i]->hide();
             m_pool.push_back(m_bullets[i]);
             m_bullets[i] = m_bullets.back();
             m_bullets.pop_back();

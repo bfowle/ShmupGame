@@ -33,7 +33,7 @@ public:
     UBulletComponent *spawnBulletActor(float x, float y, float direction, float speed);
 
 public:
-    UPROPERTY(EditDefaultsOnly, Category="Projectile", meta=(FilePathFilter="*xml"))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Projectile", meta=(FilePathFilter="*xml"))
     TArray<FFilePath> m_bulletFiles;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Projectile")
