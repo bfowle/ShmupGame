@@ -58,7 +58,7 @@ void UMovableComponentBase::TickComponent(float DeltaTime, ELevelTick TickType, 
 Movable *UMovableComponentBase::spawnBulletActor(float x, float y, float direction, float speed) {
     AActor *actor = GetWorld()->SpawnActor<AActor>(bp_projectileType,
         FVector::ZeroVector, FRotator::ZeroRotator);
-    actor->AttachToActor(m_owner, FAttachmentTransformRules::KeepRelativeTransform, TEXT("Bullets"));
+    actor->AttachToActor(m_owner, FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("Bullets"));
     actor->SetOwner(m_owner);
     m_spawnedActors.push_back(actor);
 
