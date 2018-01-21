@@ -7,7 +7,8 @@ Movable::Movable() :
     m_y(0.0),
     m_direction(0.0),
     m_speed(0.0),
-    m_rank(1.0) {
+    m_rank(1.0),
+    m_isEnd(false) {
 }
 
 Movable::Movable(double x, double y, double direction, double speed) :
@@ -15,7 +16,8 @@ Movable::Movable(double x, double y, double direction, double speed) :
     m_y(y),
     m_direction(direction),
     m_speed(speed),
-    m_rank(1.0) {
+    m_rank(1.0),
+    m_isEnd(false) {
 }
 
 Movable::~Movable() {

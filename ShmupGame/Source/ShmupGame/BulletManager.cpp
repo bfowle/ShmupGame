@@ -44,7 +44,6 @@ Movable *BulletManager::createProjectile(double x, double y, double direction, d
         bullet->setSpeed(speed);
         m_pool.pop_back();
     }
-    bullet->setEnd(false);
     m_bullets.push_back(bullet);
     return bullet;
 }
@@ -56,8 +55,7 @@ void BulletManager::destroyProjectile(Movable *projectile) {
 void BulletManager::tick() {
     g_tick++;
 
-    // add: enemies pool/tick
-
+    /*
     size_t size = m_bullets.size();
     //UE_LOG(LogTemp, Warning, TEXT(" ::tick -> m_bullets.size() == %d"), m_bullets.size());
     for (size_t i = 0; i < size; ++i) {
@@ -72,8 +70,9 @@ void BulletManager::tick() {
             m_bullets[i]->tick();
         }
     }
+    */
 
-    size = m_commands.size();
+    size_t size = m_commands.size();
     //UE_LOG(LogTemp, Warning, TEXT(" ::tick -> m_commands.size() == %d"), m_commands.size());
     for (size_t i = 0; i < size; ++i) {
         if (m_commands[i]->isDead()) {

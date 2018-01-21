@@ -43,7 +43,9 @@ void UMovableComponentBase::BeginPlay() {
 
 void UMovableComponentBase::OnComponentDestroyed(bool bDestroyingHierarchy) {
     for (AActor *actor : m_spawnedActors) {
-        actor->Destroy();
+        if (actor != nullptr) {
+            actor->Destroy();
+        }
     }
 
     Super::OnComponentDestroyed(bDestroyingHierarchy);
@@ -56,6 +58,7 @@ void UMovableComponentBase::TickComponent(float DeltaTime, ELevelTick TickType, 
 }
 
 Movable *UMovableComponentBase::spawnBulletActor(float x, float y, float direction, float speed) {
+    // @TODO: object pooling
     AActor *actor = GetWorld()->SpawnActor<AActor>(bp_projectileType,
         FVector::ZeroVector, FRotator::ZeroRotator);
     actor->AttachToActor(m_owner, FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("Bullets"));

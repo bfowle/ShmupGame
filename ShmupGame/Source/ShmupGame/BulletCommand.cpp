@@ -66,6 +66,7 @@ int BulletCommand::getTurn() {
 
 void BulletCommand::doVanish() {
     m_isDead = true;
+    m_movable->setEnd(true);
 }
 
 void BulletCommand::doChangeDirection(double direction) {
