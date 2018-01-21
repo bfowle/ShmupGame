@@ -77,19 +77,15 @@ void BulletCommand::doChangeSpeed(double speed) {
 }
 
 void BulletCommand::doAccelX(double accelX) {
-    double sx = getBulletSpeedX();
     double sy = getBulletSpeedY();
-    sx = accelX;
-    m_movable->setDirection(atan2(sy, sx));
-    m_movable->setSpeed(sqrt(sx * sx + sy * sy));
+    m_movable->setDirection(atan2(sy, accelX));
+    m_movable->setSpeed(sqrt(accelX * accelX + sy * sy));
 }
 
 void BulletCommand::doAccelY(double accelY) {
     double sx = getBulletSpeedX();
-    double sy = getBulletSpeedY();
-    sy = accelY;
-    m_movable->setDirection(atan2(sy, sx));
-    m_movable->setSpeed(sqrt(sx * sx + sy * sy));
+    m_movable->setDirection(atan2(accelY, sx));
+    m_movable->setSpeed(sqrt(sx * sx + accelY * accelY));
 }
 
 double BulletCommand::getBulletSpeedX() {

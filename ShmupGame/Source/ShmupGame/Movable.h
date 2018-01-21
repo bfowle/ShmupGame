@@ -29,6 +29,7 @@ public:
 protected:
     double m_x, m_y;
     double m_direction, m_speed;
+    //double m_vx, m_vy;
     double m_rank;
     bool m_isEnd;
 };

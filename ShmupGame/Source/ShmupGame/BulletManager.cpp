@@ -7,11 +7,10 @@
 #include "UMovableComponentBase.h"
 
 // @TODO: put this elsewhere
-int g_tick;
+int g_tick = 0;
 
 BulletManager::BulletManager(UMovableComponentBase *owner) :
     m_owner(owner) {
-    g_tick = 0;
 }
 
 BulletManager::~BulletManager() {
