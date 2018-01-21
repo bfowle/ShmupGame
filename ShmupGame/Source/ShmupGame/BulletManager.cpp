@@ -2,9 +2,10 @@
 
 #include "BulletManager.h"
 
-#include "Movable.h"
 #include "BulletCommand.h"
+#include "Movable.h"
 #include "UMovableComponentBase.h"
+#include "UBulletComponent.h"
 
 // @TODO: put this elsewhere
 int g_tick = 0;
@@ -33,7 +34,7 @@ BulletCommand *BulletManager::createBullet(BulletMLState *state, double x, doubl
 
 Movable *BulletManager::createProjectile(double x, double y, double direction, double speed) {
     //UE_LOG(LogTemp, Warning, TEXT(" ][ create projectile ][ (%f, %f) (%f, %f) "), x, y, direction, speed);
-    Movable *bullet;
+    UBulletComponent *bullet;
     if (m_pool.empty()) {
         bullet = m_owner->spawnBulletActor(x, y, direction, speed);
     } else {
@@ -55,11 +56,15 @@ void BulletManager::destroyProjectile(Movable *projectile) {
 void BulletManager::tick() {
     g_tick++;
 
-    /*
     size_t size = m_bullets.size();
     //UE_LOG(LogTemp, Warning, TEXT(" ::tick -> m_bullets.size() == %d"), m_bullets.size());
     for (size_t i = 0; i < size; ++i) {
         if (m_bullets[i]->isEnd()) {
+            if (m_bullets[i]->GetOwner() != nullptr) {
+                //m_bullets[i]->GetOwner()->DestroyConstructedComponents();
+                m_bullets[i]->GetOwner()->Destroy(true, true);
+            }
+
             m_pool.push_back(m_bullets[i]);
             m_bullets[i] = m_bullets.back();
             m_bullets.pop_back();
@@ -70,9 +75,8 @@ void BulletManager::tick() {
             m_bullets[i]->tick();
         }
     }
-    */
 
-    size_t size = m_commands.size();
+    size = m_commands.size();
     //UE_LOG(LogTemp, Warning, TEXT(" ::tick -> m_commands.size() == %d"), m_commands.size());
     for (size_t i = 0; i < size; ++i) {
         if (m_commands[i]->isDead()) {

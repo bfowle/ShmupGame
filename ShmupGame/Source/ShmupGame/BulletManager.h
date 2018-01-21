@@ -11,6 +11,7 @@ class BulletMLParser;
 class BulletCommand;
 class Movable;
 class UMovableComponentBase;
+class UBulletComponent;
 
 extern int g_tick;
 
@@ -31,6 +32,6 @@ public:
 private:
     UMovableComponentBase *m_owner;
     std::vector<BulletCommand *> m_commands;
-    std::vector<Movable *> m_bullets;
-    std::vector<Movable *> m_pool;
+    std::vector<UBulletComponent *> m_bullets;
+    std::vector<UBulletComponent *> m_pool;
 };

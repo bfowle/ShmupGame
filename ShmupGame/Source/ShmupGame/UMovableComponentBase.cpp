@@ -57,7 +57,7 @@ void UMovableComponentBase::TickComponent(float DeltaTime, ELevelTick TickType, 
     // @NOTE: each class that inherits from this should handle its own TickComponent
 }
 
-Movable *UMovableComponentBase::spawnBulletActor(float x, float y, float direction, float speed) {
+UBulletComponent *UMovableComponentBase::spawnBulletActor(float x, float y, float direction, float speed) {
     // @TODO: object pooling
     AActor *actor = GetWorld()->SpawnActor<AActor>(bp_projectileType,
         FVector::ZeroVector, FRotator::ZeroRotator);

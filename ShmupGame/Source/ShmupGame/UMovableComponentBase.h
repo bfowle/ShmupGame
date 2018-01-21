@@ -30,7 +30,7 @@ protected:
 public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
 
-    Movable *spawnBulletActor(float x, float y, float direction, float speed);
+    UBulletComponent *spawnBulletActor(float x, float y, float direction, float speed);
 
 public:
     UPROPERTY(EditDefaultsOnly, Category="Projectile", meta=(FilePathFilter="*xml"))

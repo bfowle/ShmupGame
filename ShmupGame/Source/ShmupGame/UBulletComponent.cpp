@@ -19,14 +19,6 @@ void UBulletComponent::BeginPlay() {
 void UBulletComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *TickFunction) {
     Super::TickComponent(DeltaTime, TickType, TickFunction);
 
-    if (m_isEnd) {
-        if (m_owner != nullptr) {
-            m_owner->Destroy();
-        }
-        return;
-    }
-
-    tick();
     m_owner->SetActorLocation(FVector(m_x, 100.0, m_y));
 
     //UE_LOG(LogTemp, Warning, TEXT(" [%s] UBulletComponent::TickComponent() (%f, %f) | [%f, %f] "), *GetName(),
