@@ -15,19 +15,10 @@ public:
 
 public:
     enum {
-        LARGE,
-        LARGE_MOVE,
-        MEDIUM,
-        MEDIUM_MOVE,
-        MEDIUM_BACK_MOVE,
-        MEDIUM_SUB,
-        MEDIUM_SUB_LOCK,
-        MORPH,
-        MORPH_LOCK,
-        SMALL,
-        SMALL_MOVE,
-        SMALL_SIDE_MOVE,
-        SMALL_LOCK
+        MORPH, SMALL, SMALL_MOVE, SMALL_SIDE_MOVE,
+        MEDIUM, MEDIUM_SUB, MEDIUM_MOVE, MEDIUM_BACK_MOVE,
+        LARGE, LARGE_MOVE,
+        MORPH_LOCK, SMALL_LOCK, MEDIUM_SUB_LOCK,
     };
 
     enum {

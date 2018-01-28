@@ -3,13 +3,18 @@
 #include "GameManager.h"
 #include "BulletActor.h"
 #include "BulletActorPool.h"
+#include "Field.h"
 #include "Lock.h"
+
+#include "Engine/World.h"
+#include "GameFramework/Actor.h"
 
 #include "bulletml/bulletml.h"
 #include "bulletml/bulletmlparser.h"
 
 using namespace std;
 
+const float Enemy::FIELD_SPACE = 0.5;
 Random Enemy::m_random;
 
 const int ENEMY_TYPE_SCORE[] = {
@@ -31,11 +36,12 @@ shared_ptr<Actor> Enemy::newActor() {
 
 void Enemy::init(shared_ptr<ActorInitializer> initializer) {
     shared_ptr<EnemyInitializer> enemy = static_pointer_cast<EnemyInitializer>(initializer);
+    m_field = enemy->m_field;
+    m_ship = enemy->m_ship;
     m_bullets = enemy->m_bullets;
     //m_shots = enemy->m_shots;
     m_rolls = enemy->m_rolls;
     m_locks = enemy->m_locks;
-    //m_ship = enemy->m_ship;
     m_gameManager = enemy->m_gameManager;
 
     m_position = FVector2D();
@@ -45,6 +51,9 @@ void Enemy::init(shared_ptr<ActorInitializer> initializer) {
     }
     m_velocity = FVector2D();
     m_velocityCnt = 0;
+
+    m_fieldLimitX = m_field->m_size.X / 4 * 3;
+    m_fieldLimitY = m_field->m_size.Y / 4 * 3;
 }
 
 void Enemy::set(const FVector2D &position, float direction, shared_ptr<EnemyType> type, BulletMLParser *moveParser) {
@@ -58,6 +67,10 @@ void Enemy::set(const FVector2D &position, float direction, shared_ptr<EnemyType
     if (!m_moveBullet) {
         return;
     }
+
+    m_actor = m_gameManager->m_world->SpawnActor<AActor>(m_gameManager->bp_enemyClass,
+        FVector::ZeroVector, FRotator::ZeroRotator);
+    //m_moveBullet->m_actor = m_actor;
 
     m_cnt = 0;
     m_shield = type->m_shield;
@@ -87,8 +100,14 @@ void Enemy::tick() {
     if (!m_isBoss) {
         m_position.X = m_moveBullet->m_bullet->m_position.X;
         m_position.Y = m_moveBullet->m_bullet->m_position.Y;
+
+        //UE_LOG(LogTemp, Warning, TEXT("- Enemy::tick [%s]"), *m_position.ToString());
+
+        if (m_actor) {
+            m_actor->SetActorLocation(FVector(m_position.X, 100.0, m_position.Y));
+        }
     } else {
-        //tickBoss();
+        tickBoss();
     }
 
     if (m_topBullet) {
@@ -104,22 +123,22 @@ void Enemy::tick() {
         battery->m_isDamaged = false;
         for (int j = 0; j < bt->m_batteryNum; ++j) {
             if (battery->m_topBullet[j]) {
-                battery->m_topBullet[j]->m_bullet->m_position.X = m_position.X + bt->m_batteryPos[j].X;
-                battery->m_topBullet[j]->m_bullet->m_position.Y = m_position.Y + bt->m_batteryPos[j].Y;
+                battery->m_topBullet[j]->m_bullet->m_position.X = m_position.X + bt->m_batteryPosition[j].X;
+                battery->m_topBullet[j]->m_bullet->m_position.Y = m_position.Y + bt->m_batteryPosition[j].Y;
             }
         }
     }
 
     if (!m_isBoss) {
-        //if (field->checkHit(pos)) {
-        //    remove();
-        //    return;
-        //}
-        //if (pos.y < -field->size.y / 4) {
-        //    removeTopBullets();
-        //} else {
-        controlFireCnt();
-        //}
+        if (m_field->checkHit(m_position)) {
+            remove();
+            return;
+        }
+        if (m_position.Y < -m_field->m_size.Y / 4) {
+            removeTopBullets();
+        } else {
+            controlFireCnt();
+        }
     } else {
         float mtr;
         if (m_appCnt > 0) {
@@ -130,13 +149,10 @@ void Enemy::tick() {
             m_appCnt--;
             mtr = 1.0 - (float)m_appCnt / APPEARANCE_COUNT;
         } else if (m_dstCnt > 0) {
-            //addFragments(1, z, 0.05, rand.nextSignedFloat(M_PI));
             m_gameManager->clearBullets();
             m_z += DESTROYED_Z / 60;
             m_dstCnt--;
             if (m_dstCnt <= 0) {
-                //addFragments(25, z, 0.4, rand.nextSignedFloat(M_PI));
-                //m_gameManager->setScreenShake(60, 0.01);
                 remove();
                 //m_gameManager->setBossShieldMeter(0, 0, 0, 0, 0, 0);
                 return;
@@ -170,14 +186,6 @@ void Enemy::tick() {
     //    timeoutCnt <= 0) {
     //    checkDamage();
     //}
-
-    /*
-    UE_LOG(LogTemp, Warning, TEXT("- Enemy::tick [%f, %f] [battery: %d]"), m_position.X, m_position.Y, m_type->m_batteryNum);
-    if (m_topBullet) {
-        FString topBulletName(m_topBullet->m_parser->getName().c_str());
-        UE_LOG(LogTemp, Warning, TEXT("  -- Enemy::tick/topBullet: [%f, %f] :: %s"), m_topBullet->m_bullet->m_direction, m_topBullet->m_bullet->m_speed, *topBulletName);
-    }
-    */
 }
 
 void Enemy::tickBoss() {
@@ -211,6 +219,14 @@ shared_ptr<BulletActor> Enemy::setBullet(const Barrage &barrage, const FVector2D
             barrage.m_speedRank, barrage.m_shape, barrage.m_color,
             barrage.m_bulletSize, barrage.m_xReverse * xr);
     }
+
+    if (bullet != nullptr) {
+        bullet->m_actor = m_gameManager->m_world->SpawnActor<AActor>(m_gameManager->bp_bulletClass,
+            FVector(bx, 100.0, by), FRotator::ZeroRotator);
+    }
+    
+    //UE_LOG(LogTemp, Warning, TEXT("- Enemy::setBullet [%s] [%f, %f] (%s)"), *m_position.ToString(), bx, by, *bullet->m_actor->GetName());
+
     return bullet;
 }
 
@@ -229,7 +245,7 @@ void Enemy::setTopBullets() {
         const BatteryType *bt = &(m_type->m_batteryType[i]);
         float xr = 1;
         for (int j = 0; j < bt->m_batteryNum; ++j) {
-            battery->m_topBullet[j] = setBullet(bt->m_barrage[m_barragePatternIdx], &(bt->m_batteryPos[j]), xr);
+            battery->m_topBullet[j] = setBullet(bt->m_barrage[m_barragePatternIdx], &(bt->m_batteryPosition[j]), xr);
             if (bt->m_xReverseAlternate)
                 xr *= -1;
         }
@@ -251,17 +267,11 @@ void Enemy::removeBattery(Battery *battery, const BatteryType &bt) {
 void Enemy::addDamageBattery(int idx, int dmg) {
     m_battery[idx].m_shield -= dmg;
     if (m_battery[idx].m_shield <= 0) {
-        //FVector2D *p = &(m_type->m_batteryType[idx].m_collisionPos);
-
-        //addBonuses(p, m_type->batteryType[idx].shield);
-        //manager->addScore(ENEMY_WING_SCORE);
-        //addWingFragments(type->batteryType[idx], 10, 0, 0.1, rand.nextSignedFloat(1));
-        //SoundManager::playSe(SoundManager::LARGE_ENEMY_DESTROYED);
-        //manager->setScreenShake(10, 0.03);
+        FVector2D *p = &(m_type->m_batteryType[idx].m_collisionPosition);
 
         removeBattery(&(m_battery[idx]), m_type->m_batteryType[idx]);
-        //m_velocity.Y = -p->X / 10;
-        //m_velocity.Y = -p->X / 10;
+        m_velocity.Y = -p->X / 10;
+        m_velocity.Y = -p->X / 10;
         m_velocityCnt = 60;
 
         removeTopBullets();
@@ -271,7 +281,6 @@ void Enemy::addDamageBattery(int idx, int dmg) {
 }
 
 int Enemy::checkLocked(const FVector2D &position, float xofs, shared_ptr<Lock> lock) {
-    /*
     if (fabs(position.X - m_position.Y) < m_type->m_collisionSize.X + xofs &&
         m_position.Y < lock->m_lockMinY &&
         m_position.Y > position.Y) {
@@ -286,9 +295,9 @@ int Enemy::checkLocked(const FVector2D &position, float xofs, shared_ptr<Lock> l
             }
 
             const BatteryType *bt = &(m_type->m_batteryType[i]);
-            float by = m_position.Y + bt->m_collisionPos.Y;
+            float by = m_position.Y + bt->m_collisionPosition.Y;
 
-            if (fabs(position.X - m_position.X - bt->m_collisionPos.X) < bt->m_collisionSize.X + xofs &&
+            if (fabs(position.X - m_position.X - bt->m_collisionPosition.X) < bt->m_collisionSize.X + xofs &&
                 by < lock->m_lockMinY &&
                 by > position.Y) {
                 lock->m_lockMinY = by;
@@ -299,7 +308,6 @@ int Enemy::checkLocked(const FVector2D &position, float xofs, shared_ptr<Lock> l
             return lp;
         }
     }
-    */
 
     return NOHIT;
 }

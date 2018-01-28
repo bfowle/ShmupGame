@@ -40,7 +40,7 @@ void EnemyType::clearExistsList() {
 void EnemyType::setSmallEnemyType(float rank, int mode) {
     m_type = SMALL;
     m_barragePatternNum = 1;
-    //m_wingCollision = false;
+    m_wingCollision = false;
 
     setEnemyColorType();
 
@@ -69,7 +69,7 @@ void EnemyType::setSmallEnemyType(float rank, int mode) {
 void EnemyType::setMediumEnemyType(float rank, int mode) {
     m_type = MEDIUM;
     m_barragePatternNum = 1;
-    //m_wingCollision = false;
+    m_wingCollision = false;
     
     setEnemyColorType();
 
@@ -142,7 +142,7 @@ void EnemyType::setLargeEnemyType(float rank, int mode) {
     m_type = LARGE;
 
     m_barragePatternNum = 2 + m_random.nextInt(3);
-    //m_wingCollision = true;
+    m_wingCollision = true;
 
     setEnemyColorType();
 
@@ -197,7 +197,7 @@ void EnemyType::setMediumBossEnemyType(float rank, int mode) {
     m_type = MEDIUM;
 
     m_barragePatternNum = 2 + m_random.nextInt(2);
-    //m_wingCollision = true;
+    m_wingCollision = true;
 
     setEnemyColorType();
 
@@ -245,7 +245,7 @@ void EnemyType::setLargeBossEnemyType(float rank, int mode) {
     m_type = LARGE;
 
     m_barragePatternNum = 2 + m_random.nextInt(3);
-    //m_wingCollision = true;
+    m_wingCollision = true;
 
     setEnemyColorType();
 
@@ -422,7 +422,147 @@ void EnemyType::createEnemyColor() {
 }
 
 void EnemyType::setEnemyShapeAndWings(int size) {
+    createEnemyColor();
+    //m_r = m_er;
+    //m_g = m_eg;
+    //m_b = m_eb;
 
+    float x1 = m_enemySize[size][0] + m_random.nextSignedFloat(m_enemySize[size][1]);
+    float y1 = m_enemySize[size][2] + m_random.nextSignedFloat(m_enemySize[size][3]);
+    float x2 = m_enemySize[size][0] + m_random.nextSignedFloat(m_enemySize[size][1]);
+    float y2 = m_enemySize[size][2] + m_random.nextSignedFloat(m_enemySize[size][3]);
+    m_bodyShapePosition[0].X = -x1;
+    m_bodyShapePosition[0].Y = y1;
+    m_bodyShapePosition[1].X = x1;
+    m_bodyShapePosition[1].Y = y1;
+    m_bodyShapePosition[2].X = x2;
+    m_bodyShapePosition[2].Y = -y2;
+    m_bodyShapePosition[3].X = -x2;
+    m_bodyShapePosition[3].Y = -y2;
+
+    //m_retroSize = m_enemySize[size][4];
+    switch (size) {
+    case SMALL:
+    case MEDIUM:
+    case MEDIUM_BOSS:
+        m_batteryNum = 2;
+        break;
+    case LARGE:
+    case LARGE_BOSS:
+        m_batteryNum = 4;
+        break;
+    }
+
+    float px = 0;
+    float py = 0;
+    float mpx = 0;
+    float mpy = 0;
+    int bsl = 0;
+    if (x1 > x2) {
+        m_collisionSize.X = x1;
+    } else {
+        m_collisionSize.X = x2;
+    }
+    if (y1 > y2) {
+        m_collisionSize.Y = y1;
+    } else {
+        m_collisionSize.Y = y2;
+    }
+
+    for (int i = 0; i < m_batteryNum; ++i) {
+        BatteryType *bt = &(m_batteryType[i]);
+        int wrl = 1;
+        if (i % 2 == 0) {
+            px = m_enemySize[size][5] + m_random.nextFloat(m_enemySize[size][6]);
+            if (m_batteryNum <= 2) {
+                py = m_random.nextSignedFloat(m_enemySize[size][7]);
+            } else {
+                if (i < 2) {
+                    py = m_random.nextFloat(m_enemySize[size][7] / 2) + m_enemySize[size][7] / 2;
+                } else {
+                    py = -m_random.nextFloat(m_enemySize[size][7] / 2) - m_enemySize[size][7] / 2;
+                }
+            }
+
+            float md;
+            if (m_random.nextInt(2) == 0) {
+                md = m_random.nextFloat(M_PI / 2) - M_PI / 4;
+            } else {
+                md = m_random.nextFloat(M_PI / 2) + M_PI / 4 * 3;
+            }
+            mpx = px / 2 + sin(md) * (m_enemySize[size][8] / 2 + m_random.nextFloat(m_enemySize[size][8] / 2));
+            mpy = py / 2 + cos(md) * (m_enemySize[size][8] / 2 + m_random.nextFloat(m_enemySize[size][8] / 2));
+
+            switch (size) {
+            case SMALL:
+            case MEDIUM:
+            case LARGE:
+                bsl = 1;
+                break;
+            case MEDIUM_BOSS:
+                bsl = 150 + m_random.nextInt(30);
+                break;
+            case LARGE_BOSS:
+                bsl = 200 + m_random.nextInt(50);
+                break;
+            }
+
+            createEnemyColor();
+
+            wrl = -1;
+            if (!m_wingCollision) {
+                if (px > m_collisionSize.X) {
+                    m_collisionSize.X = px;
+                }
+
+                float cpy = fabs(py);
+                if (cpy > m_collisionSize.Y) {
+                    m_collisionSize.Y = cpy;
+                }
+
+                cpy = fabs(mpy);
+                if (cpy > m_collisionSize.Y) {
+                    m_collisionSize.Y = cpy;
+                }
+            }
+        }
+
+        switch (wrl) {
+        case 1:
+            bt->m_wingShapePosition[0].X = px / 4 * wrl;
+            bt->m_wingShapePosition[0].Y = py / 4;
+            bt->m_wingShapePosition[1].X = px * wrl;
+            bt->m_wingShapePosition[1].Y = py;
+            bt->m_wingShapePosition[2].X = mpx * wrl;
+            bt->m_wingShapePosition[2].Y = mpy;
+            break;
+        case -1:
+            bt->m_wingShapePosition[0].X = px / 4 * wrl;
+            bt->m_wingShapePosition[0].Y = py / 4;
+            bt->m_wingShapePosition[1].X = px * wrl;
+            bt->m_wingShapePosition[1].Y = py;
+            bt->m_wingShapePosition[2].X = mpx * wrl;
+            bt->m_wingShapePosition[2].Y = mpy;
+            break;
+        }
+
+        bt->m_collisionPosition.X = (px + px / 4) / 2 * wrl;
+        bt->m_collisionPosition.Y = (py + mpy + py / 4) / 3;
+        bt->m_collisionSize.X = px / 4 * 3 / 2;
+
+        float sy1 = fabs(py - mpy) / 2;
+        float sy2 = fabs(py - py / 4) / 2;
+        if (sy1 > sy2) {
+            bt->m_collisionSize.Y = sy1;
+        } else {
+            bt->m_collisionSize.Y = sy2;
+        }
+
+        //bt->m_r = m_er;
+        //bt->m_g = m_eg;
+        //bt->m_b = m_eb;
+        bt->m_shield = bsl;
+    }
 }
 
 void EnemyType::setBattery(float rank, int n, int barrageType, int barrageIntensity, int idx, int ptnIdx, float slowness, int mode) {
@@ -452,7 +592,6 @@ void EnemyType::setBattery(float rank, int n, int barrageType, int barrageIntens
     barrage2->m_bulletSize = barrage->m_bulletSize;
     barrage2->m_xReverse = -barrage->m_xReverse;
     
-    /*
     if (m_random.nextInt(4) == 0) {
         bt->m_xReverseAlternate = true;
         bt2->m_xReverseAlternate = true;
@@ -461,19 +600,18 @@ void EnemyType::setBattery(float rank, int n, int barrageType, int barrageIntens
         bt2->m_xReverseAlternate = false;
     }
 
-    float px = bt->m_wingShapePos[1].X;
-    float py = bt->m_wingShapePos[1].Z;
-    float mpx = bt->m_wingShapePos[2].X;
-    float mpy = bt->m_wingShapePos[2].Z;
+    float px = bt->m_wingShapePosition[1].X;
+    float py = bt->m_wingShapePosition[1].Y;
+    float mpx = bt->m_wingShapePosition[2].X;
+    float mpy = bt->m_wingShapePosition[2].Y;
     for (int i = 0; i < n; i++) {
-        bt->m_batteryPos[i].X = px;
-        bt->m_batteryPos[i].Z = py;
-        bt2->m_batteryPos[i].X = -px;
-        bt2->m_batteryPos[i].Z = py;
+        bt->m_batteryPosition[i].X = px;
+        bt->m_batteryPosition[i].Y = py;
+        bt2->m_batteryPosition[i].X = -px;
+        bt2->m_batteryPosition[i].Y = py;
         px += (mpx - px) / (n - 1);
         py += (mpy - py) / (n - 1);
     }
-    */
 
     bt->m_batteryNum = n;
     bt2->m_batteryNum = n;

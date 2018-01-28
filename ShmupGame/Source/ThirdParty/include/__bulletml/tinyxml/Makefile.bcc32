@@ -1,8 +1,0 @@
-OBJS=tinyxml.obj tinyxmlerror.obj tinyxmlparser.obj
-
-all: $(OBJS)
-	copy tiny*.obj ..
-
-.cpp.obj:
-	bcc32 -c -O -I. $<
-

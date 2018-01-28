@@ -17,13 +17,13 @@ public:
     };
 
     std::array<Barrage, BARRAGE_PATTERN_MAX> m_barrage;
-    std::array<FVector2D, WING_BATTERY_MAX> m_batteryPos;
-    std::array<FVector2D, WING_SHAPE_POINT_NUM> m_wingShapePos;
+    std::array<FVector2D, WING_BATTERY_MAX> m_batteryPosition;
+    std::array<FVector2D, WING_SHAPE_POINT_NUM> m_wingShapePosition;
     int m_batteryNum;
     int m_shield;
 
-    //FVector2D m_collisionPos;
-    //FVector2D m_collisionSize;
+    FVector2D m_collisionPosition;
+    FVector2D m_collisionSize;
     //float r, g, b;
     bool m_xReverseAlternate;
 };

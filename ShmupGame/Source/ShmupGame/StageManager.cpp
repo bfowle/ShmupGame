@@ -2,6 +2,7 @@
 
 #include "GameManager.h"
 #include "Enemy.h"
+#include "Field.h"
 
 #include "bulletml/bulletmlparser.h"
 #include "bulletml/bulletmlparser-tinyxml.h"
@@ -9,7 +10,9 @@
 using namespace std;
 
 const int StageManager::m_appearancePattern[][7][3] = {
+    // 0: roll | 1: lock
     {
+        // 0: small | 1: medium | 2: large
         {1, 0, 0},
         {2, 0, 0},
         {1, 1, 0},
@@ -28,9 +31,10 @@ const int StageManager::m_appearancePattern[][7][3] = {
     }
 };
 
-void StageManager::init(AGameManager *gameManager, shared_ptr<BarrageManager> barrageManager) {
-    m_gameManager = gameManager;
+void StageManager::init(shared_ptr<Field> field, shared_ptr<BarrageManager> barrageManager, AGameManager *gameManager) {
+    m_field = field;
     m_barrageManager = barrageManager;
+    m_gameManager = gameManager;
 
     m_random = Random();
     m_apos = FVector2D();
@@ -98,39 +102,39 @@ void StageManager::tick() {
         case TOP:
             switch (appearance->m_pattern) {
             case BOTH_SIDES:
-                m_apos.X = (p - 0.5) * 11 /*m_field->m_size.X*/ * 1.8;
+                m_apos.X = (p - 0.5) * m_field->m_size.X * 1.8;
                 break;
             default:
-                m_apos.X = (p * 0.6 + 0.2) * 11 /*m_field->m_size.X*/ * appearance->m_side;
+                m_apos.X = (p * 0.6 + 0.2) * m_field->m_size.X * appearance->m_side;
                 break;
             }
-            m_apos.Y = 16/*m_field->m_size.Y*/ - 0.5/*Enemy::FIELD_SPACE*/;
+            m_apos.Y = m_field->m_size.Y - Enemy::FIELD_SPACE;
             d = M_PI;
             break;
 
         case BACK:
             switch (appearance->m_pattern) {
             case BOTH_SIDES:
-                m_apos.X = (p - 0.5) * 11 /*m_field->m_size.X*/ * 1.8;
+                m_apos.X = (p - 0.5) * m_field->m_size.X * 1.8;
                 break;
             default:
-                m_apos.X = (p * 0.6 + 0.2) * 11 /*m_field->m_size.X*/ * appearance->m_side;
+                m_apos.X = (p * 0.6 + 0.2) * m_field->m_size.X * appearance->m_side;
                 break;
             }
-            m_apos.Y = -16/*m_field->m_size.Y*/ + 0.5/*Enemy::FIELD_SPACE*/;
+            m_apos.Y = -m_field->m_size.Y + Enemy::FIELD_SPACE;
             d = 0;
             break;
 
         case SIDE:
             switch (appearance->m_pattern) {
             case BOTH_SIDES:
-                m_apos.X = (11 /*m_field->m_size.X*/ - 0.5/*Enemy::FIELD_SPACE*/) * (m_random.nextInt(2) * 2 - 1);
+                m_apos.X = (m_field->m_size.X - Enemy::FIELD_SPACE) * (m_random.nextInt(2) * 2 - 1);
                 break;
             default:
-                m_apos.X = (11 /*m_field->m_size.X*/ - 0.5/*Enemy::FIELD_SPACE*/) * appearance->m_side;
+                m_apos.X = (m_field->m_size.X - Enemy::FIELD_SPACE) * appearance->m_side;
                 break;
             }
-            m_apos.Y = (p * 0.4 + 0.4) * 16/*m_field->m_size.Y*/;
+            m_apos.Y = (p * 0.4 + 0.4) * m_field->m_size.Y;
             if (m_apos.X < 0) {
                 d = M_PI / 2;
             } else {
@@ -347,45 +351,39 @@ void StageManager::createSectionData() {
         return;
     }
 
-    //m_field->m_aimSpeed = 0.1 + m_section * 0.02;
+    m_field->m_aimSpeed = 0.1 + m_section * 0.02;
 
     if (m_section == 4) {
         // set the middle boss
-        //FVector2D pos(0, m_field->m_size.Y / 4 * 3);
-        FVector2D pos;
-        pos.X = 0;
-        pos.Y = 16 / 4 * 3;
+        FVector2D pos(0, m_field->m_size.Y / 4 * 3);
 
-        //m_gameManager->addBoss(pos, M_PI, m_mediumBossType);
+        m_gameManager->addBoss(pos, M_PI, m_mediumBossType);
         m_bossSection = true;
 
         m_sectionIntervalCnt = 2 * 60;
         m_sectionCnt = 2 * 60;
 
-        //m_field->m_aimZ = 11;
+        m_field->m_aimZ = 11;
         return;
     } else if (m_section == 9) {
         // set the large boss
-        //FVector2D pos(0, m_field->m_size.Y / 4 * 3);
-        FVector2D pos;
-        pos.X = 0;
-        pos.Y = 16 / 4 * 3;
+        FVector2D pos(0, m_field->m_size.Y / 4 * 3);
 
-        //m_gameManager->addBoss(pos, M_PI, m_largeBossType);
+        m_gameManager->addBoss(pos, M_PI, m_largeBossType);
         m_bossSection = true;
 
         m_sectionIntervalCnt = 3 * 60;
         m_sectionCnt = 3 * 60;
 
-        //m_field->m_aimZ = 12;
+        m_field->m_aimZ = 12;
         return;
     } else if (m_section == m_middleRushSectionNum) {
         // no small enemies in this section
         m_middleRushSection = true;
-        //m_field->m_aimZ = 9;
+        m_field->m_aimZ = 9;
     } else {
         m_middleRushSection = false;
-        //m_field->m_aimZ = 10 + m_random.nextSignedFloat(0.3);
+        m_field->m_aimZ = 10 + m_random.nextSignedFloat(0.3);
     }
 
     m_bossSection = false;
@@ -431,7 +429,7 @@ void StageManager::createStage() {
         m_middleRushSectionNum++;
     }
 
-    //m_field->setType(m_stageType % Field::TYPE_NUM);
+    m_field->setType(m_stageType % Field::TYPE_NUMBER);
     ++m_stageType;
 }
 

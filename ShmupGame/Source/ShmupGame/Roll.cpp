@@ -2,6 +2,8 @@
 
 #include "RollInitializer.h"
 #include "GameManager.h"
+#include "Field.h"
+#include "Ship.h"
 
 using namespace std;
 
@@ -18,9 +20,8 @@ shared_ptr<Actor> Roll::newActor() {
 
 void Roll::init(shared_ptr<ActorInitializer> initializer) {
     shared_ptr<RollInitializer> ri = static_pointer_cast<RollInitializer>(initializer);
-
-    //m_ship = ri->m_ship;
-    //m_field = ri->m_field;
+    m_field = ri->m_field;
+    m_ship = ri->m_ship;
     m_gameManager = ri->m_gameManager;
 
     for (int i = 0; i < LENGTH; ++i) {
@@ -31,8 +32,8 @@ void Roll::init(shared_ptr<ActorInitializer> initializer) {
 
 void Roll::set() {
     for (int i = 0; i < LENGTH; ++i) {
-        //m_position[i].X = m_ship->m_position.X;
-        //m_position[i].Y = m_ship->m_position.Y;
+        m_position[i].X = m_ship->m_position.X;
+        m_position[i].Y = m_ship->m_position.Y;
         m_velocity[i].X = 0;
         m_velocity[i].Y = 0;
     }
@@ -45,18 +46,18 @@ void Roll::set() {
 void Roll::tick() {
     if (m_released) {
         m_position[0].Y += SPEED;
-        //if (m_position[0].Y > m_field->m_size.Y) {
-        //    m_exists = false;
-        //    return;
-        //}
+        if (m_position[0].Y > m_field->m_size.Y) {
+            m_exists = false;
+            return;
+        }
 
         //m_gameManager->addParticle(...);
     } else {
         if (m_distance < BASE_DISTANCE) {
             m_distance += BASE_DISTANCE / 90;
         }
-        //m_position[i].X = m_ship->m_position.X + sin(m_cnt * 0.1) * m_distance;
-        //m_position[i].Y = m_ship->m_position.Y + cos(m_cnt * 0.1) * m_distance;
+        m_position[0].X = m_ship->m_position.X + sin(m_cnt * 0.1) * m_distance;
+        m_position[0].Y = m_ship->m_position.Y + cos(m_cnt * 0.1) * m_distance;
     }
 
     float dist, deg, v;

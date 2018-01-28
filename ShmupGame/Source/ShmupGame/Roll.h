@@ -9,7 +9,8 @@
 #include <memory>
 
 class AGameManager;
-//class Ship;
+class Field;
+class Ship;
 
 class Roll : public Actor {
 public:
@@ -38,8 +39,8 @@ private:
     static const float SPEED;
     
     std::array<FVector2D, LENGTH> m_velocity;
-    //std::shared_ptr<Ship> m_ship;
-    //std::shared_ptr<Field> m_field;
+    std::shared_ptr<Ship> m_ship;
+    std::shared_ptr<Field> m_field;
     AGameManager *m_gameManager;
 
     float m_distance;

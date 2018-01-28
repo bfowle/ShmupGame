@@ -10,13 +10,19 @@
 #include <array>
 #include <memory>
 
+class AActor;
 class BulletMLParser;
 class BulletMLRunner;
-//class Ship;
+class Field;
+class Ship;
 
 class BulletActor : public Actor {
 public:
-    BulletActor() {};
+    BulletActor() :
+        m_actor(nullptr),
+        SHIP_HIT_WIDTH(0.2),
+        RETRO_COUNT(24) {
+    };
 
 private:
     BulletActor(const BulletActor &other);
@@ -32,8 +38,9 @@ public:
     void set(float x, float y, float direction, float speed, float rank, float speedRank, int shape, int color, int size, float xReverse);
     void setInvisible();
     void setTop(BulletMLParser *parser);
-    //void rewind();
+    void rewind();
     void remove();
+    void toRetro();
     void tick();
 
     static void resetTotalBulletsSpeed();
@@ -49,26 +56,39 @@ public:
         BULLET_COLOR_NUM = 4
     };
 
+    AActor *m_actor;
     std::shared_ptr<ShmupBullet> m_bullet;
-    BulletMLParser *m_parser;
     static float m_totalBulletsSpeed;
 
 private:
     enum {
-        BULLET_DISAPPEAR_CNT = 180
+        BULLET_DISAPPEAR_COUNT = 180
     };
 
-    //std::shared_ptr<Field> m_field;
-    //std::shared_ptr<Ship> m_ship;
+    const float SHIP_HIT_WIDTH;
+    const float RETRO_COUNT;
+    static const float FIELD_SPACE;
+    //static const float m_shapePos[][8][2];
+    //static const float m_bulletColor[4][3];
+    static const float SHAPE_POINT_SIZE;
+    //static const float SHAPE_BASE_COLOR_R;
+    //static const float SHAPE_BASE_COLOR_G;
+    //static const float SHAPE_BASE_COLOR_B;
+
+    std::shared_ptr<Field> m_field;
+    std::shared_ptr<Ship> m_ship;
+    BulletMLParser *m_parser;
 
     static int m_nextId;
     bool m_isSimple;
     bool m_isTop;
     bool m_isVisible;
 
-    FVector2D m_position;
+    FVector2D m_previousPosition;
     int m_cnt;
+    float m_rtCnt;
     bool m_shouldBeRemoved;
+    bool m_backToRetro;
 };
 
 #endif

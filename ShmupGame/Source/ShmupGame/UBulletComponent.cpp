@@ -23,7 +23,7 @@ void UBulletComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
     Super::TickComponent(DeltaTime, TickType, TickFunction);
 
-    m_owner->SetActorLocation(FVector(m_x, 100.0, m_y));
+    //m_owner->SetActorLocation(FVector(m_x, 100.0, m_y));
 
     //UE_LOG(LogTemp, Warning, TEXT(" [%s] UBulletComponent::TickComponent() (%f, %f) | [%f, %f] "), *GetName(),
     //    m_x, m_y, m_direction, m_speed);

@@ -25,10 +25,10 @@ UEnemyComponent::~UEnemyComponent() {
 void UEnemyComponent::BeginPlay() {
     Super::BeginPlay();
 
+    /*
     m_x = m_owner->GetActorLocation().X;
     m_y = m_owner->GetActorLocation().Z;
 
-    /*
     APawn *player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
     if (player != nullptr) {
         m_playerComponent = player->FindComponentByClass<UPlayerComponent>();
@@ -46,8 +46,8 @@ void UEnemyComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
     //m_bulletManager->tick();
 
-    tick();
-    m_owner->SetActorLocation(FVector(m_x, 100.0, m_y));
+    //tick();
+    //m_owner->SetActorLocation(FVector(m_x, 100.0, m_y));
 
     //UE_LOG(LogTemp, Warning, TEXT(" TICK: %s [%f, %f] (d: %f, s: %f) ... "), *GetName(), m_x, m_y, m_direction, m_speed);
 }

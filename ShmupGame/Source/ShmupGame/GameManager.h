@@ -15,8 +15,9 @@
 
 class StageManager;
 class BarrageManager;
-//class Ship;
 class Enemy;
+class Field;
+class Ship;
 class BulletActorPool;
 class BulletMLParser;
 
@@ -27,7 +28,7 @@ class SHMUPGAME_API AGameManager : public AGameMode/*, public TSharedFromThis<AG
 public:
     AGameManager();
 
-    TSharedRef<AGameManager> getPtr();
+    //TSharedRef<AGameManager> getPtr();
 
     void InitGame(const FString &MapName, const FString &Options, FString &ErrorMessage);
     void StartPlay();
@@ -42,13 +43,13 @@ public:
     void close();
     void startStage(int difficulty, int parsecSlot, int startParsec, int mode);
     void addEnemy(const FVector2D &position, float direction, std::shared_ptr<EnemyType> type, BulletMLParser *moveParser);
+    void addBoss(const FVector2D &position, float direction, std::shared_ptr<EnemyType> type);
+    //void addShot(const FVector2D &position, float direction);
     void addRoll();
     void addLock();
     void releaseRoll();
     void releaseLock();
     void shipDestroyed();
-    //void addBoss(const FVector2D &position, float direction, std::shared_ptr<EnemyType> type);
-    //void addShot(const FVector2D &position, float direction);
     void clearBullets();
 
 private:
@@ -85,6 +86,12 @@ public:
         LOCK
     };
 
+    const int INTERVAL_BASE = 16;
+
+    UWorld *m_world;
+    UClass *bp_enemyClass;
+    UClass *bp_bulletClass;
+
     int m_mode, m_state;
     bool m_nowait;
     int m_difficulty, m_parsecSlot;
@@ -99,7 +106,8 @@ private:
     };
 
     Random m_random;
-    //std::shared_ptr<Ship> m_ship;
+    std::shared_ptr<Field> m_field;
+    std::shared_ptr<Ship> m_ship;
     std::shared_ptr<ActorPool> m_enemies;
     std::shared_ptr<BulletActorPool> m_bullets;
     std::shared_ptr<ActorPool> m_shots;
@@ -114,7 +122,7 @@ private:
     int m_score, m_extendScore;
     int m_cnt;
     int m_pauseCnt;
-    //int m_bossShield;
-    //std::array<int, BOSS_WING_NUM> m_bossWingShield;
+    int m_bossShield;
+    std::array<int, BOSS_WING_NUM> m_bossWingShield;
     float m_interval;
 };

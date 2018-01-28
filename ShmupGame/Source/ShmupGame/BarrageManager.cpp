@@ -9,19 +9,10 @@
 using namespace std;
 
 array<const string, BarrageManager::BARRAGE_TYPE> BarrageManager::m_dirName = {
-    "large",
-    "large_move",
-    "medium",
-    "medium_back_move",
-    "medium_move",
-    "medium_sub",
-    "medium_sub_lock",
-    "morph",
-    "morph_lock",
-    "small",
-    "small_lock",
-    "small_move",
-    "small_side_move"
+    "morph", "small", "small_move", "small_side_move",
+    "medium", "medium_sub", "medium_move", "medium_back_move",
+    "large", "large_move",
+    "morph_lock", "small_lock", "medium_sub_lock"
 };
 
 void BarrageManager::loadBulletMLFiles() {

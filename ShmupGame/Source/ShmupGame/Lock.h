@@ -11,7 +11,8 @@
 
 class AGameManager;
 class Enemy;
-//class Ship;
+class Field;
+class Ship;
 
 class Lock : public Actor {
 public:
@@ -62,8 +63,8 @@ private:
 
     static Random m_random;
     FVector2D m_velocity;
-    //std::shared_ptr<Ship> m_ship;
-    //std::shared_ptr<Field> m_field;
+    std::shared_ptr<Ship> m_ship;
+    std::shared_ptr<Field> m_field;
     AGameManager *m_gameManager;
 };
 

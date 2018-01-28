@@ -38,11 +38,6 @@ public:
     void kill();
     void remove();
 
-private:
-    static Random m_random;
-    static BulletManager *m_manager;
-    BulletMLRunner *m_runner;
-
 public:
     int m_id;
 
@@ -50,14 +45,15 @@ public:
     static FVector2D m_target;
     FVector2D m_position, m_acceleration;
     float m_direction, m_speed, m_rank;
+
+private:
+    static Random m_random;
+    static BulletManager *m_manager;
+    BulletMLRunner *m_runner;
 };
 
-inline float rtod(float a) {
-    return a * 180 / M_PI;
-};
-inline float dtor(float a) {
-    return a * M_PI / 180;
-};
+float rtod(float a);
+float dtor(float a);
 
 extern "C" {
     double getBulletDirection_(BulletMLRunner *runner);

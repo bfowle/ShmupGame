@@ -76,21 +76,31 @@ void Bullet::remove() {
     }
 }
 
-const float VEL_SS_SDM_RATIO = 62.0 / 10;
-const float VEL_SDM_SS_RATIO = 10.0 / 62;
+const float VEL_SS_SDM_RATIO = 62.0 / 100;
+const float VEL_SDM_SS_RATIO = 100.0 / 62;
+
+float rtod(float a) {
+    return a * 180 / M_PI;
+}
+
+float dtor(float a) {
+    return a * M_PI / 180;
+}
 
 double getBulletDirection_(BulletMLRunner *runner) {
     return rtod(Bullet::m_now->m_direction);
+    //return Bullet::m_now->m_direction;
 }
 
 double getAimDirection_(BulletMLRunner *runner) {
-    FVector2D b = Bullet::m_now->m_position;
-    FVector2D t = Bullet::m_target;
-    return rtod(atan2(t.X - b.X, t.Y - b.Y));
+    return rtod(atan2(Bullet::m_target.X - Bullet::m_now->m_position.X,
+        Bullet::m_target.Y - Bullet::m_now->m_position.Y));
+    //return rtod(M_PI - atan2(t.X - b.X, t.Y - b.Y));
 }
 
 double getBulletSpeed_(BulletMLRunner *runner) {
     return Bullet::m_now->m_speed * VEL_SS_SDM_RATIO;
+    //return Bullet::m_now->m_speed;
 }
 
 double getDefaultSpeed_(BulletMLRunner *runner) {
@@ -123,22 +133,31 @@ void doChangeDirection_(BulletMLRunner *runner, double direction) {
 
 void doChangeSpeed_(BulletMLRunner *runner, double speed) {
     Bullet::m_now->m_speed = speed * VEL_SDM_SS_RATIO;
+    //Bullet::m_now->m_speed = speed;
 }
 
 void doAccelX_(BulletMLRunner *runner, double accelX) {
     Bullet::m_now->m_acceleration.X = accelX * VEL_SDM_SS_RATIO;
+    //double sy = getBulletSpeedY_(runner);
+    //Bullet::m_now->m_direction = atan2(sy, accelX);
+    //Bullet::m_now->m_speed = sqrt(accelX * accelX + sy * sy);
 }
 
 void doAccelY_(BulletMLRunner *runner, double accelY) {
     Bullet::m_now->m_acceleration.Y = accelY * VEL_SDM_SS_RATIO;
+    //double sx = getBulletSpeedX_(runner);
+    //Bullet::m_now->m_direction = atan2(sx, accelY);
+    //Bullet::m_now->m_speed = sqrt(sx * sx + accelY * accelY);
 }
 
 double getBulletSpeedX_(BulletMLRunner *runner) {
     return Bullet::m_now->m_acceleration.X;
+    //return Bullet::m_now->m_speed * sin(Bullet::m_now->m_direction);
 }
 
 double getBulletSpeedY_(BulletMLRunner *runner) {
     return Bullet::m_now->m_acceleration.Y;
+    //return -Bullet::m_now->m_speed * cos(Bullet::m_now->m_direction);
 }
 
 double getRand_(BulletMLRunner *runner) {

@@ -67,10 +67,10 @@ public:
 
     std::array<Barrage, BARRAGE_PATTERN_MAX> m_barrage;
     static std::array<bool, ENEMY_TYPE_MAX> m_exists;
-    //std::array<FVector2D, BODY_SHAPE_POINT_NUM> m_bodyShapePos;
+    std::array<FVector2D, BODY_SHAPE_POINT_NUM> m_bodyShapePosition;
 
-    //FVector2D m_collisionSize;
-    //bool m_wingCollision;
+    FVector2D m_collisionSize;
+    bool m_wingCollision;
     //float r, g, b;
     //float retroSize;
 

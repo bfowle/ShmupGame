@@ -11,10 +11,12 @@
 #include <array>
 #include <memory>
 
+class AActor;
 class AGameManager;
 class ActorPool;
 class BulletActor;
 class BulletActorPool;
+class Field;
 class Lock;
 class Ship;
 
@@ -22,6 +24,7 @@ class Enemy : public Actor, public std::enable_shared_from_this<Enemy> {
 public:
     std::shared_ptr<Enemy> getPtr();
     std::shared_ptr<Actor> newActor();
+
     void init(std::shared_ptr<ActorInitializer> initializer);
     void set(const FVector2D &position, float direction, std::shared_ptr<EnemyType> type, BulletMLParser *parser);
     void setBoss(const FVector2D &p, float direction, std::shared_ptr<EnemyType> type);
@@ -48,6 +51,8 @@ private:
     void controlFireCnt();
 
 public:
+    static const float FIELD_SPACE;
+
     FVector2D m_position;
     std::shared_ptr<EnemyType> m_type;
     std::array<Battery, EnemyType::BATTERY_MAX> m_battery;
@@ -75,6 +80,8 @@ private:
 
     static Random m_random;
 
+    AActor *m_actor;
+    std::shared_ptr<Field> m_field;
     std::shared_ptr<BulletActorPool> m_bullets;
     //std::shared_ptr<ActorPool> m_shots;
     std::shared_ptr<ActorPool> m_rolls;
@@ -96,7 +103,7 @@ private:
     float m_direction, m_baseDirection;
     bool m_onRoute;
     int m_fireCnt, m_barragePatternIdx;
-    //float m_fieldLimitX, m_fieldLimitY;
+    float m_fieldLimitX, m_fieldLimitY;
     int m_appCnt, m_dstCnt, m_timeoutCnt;
     float m_z;
     bool m_isBoss;
