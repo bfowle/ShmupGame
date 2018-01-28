@@ -77,7 +77,7 @@ public:
 
 private:
     enum {
-        MIDDLE_RUSH_SECTION_PATTERN = 6
+        MEDIUM_RUSH_SECTION_PATTERN = 6
     };
 
     Random m_random;
@@ -98,8 +98,8 @@ private:
     FVector2D m_apos;
     int m_sectionCnt, m_sectionIntervalCnt, m_section;
     float m_rank, m_rankInc;
-    int m_middleRushSectionNum;
-    bool m_middleRushSection;
+    int m_mediumRushSectionNum;
+    bool m_mediumRushSection;
     int m_stageType;
 };
 

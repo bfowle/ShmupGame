@@ -13,10 +13,10 @@
 using namespace std;
 
 float BulletActor::m_totalBulletsSpeed;
-int BulletActor::m_nextId = 0;
 const float BulletActor::FIELD_SPACE = 0.5;
-const float BulletActor::SHAPE_POINT_SIZE = 0.1;
+int BulletActor::m_nextId = 0;
 /*
+const float BulletActor::SHAPE_POINT_SIZE = 0.1;
 const float BulletActor::SHAPE_BASE_COLOR_R = 1;
 const float BulletActor::SHAPE_BASE_COLOR_G = 0.9;
 const float BulletActor::SHAPE_BASE_COLOR_B = 0.7;
@@ -106,6 +106,10 @@ void BulletActor::remove() {
 void BulletActor::removeForced() {
     if (!m_isSimple) {
         m_bullet->remove();
+
+        //if (m_actor != nullptr) {
+        //    m_actor->Destroy();
+        //}
     }
     m_exists = false;
 }
@@ -128,6 +132,7 @@ void BulletActor::tick() {
 
     if (!m_isSimple) {
         m_bullet->tick();
+
         if (m_isTop &&
             m_bullet->isEnd()) {
             rewind();
@@ -151,8 +156,10 @@ void BulletActor::tick() {
         } else {
             m_rtCnt += sr;
         }
+
         if (m_ship->m_cnt < -m_ship->INVINCIBLE_COUNT / 2 &&
-            m_isVisible && m_rtCnt >= RETRO_COUNT) {
+            m_isVisible &&
+            m_rtCnt >= RETRO_COUNT) {
             removeForced();
             return;
         }
@@ -164,11 +171,10 @@ void BulletActor::tick() {
     }
 
     m_bullet->m_position.X += (sin(m_bullet->m_direction) * m_bullet->m_speed + m_bullet->m_acceleration.X) * sr * m_bullet->m_xReverse;
-    m_bullet->m_position.Y -= (cos(m_bullet->m_direction) * m_bullet->m_speed - m_bullet->m_acceleration.Y) * sr;
+    m_bullet->m_position.Y += (cos(m_bullet->m_direction) * m_bullet->m_speed - m_bullet->m_acceleration.Y) * sr;
 
     if (m_actor != nullptr) {
         //UE_LOG(LogTemp, Warning, TEXT("  -- Bullet::tick [%s] (%s)"), *m_actor->GetName(), *m_bullet->m_position.ToString());
-
         m_actor->SetActorLocation(FVector(m_bullet->m_position.X, 100.0, m_bullet->m_position.Y));
     }
 
@@ -180,6 +186,7 @@ void BulletActor::tick() {
         }
 
         if (m_field->checkHit(m_bullet->m_position, FIELD_SPACE)) {
+            //UE_LOG(LogTemp, Warning, TEXT(" __ Bullet :: hit field __ [%s] ... %d "), *m_bullet->m_position.ToString(), m_cnt);
             removeForced();
         }
     }

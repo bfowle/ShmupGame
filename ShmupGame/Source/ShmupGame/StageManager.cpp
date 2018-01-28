@@ -71,7 +71,7 @@ void StageManager::tick() {
 
         if (appearance->m_cnt > 0) {
             // add an extra enemy
-            if (!m_middleRushSection) {
+            if (!m_mediumRushSection) {
                 if (appearance->m_type->m_type == EnemyType::SMALL &&
                     !EnemyType::m_exists[appearance->m_type->m_id]) {
                     appearance->m_cnt = 0;
@@ -266,10 +266,10 @@ void StageManager::setMediumAppearance(EnemyAppearance *appearance) {
 
     if (m_random.nextFloat(1) > 0.1) {
         appearance->m_point = TOP;
-        mt = BarrageManager::MIDDLE_MOVE;
+        mt = BarrageManager::MEDIUM_MOVE;
     } else {
         appearance->m_point = BACK;
-        mt = BarrageManager::MIDDLE_BACK_MOVE;
+        mt = BarrageManager::MEDIUM_BACK_MOVE;
     }
     */
     appearance->m_point = TOP;
@@ -353,8 +353,10 @@ void StageManager::createSectionData() {
 
     m_field->m_aimSpeed = 0.1 + m_section * 0.02;
 
+    UE_LOG(LogTemp, Warning, TEXT(" StageManager::createSectionData => %d"), m_section);
+
     if (m_section == 4) {
-        // set the middle boss
+        // set the medium boss
         FVector2D pos(0, m_field->m_size.Y / 4 * 3);
 
         m_gameManager->addBoss(pos, M_PI, m_mediumBossType);
@@ -377,12 +379,12 @@ void StageManager::createSectionData() {
 
         m_field->m_aimZ = 12;
         return;
-    } else if (m_section == m_middleRushSectionNum) {
+    } else if (m_section == m_mediumRushSectionNum) {
         // no small enemies in this section
-        m_middleRushSection = true;
+        m_mediumRushSection = true;
         m_field->m_aimZ = 9;
     } else {
-        m_middleRushSection = false;
+        m_mediumRushSection = false;
         m_field->m_aimZ = 10 + m_random.nextSignedFloat(0.3);
     }
 
@@ -402,8 +404,8 @@ void StageManager::createSectionData() {
 
     if (m_section == 0) {
         ap = 0;
-    } else if (m_middleRushSection) {
-        ap = MIDDLE_RUSH_SECTION_PATTERN;
+    } else if (m_mediumRushSection) {
+        ap = MEDIUM_RUSH_SECTION_PATTERN;
     }
 
     for (int i = 0; i < m_appearancePattern[m_gameManager->m_mode][ap][0]; ++i, ++m_apNum) {
@@ -423,10 +425,10 @@ void StageManager::createSectionData() {
 void StageManager::createStage() {
     createEnemyData();
 
-    m_middleRushSectionNum = 2 + m_random.nextInt(6);
+    m_mediumRushSectionNum = 2 + m_random.nextInt(6);
 
-    if (m_middleRushSectionNum <= 4) {
-        m_middleRushSectionNum++;
+    if (m_mediumRushSectionNum <= 4) {
+        m_mediumRushSectionNum++;
     }
 
     m_field->setType(m_stageType % Field::TYPE_NUMBER);

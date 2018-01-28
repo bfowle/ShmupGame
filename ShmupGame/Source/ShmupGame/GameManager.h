@@ -40,6 +40,7 @@ public:
     //SetPlayerDefaults
     //StartToLeaveMap
 
+    void tick();
     void close();
     void startStage(int difficulty, int parsecSlot, int startParsec, int mode);
     void addEnemy(const FVector2D &position, float direction, std::shared_ptr<EnemyType> type, BulletMLParser *moveParser);
@@ -87,6 +88,7 @@ public:
     };
 
     const int INTERVAL_BASE = 16;
+    const int TARGET_FPS = 1 / 60;
 
     UWorld *m_world;
     UClass *bp_enemyClass;
@@ -124,5 +126,10 @@ private:
     int m_pauseCnt;
     int m_bossShield;
     std::array<int, BOSS_WING_NUM> m_bossWingShield;
-    float m_interval;
+
+    //int m_frame;  
+    float m_interval; // INTERVAL_BASE
+    //int m_accFrame, m_maxSkipFrame; // 0, 5
+    //long m_nowTick;
+    int m_frame;
 };

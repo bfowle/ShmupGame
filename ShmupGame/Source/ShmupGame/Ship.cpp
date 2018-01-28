@@ -80,7 +80,6 @@ void Ship::tick() {
 
     m_position = (FVector2D)m_playerPawn->GetActorLocation();
 
-    /*
     m_velocity.X = 0;
     m_velocity.Y = 0;
 
@@ -88,8 +87,7 @@ void Ship::tick() {
     m_prevPosition.Y = m_position.Y;
     m_position.X += m_velocity.X;
     m_position.Y += m_velocity.Y;
-    m_bank += (m_velocity.X * BANK_BASE - m_bank) * 0.1;
-    */
+    //m_bank += (m_velocity.X * BANK_BASE - m_bank) * 0.1;
 
     if (m_position.X < -m_fieldLimitX) {
         m_position.X = -m_fieldLimitX;

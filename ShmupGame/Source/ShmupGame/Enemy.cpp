@@ -14,7 +14,7 @@
 
 using namespace std;
 
-const float Enemy::FIELD_SPACE = 0.5;
+const float Enemy::FIELD_SPACE = 65;
 Random Enemy::m_random;
 
 const int ENEMY_TYPE_SCORE[] = {
@@ -131,9 +131,16 @@ void Enemy::tick() {
 
     if (!m_isBoss) {
         if (m_field->checkHit(m_position)) {
+            //UE_LOG(LogTemp, Warning, TEXT(" __ [%s] hit field __ [%s] "), *m_actor->GetName(), *m_position.ToString());
             remove();
+
+            if (m_actor != nullptr) {
+                m_actor->Destroy();
+            }
             return;
         }
+
+        // @TODO: check that this is the correct Y [Z] positioning
         if (m_position.Y < -m_field->m_size.Y / 4) {
             removeTopBullets();
         } else {

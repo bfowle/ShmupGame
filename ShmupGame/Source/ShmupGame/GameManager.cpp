@@ -82,7 +82,10 @@ void AGameManager::InitGame(const FString &MapName, const FString &Options, FStr
     m_stageManager.reset(new StageManager());
     m_stageManager->init(m_field, m_barrageManager, this/*getPtr()*/);
 
-    //m_interval = m_mainLoop->INTERVAL_BASE;
+    m_frame = 0;
+    m_interval = INTERVAL_BASE;
+    //m_accFrame = 0;
+    //m_maxSkipFrame = 5;
 }
 
 void AGameManager::StartPlay() {
@@ -94,7 +97,6 @@ void AGameManager::StartPlay() {
     }
 
     //startTitle();
-
     //m_mode = LOCK;
     startInGame();
 }
@@ -102,6 +104,15 @@ void AGameManager::StartPlay() {
 void AGameManager::Tick(float DeltaSeconds) {
     Super::Tick(DeltaSeconds);
 
+    //m_frame = (int)(DeltaSeconds * m_interval);
+    //m_frame += DeltaSeconds;
+    //if (m_frame == TARGET_FPS) {
+    tick();
+    //    m_frame = 0;
+    //}
+}
+
+void AGameManager::tick() {
     switch (m_state) {
     case TITLE:
         titleTick();
@@ -174,7 +185,6 @@ void AGameManager::addBoss(const FVector2D &position, float direction, shared_pt
 
 void AGameManager::addRoll() {
     shared_ptr<Roll> roll = static_pointer_cast<Roll>(m_rolls->getInstance());
-
     if (roll) {
         roll->set();
     }
@@ -182,7 +192,6 @@ void AGameManager::addRoll() {
 
 void AGameManager::addLock() {
     shared_ptr<Lock> lock = static_pointer_cast<Lock>(m_locks->getInstance());
-
     if (lock) {
         lock->set();
     }
@@ -285,6 +294,7 @@ void AGameManager::stageTick() {
 void AGameManager::inGameTick() {
     stageTick();
 
+    m_field->tick();
     m_ship->tick();
     //m_shots->tick();
     m_enemies->tick();
@@ -310,6 +320,7 @@ void AGameManager::inGameTick() {
         } else {
             m_interval += (INTERVAL_BASE - m_interval) * 0.08;
         }
+        //UE_LOG(LogTemp, Warning, TEXT(" ][ m_interval ][ %f "), m_interval);
     }
 }
 

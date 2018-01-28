@@ -70,7 +70,7 @@ private:
     static const float FIELD_SPACE;
     //static const float m_shapePos[][8][2];
     //static const float m_bulletColor[4][3];
-    static const float SHAPE_POINT_SIZE;
+    //static const float SHAPE_POINT_SIZE;
     //static const float SHAPE_BASE_COLOR_R;
     //static const float SHAPE_BASE_COLOR_G;
     //static const float SHAPE_BASE_COLOR_B;

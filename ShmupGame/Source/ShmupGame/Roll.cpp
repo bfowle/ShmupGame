@@ -60,7 +60,7 @@ void Roll::tick() {
         m_position[0].Y = m_ship->m_position.Y + cos(m_cnt * 0.1) * m_distance;
     }
 
-    float dist, deg, v;
+    float dist, dir, v;
     for (int i = 1; i < LENGTH; ++i) {
         m_position[i].X += m_velocity[i].X;
         m_position[i].Y += m_velocity[i].Y;
@@ -73,11 +73,11 @@ void Roll::tick() {
         }
 
         v = (dist - BASE_LENGTH) * BASE_SPRING;
-        deg = atan2(m_position[i - 1].X - m_position[i].X,
+        dir = atan2(m_position[i - 1].X - m_position[i].X,
             m_position[i - 1].Y - m_position[i].Y);
 
-        m_velocity[i].X += sin(deg) * v;
-        m_velocity[i].Y += cos(deg) * v;
+        m_velocity[i].X += sin(dir) * v;
+        m_velocity[i].Y += cos(dir) * v;
     }
 
     //UE_LOG(LogTemp, Warning, TEXT(" __ roll: %f, %f ; %f, %f __ "), m_position[0].X, m_position[0].Y, m_velocity[0].X, m_velocity[0].Y);
