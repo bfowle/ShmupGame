@@ -51,17 +51,18 @@ double BulletCommand::getRank() {
 }
 
 void BulletCommand::createSimpleBullet(double direction, double speed) {
-    m_owner->createProjectile(m_movable->getX(), m_movable->getY(),
-        dtor(direction), speed);
+    //m_owner->createProjectile(m_movable->getX(), m_movable->getY(),
+    //    dtor(direction), speed);
 }
 
 void BulletCommand::createBullet(BulletMLState *state, double direction, double speed) {
-    m_owner->createBullet(state, m_movable->getX(), m_movable->getY(),
-        dtor(direction), speed, m_target);
+    //m_owner->createBullet(state, m_movable->getX(), m_movable->getY(),
+    //    dtor(direction), speed, m_target);
 }
 
 int BulletCommand::getTurn() {
-    return g_tick;
+    return 0;
+    //return g_tick;
 }
 
 void BulletCommand::doVanish() {

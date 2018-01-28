@@ -28,6 +28,7 @@ void UEnemyComponent::BeginPlay() {
     m_x = m_owner->GetActorLocation().X;
     m_y = m_owner->GetActorLocation().Z;
 
+    /*
     APawn *player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
     if (player != nullptr) {
         m_playerComponent = player->FindComponentByClass<UPlayerComponent>();
@@ -37,12 +38,13 @@ void UEnemyComponent::BeginPlay() {
             m_bulletManager->createBullet(m_bulletParsers[i], this, m_playerComponent);
         }
     }
+    */
 }
 
 void UEnemyComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *TickFunction) {
     Super::TickComponent(DeltaTime, TickType, TickFunction);
 
-    m_bulletManager->tick();
+    //m_bulletManager->tick();
 
     tick();
     m_owner->SetActorLocation(FVector(m_x, 100.0, m_y));

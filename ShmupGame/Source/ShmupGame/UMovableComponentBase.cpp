@@ -16,8 +16,8 @@
 using namespace std;
 
 UMovableComponentBase::UMovableComponentBase() :
-    m_owner(GetOwner()),
-    m_bulletManager(new BulletManager(this)) {
+    m_owner(GetOwner())/*,
+    m_bulletManager(new BulletManager(this))*/ {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
@@ -26,6 +26,7 @@ UMovableComponentBase::UMovableComponentBase() :
 void UMovableComponentBase::BeginPlay() {
 	Super::BeginPlay();
 
+    /*
     FString sourcePath = FPaths::GameSourceDir();
 
     // @TODO: is this the proper place to parse these...?
@@ -39,14 +40,17 @@ void UMovableComponentBase::BeginPlay() {
     for (size_t i = 0; i < m_bulletParsers.size(); ++i) {
         m_bulletParsers[i]->build();
     }
+    */
 }
 
 void UMovableComponentBase::OnComponentDestroyed(bool bDestroyingHierarchy) {
+    /*
     for (AActor *actor : m_spawnedActors) {
         if (actor != nullptr) {
             actor->Destroy();
         }
     }
+    */
 
     Super::OnComponentDestroyed(bDestroyingHierarchy);
 }

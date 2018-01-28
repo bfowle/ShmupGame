@@ -2,6 +2,7 @@
 
 #include "BulletManager.h"
 
+/*
 #include "BulletCommand.h"
 #include "Movable.h"
 #include "UMovableComponentBase.h"
@@ -87,3 +88,4 @@ void BulletManager::tick() {
         }
     }
 }
+*/

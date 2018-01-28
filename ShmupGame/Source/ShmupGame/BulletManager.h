@@ -1,11 +1,25 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+#ifndef BULLETMANAGER_H
+#define BULLETMANAGER_H
 
-#pragma once
+//#include "CoreMinimal.h"
 
-#include "CoreMinimal.h"
+#include <bulletml/bulletmlrunner.h>
 
 #include <vector>
 
+class Bullet;
+
+class BulletManager {
+public:
+    virtual ~BulletManager() {};
+
+    virtual void addBullet(float direction, float speed) = 0;
+    virtual void addBullet(BulletMLState *state, float direction, float speed) = 0;
+    virtual int getTurn() = 0;
+    virtual void kill(Bullet *bullet) = 0;
+};
+
+/*
 class BulletMLState;
 class BulletMLParser;
 class BulletCommand;
@@ -35,3 +49,6 @@ private:
     std::vector<UBulletComponent *> m_bullets;
     std::vector<UBulletComponent *> m_pool;
 };
+*/
+
+#endif

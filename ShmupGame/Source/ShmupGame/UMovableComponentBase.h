@@ -41,7 +41,7 @@ public:
 
 protected:
     AActor *m_owner;
-    BulletManager *m_bulletManager;    
+    //BulletManager *m_bulletManager;    
     std::vector<BulletMLParser *> m_bulletParsers;
     std::vector<AActor *> m_spawnedActors;
 };
