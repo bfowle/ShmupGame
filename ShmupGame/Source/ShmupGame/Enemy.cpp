@@ -14,7 +14,7 @@
 
 using namespace std;
 
-const float Enemy::FIELD_SPACE = 65;
+const float Enemy::FIELD_SPACE = 1.5;
 Random Enemy::m_random;
 
 const int ENEMY_TYPE_SCORE[] = {
@@ -70,7 +70,6 @@ void Enemy::set(const FVector2D &position, float direction, shared_ptr<EnemyType
 
     m_actor = m_gameManager->m_world->SpawnActor<AActor>(m_gameManager->bp_enemyClass,
         FVector::ZeroVector, FRotator::ZeroRotator);
-    //m_moveBullet->m_actor = m_actor;
 
     m_cnt = 0;
     m_shield = type->m_shield;
@@ -82,7 +81,7 @@ void Enemy::set(const FVector2D &position, float direction, shared_ptr<EnemyType
     m_fireCnt = 0;
     m_barragePatternIdx = 0;
     m_baseDirection = direction;
-    m_appCnt = 0;
+    m_appearanceCnt = 0;
     m_dstCnt = 0;
     m_timeoutCnt = 0;
     m_z = 0;
@@ -101,10 +100,10 @@ void Enemy::tick() {
         m_position.X = m_moveBullet->m_bullet->m_position.X;
         m_position.Y = m_moveBullet->m_bullet->m_position.Y;
 
-        //UE_LOG(LogTemp, Warning, TEXT("- Enemy::tick [%s]"), *m_position.ToString());
-
-        if (m_actor) {
-            m_actor->SetActorLocation(FVector(m_position.X, 100.0, m_position.Y));
+        if (m_actor != nullptr &&
+            !m_actor->IsActorBeingDestroyed()) {
+            m_actor->SetActorLocation(FVector(m_position.X, 100.0, m_position.Y),
+                false, nullptr, ETeleportType::TeleportPhysics);
         }
     } else {
         tickBoss();
@@ -121,6 +120,7 @@ void Enemy::tick() {
         const BatteryType *bt = &(m_type->m_batteryType[i]);
         Battery *battery = &(m_battery[i]);
         battery->m_isDamaged = false;
+
         for (int j = 0; j < bt->m_batteryNum; ++j) {
             if (battery->m_topBullet[j]) {
                 battery->m_topBullet[j]->m_bullet->m_position.X = m_position.X + bt->m_batteryPosition[j].X;
@@ -133,10 +133,11 @@ void Enemy::tick() {
         if (m_field->checkHit(m_position)) {
             //UE_LOG(LogTemp, Warning, TEXT(" __ [%s] hit field __ [%s] "), *m_actor->GetName(), *m_position.ToString());
             remove();
-
-            if (m_actor != nullptr) {
-                m_actor->Destroy();
-            }
+            m_gameManager->m_world->DestroyActor(m_actor);
+            //if (m_actor != nullptr) {
+            //    m_actor->Destroy();
+            //    //m_actor = nullptr;
+            //}
             return;
         }
 
@@ -148,13 +149,13 @@ void Enemy::tick() {
         }
     } else {
         float mtr;
-        if (m_appCnt > 0) {
+        if (m_appearanceCnt > 0) {
             if (m_z < 0) {
                 m_z -= APPEARANCE_Z / 60;
             }
 
-            m_appCnt--;
-            mtr = 1.0 - (float)m_appCnt / APPEARANCE_COUNT;
+            m_appearanceCnt--;
+            mtr = 1.0 - (float)m_appearanceCnt / APPEARANCE_COUNT;
         } else if (m_dstCnt > 0) {
             m_gameManager->clearBullets();
             m_z += DESTROYED_Z / 60;
@@ -214,6 +215,7 @@ shared_ptr<BulletActor> Enemy::setBullet(const Barrage &barrage, const FVector2D
         bx += ofs->X;
         by += ofs->Y;
     }
+
     if (barrage.m_morphCnt > 0) {
         bullet = m_bullets->addBullet(barrage.m_parser, runner,
             bx, by, m_baseDirection, 0, barrage.m_rank,
@@ -227,12 +229,7 @@ shared_ptr<BulletActor> Enemy::setBullet(const Barrage &barrage, const FVector2D
             barrage.m_bulletSize, barrage.m_xReverse * xr);
     }
 
-    if (bullet != nullptr) {
-        bullet->m_actor = m_gameManager->m_world->SpawnActor<AActor>(m_gameManager->bp_bulletClass,
-            FVector(bx, 100.0, by), FRotator::ZeroRotator);
-    }
-    
-    //UE_LOG(LogTemp, Warning, TEXT("- Enemy::setBullet [%s] [%f, %f] (%s)"), *m_position.ToString(), bx, by, *bullet->m_actor->GetName());
+    //UE_LOG(LogTemp, Warning, TEXT("- Enemy::setBullet [%s] [%f, %f] (%s)"), *m_position.ToString(), bx, by, *m_bulletActor->GetName());
 
     return bullet;
 }
@@ -253,8 +250,9 @@ void Enemy::setTopBullets() {
         float xr = 1;
         for (int j = 0; j < bt->m_batteryNum; ++j) {
             battery->m_topBullet[j] = setBullet(bt->m_barrage[m_barragePatternIdx], &(bt->m_batteryPosition[j]), xr);
-            if (bt->m_xReverseAlternate)
+            if (bt->m_xReverseAlternate) {
                 xr *= -1;
+            }
         }
     }
 }

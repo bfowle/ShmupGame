@@ -2,6 +2,8 @@
 
 #include "BarrageManager.h"
 
+#include <cassert>
+
 using namespace std;
 
 array<bool, EnemyType::ENEMY_TYPE_MAX> EnemyType::m_exists;
@@ -12,15 +14,16 @@ shared_ptr<BarrageManager> EnemyType::m_barrageManager(new BarrageManager());
 array<bool, BarrageManager::BARRAGE_MAX> EnemyType::m_usedMorphParser;
 
 const float EnemyType::m_enemySize[][9] = {
-    { 0.3, 0.3, 0.3, 0.1, 0.1,  1.0, 0.4, 0.6, 0.9 },
-    { 0.4, 0.2, 0.4, 0.1, 0.15, 2.2, 0.2, 1.6, 1.0 },
-    { 0.6, 0.3, 0.5, 0.1, 0.2,  3.0, 0.3, 1.4, 1.2 },
-    { 0.9, 0.3, 0.7, 0.2, 0.25, 5.0, 0.6, 3.0, 1.5 },
-    { 1.2, 0.2, 0.9, 0.1, 0.3,  7.0, 0.8, 4.5, 1.5 },
+    {0.3, 0.3, 0.3, 0.1, 0.1,  1.0, 0.4, 0.6, 0.9},
+    {0.4, 0.2, 0.4, 0.1, 0.15, 2.2, 0.2, 1.6, 1.0},
+    {0.6, 0.3, 0.5, 0.1, 0.2,  3.0, 0.3, 1.4, 1.2},
+    {0.9, 0.3, 0.7, 0.2, 0.25, 5.0, 0.6, 3.0, 1.5},
+    {1.2, 0.2, 0.9, 0.1, 0.3,  7.0, 0.8, 4.5, 1.5},
 };
 
-EnemyType::EnemyType() :
-    m_id(m_idCnt) {
+EnemyType::EnemyType() {
+    assert(m_idCnt < ENEMY_TYPE_MAX);
+    m_id = m_idCnt;
     ++m_idCnt;
 }
 
@@ -304,7 +307,6 @@ void EnemyType::setBarrageType(Barrage *barrage, int btn, int mode) {
     }
 
     int mpn;
-
     if (mode == ROLL) {
         mpn = m_barrageManager->m_parserNum[BarrageManager::MORPH];
     } else {
@@ -391,8 +393,8 @@ void EnemyType::setBarrageShape(Barrage *barrage, float size) {
     /*
     barrage->m_shape = m_random.nextInt(BULLET_SHAPE_NUM);
     barrage->m_color = m_random.nextInt(BULLET_COLOR_NUM);
-    barrage->m_bulletSize = (1.0 + m_random.nextSignedFloat(0.1)) * size;
     */
+    barrage->m_bulletSize = (1.0 + m_random.nextSignedFloat(0.1)) * size;
 }
 
 void EnemyType::setEnemyColorType() {
@@ -440,7 +442,7 @@ void EnemyType::setEnemyShapeAndWings(int size) {
     m_bodyShapePosition[3].X = -x2;
     m_bodyShapePosition[3].Y = -y2;
 
-    //m_retroSize = m_enemySize[size][4];
+    m_retroSize = m_enemySize[size][4];
     switch (size) {
     case SMALL:
     case MEDIUM:

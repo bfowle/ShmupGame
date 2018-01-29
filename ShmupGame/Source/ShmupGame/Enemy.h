@@ -104,7 +104,7 @@ private:
     bool m_onRoute;
     int m_fireCnt, m_barragePatternIdx;
     float m_fieldLimitX, m_fieldLimitY;
-    int m_appCnt, m_dstCnt, m_timeoutCnt;
+    int m_appearanceCnt, m_dstCnt, m_timeoutCnt;
     float m_z;
     bool m_isBoss;
     bool m_isDamaged;

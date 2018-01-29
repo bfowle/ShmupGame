@@ -37,7 +37,7 @@ void StageManager::init(shared_ptr<Field> field, shared_ptr<BarrageManager> barr
     m_gameManager = gameManager;
 
     m_random = Random();
-    m_apos = FVector2D();
+    m_appearancePosition = FVector2D();
 
     for (int i = 0; i < m_smallType.size(); ++i) {
         m_smallType[i].reset(new EnemyType());
@@ -65,7 +65,7 @@ void StageManager::setRank(float baseRank, float inc, int startParsec, int type)
 }
 
 void StageManager::tick() {
-    for (int i = 0; i < m_apNum; ++i) {
+    for (int i = 0; i < m_appearanceNum; ++i) {
         EnemyAppearance *appearance = &m_appearance[i];
         appearance->m_cnt--;
 
@@ -102,49 +102,49 @@ void StageManager::tick() {
         case TOP:
             switch (appearance->m_pattern) {
             case BOTH_SIDES:
-                m_apos.X = (p - 0.5) * m_field->m_size.X * 1.8;
+                m_appearancePosition.X = (p - 0.5) * m_field->m_size.X * 1.8;
                 break;
             default:
-                m_apos.X = (p * 0.6 + 0.2) * m_field->m_size.X * appearance->m_side;
+                m_appearancePosition.X = (p * 0.6 + 0.2) * m_field->m_size.X * appearance->m_side;
                 break;
             }
-            m_apos.Y = m_field->m_size.Y - Enemy::FIELD_SPACE;
+            m_appearancePosition.Y = m_field->m_size.Y - Enemy::FIELD_SPACE;
             d = M_PI;
             break;
 
         case BACK:
             switch (appearance->m_pattern) {
             case BOTH_SIDES:
-                m_apos.X = (p - 0.5) * m_field->m_size.X * 1.8;
+                m_appearancePosition.X = (p - 0.5) * m_field->m_size.X * 1.8;
                 break;
             default:
-                m_apos.X = (p * 0.6 + 0.2) * m_field->m_size.X * appearance->m_side;
+                m_appearancePosition.X = (p * 0.6 + 0.2) * m_field->m_size.X * appearance->m_side;
                 break;
             }
-            m_apos.Y = -m_field->m_size.Y + Enemy::FIELD_SPACE;
+            m_appearancePosition.Y = -m_field->m_size.Y + Enemy::FIELD_SPACE;
             d = 0;
             break;
 
         case SIDE:
             switch (appearance->m_pattern) {
             case BOTH_SIDES:
-                m_apos.X = (m_field->m_size.X - Enemy::FIELD_SPACE) * (m_random.nextInt(2) * 2 - 1);
+                m_appearancePosition.X = (m_field->m_size.X - Enemy::FIELD_SPACE) * (m_random.nextInt(2) * 2 - 1);
                 break;
             default:
-                m_apos.X = (m_field->m_size.X - Enemy::FIELD_SPACE) * appearance->m_side;
+                m_appearancePosition.X = (m_field->m_size.X - Enemy::FIELD_SPACE) * appearance->m_side;
                 break;
             }
-            m_apos.Y = (p * 0.4 + 0.4) * m_field->m_size.Y;
-            if (m_apos.X < 0) {
+            m_appearancePosition.Y = (p * 0.4 + 0.4) * m_field->m_size.Y;
+            if (m_appearancePosition.X < 0) {
                 d = M_PI / 2;
             } else {
                 d = M_PI / 2 * 3;
             }
             break;
         }
-        m_apos.X *= 0.88;
+        m_appearancePosition.X *= 0.88;
 
-        m_gameManager->addEnemy(m_apos, d, appearance->m_type, appearance->m_moveParser);
+        m_gameManager->addEnemy(m_appearancePosition, d, appearance->m_type, appearance->m_moveParser);
 
         appearance->m_left--;
         if (appearance->m_left <= 0) {
@@ -170,12 +170,14 @@ void StageManager::tick() {
             m_sectionCnt == m_sectionIntervalCnt - 1) {
             // do stuff
         }
-        m_apNum = 0;
+        m_appearanceNum = 0;
 
         if (m_sectionCnt <= 0) {
             gotoNextSection();
         }
     }
+
+    EnemyType::clearExistsList();
 }
 
 void StageManager::createEnemyData() {
@@ -263,7 +265,6 @@ void StageManager::setMediumAppearance(EnemyAppearance *appearance) {
     int mt;
     /*
     @NOTE: appearance from behind is disabled for medium enemies
-
     if (m_random.nextFloat(1) > 0.1) {
         appearance->m_point = TOP;
         mt = BarrageManager::MEDIUM_MOVE;
@@ -346,14 +347,14 @@ void StageManager::setAppearance(EnemyAppearance *appearance, int type) {
 }
 
 void StageManager::createSectionData() {
-    m_apNum = 0;
+    m_appearanceNum = 0;
     if (m_rank <= 0) {
         return;
     }
 
     m_field->m_aimSpeed = 0.1 + m_section * 0.02;
 
-    UE_LOG(LogTemp, Warning, TEXT(" StageManager::createSectionData => %d"), m_section);
+    //UE_LOG(LogTemp, Warning, TEXT(" StageManager::createSectionData => %d"), m_section);
 
     if (m_section == 4) {
         // set the medium boss
@@ -408,16 +409,16 @@ void StageManager::createSectionData() {
         ap = MEDIUM_RUSH_SECTION_PATTERN;
     }
 
-    for (int i = 0; i < m_appearancePattern[m_gameManager->m_mode][ap][0]; ++i, ++m_apNum) {
-        EnemyAppearance *appearance = &m_appearance[m_apNum];
+    for (int i = 0; i < m_appearancePattern[m_gameManager->m_mode][ap][0]; ++i, ++m_appearanceNum) {
+        EnemyAppearance *appearance = &m_appearance[m_appearanceNum];
         setAppearance(appearance, SMALL);
     }
-    for (int i = 0; i < m_appearancePattern[m_gameManager->m_mode][ap][1]; ++i, ++m_apNum) {
-        EnemyAppearance *appearance = &m_appearance[m_apNum];
+    for (int i = 0; i < m_appearancePattern[m_gameManager->m_mode][ap][1]; ++i, ++m_appearanceNum) {
+        EnemyAppearance *appearance = &m_appearance[m_appearanceNum];
         setAppearance(appearance, MEDIUM);
     }
-    for (int i = 0; i < m_appearancePattern[m_gameManager->m_mode][ap][2]; ++i, ++m_apNum) {
-        EnemyAppearance *appearance = &m_appearance[m_apNum];
+    for (int i = 0; i < m_appearancePattern[m_gameManager->m_mode][ap][2]; ++i, ++m_appearanceNum) {
+        EnemyAppearance *appearance = &m_appearance[m_appearanceNum];
         setAppearance(appearance, LARGE);
     }
 }

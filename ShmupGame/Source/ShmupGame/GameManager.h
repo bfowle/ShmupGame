@@ -88,15 +88,14 @@ public:
     };
 
     const int INTERVAL_BASE = 16;
-    const int TARGET_FPS = 1 / 60;
 
     UWorld *m_world;
     UClass *bp_enemyClass;
     UClass *bp_bulletClass;
 
     int m_mode, m_state;
-    bool m_nowait;
     int m_difficulty, m_parsecSlot;
+    float m_deltaSeconds;
 
 private:
     enum {
@@ -127,9 +126,7 @@ private:
     int m_bossShield;
     std::array<int, BOSS_WING_NUM> m_bossWingShield;
 
-    //int m_frame;  
-    float m_interval; // INTERVAL_BASE
-    //int m_accFrame, m_maxSkipFrame; // 0, 5
-    //long m_nowTick;
-    int m_frame;
+    float m_interval;
+    int m_frame, m_maxSkipFrame;
+    long m_previousTick;
 };

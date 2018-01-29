@@ -2,13 +2,15 @@
 
 #include "BulletActorInitializer.h"
 #include "BulletActorPool.h"
+#include "GameManager.h"
 #include "Field.h"
 #include "Ship.h"
 
+#include "Engine/World.h"
+#include "GameFramework/Actor.h"
+
 #include "bulletml/bulletml.h"
 #include "bulletml/bulletmlparser.h"
-
-#include "GameFramework/Actor.h"
 
 using namespace std;
 
@@ -40,6 +42,7 @@ void BulletActor::init(shared_ptr<ActorInitializer> initializer) {
     shared_ptr<BulletActorInitializer> bullet = static_pointer_cast<BulletActorInitializer>(initializer);
     m_field = bullet->m_field;
     m_ship = bullet->m_ship;
+    m_gameManager = bullet->m_gameManager;
 
     m_bullet.reset(new ShmupBullet(m_nextId));
     m_previousPosition = FVector2D();
@@ -78,6 +81,9 @@ void BulletActor::start(float speedRank, int shape, int color, float size, float
     m_rtCnt = 0;
     m_shouldBeRemoved = false;
     m_backToRetro = false;
+
+    m_actor = m_gameManager->m_world->SpawnActor<AActor>(m_gameManager->bp_bulletClass,
+        FVector(m_bullet->m_position.X, 100.0, m_bullet->m_position.Y), FRotator::ZeroRotator);
 }
 
 void BulletActor::setInvisible() {
@@ -93,6 +99,12 @@ void BulletActor::setTop(BulletMLParser *parser) {
 void BulletActor::rewind() {
     m_bullet->remove();
 
+    m_gameManager->m_world->DestroyActor(m_actor);
+    //if (m_actor != nullptr) {
+    //    m_actor->Destroy();
+    //    //m_actor = nullptr;
+    //}
+
     BulletMLRunner *runner = BulletMLRunner_new_parser(m_parser);
     BulletActorPool::registerFunctions(runner);
     m_bullet->setRunner(runner);
@@ -107,8 +119,10 @@ void BulletActor::removeForced() {
     if (!m_isSimple) {
         m_bullet->remove();
 
+        m_gameManager->m_world->DestroyActor(m_actor);
         //if (m_actor != nullptr) {
         //    m_actor->Destroy();
+        //    //m_actor = nullptr;
         //}
     }
     m_exists = false;
@@ -173,11 +187,6 @@ void BulletActor::tick() {
     m_bullet->m_position.X += (sin(m_bullet->m_direction) * m_bullet->m_speed + m_bullet->m_acceleration.X) * sr * m_bullet->m_xReverse;
     m_bullet->m_position.Y += (cos(m_bullet->m_direction) * m_bullet->m_speed - m_bullet->m_acceleration.Y) * sr;
 
-    if (m_actor != nullptr) {
-        //UE_LOG(LogTemp, Warning, TEXT("  -- Bullet::tick [%s] (%s)"), *m_actor->GetName(), *m_bullet->m_position.ToString());
-        m_actor->SetActorLocation(FVector(m_bullet->m_position.X, 100.0, m_bullet->m_position.Y));
-    }
-
     if (m_isVisible) {
         m_totalBulletsSpeed += m_bullet->m_speed * sr;
 
@@ -188,6 +197,12 @@ void BulletActor::tick() {
         if (m_field->checkHit(m_bullet->m_position, FIELD_SPACE)) {
             //UE_LOG(LogTemp, Warning, TEXT(" __ Bullet :: hit field __ [%s] ... %d "), *m_bullet->m_position.ToString(), m_cnt);
             removeForced();
+        }
+
+        if (m_actor != nullptr &&
+            !m_actor->IsActorBeingDestroyed()) {
+            m_actor->SetActorLocation(FVector(m_bullet->m_position.X, 100.0, m_bullet->m_position.Y),
+                false, nullptr, ETeleportType::TeleportPhysics);
         }
     }
 

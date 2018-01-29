@@ -59,7 +59,7 @@ void AGameManager::InitGame(const FString &MapName, const FString &Options, FStr
     m_ship.reset(new Ship());
     m_ship->init(m_field, this/*getPtr()*/);
 
-    shared_ptr<BulletActorInitializer> bi(new BulletActorInitializer(m_field, m_ship));
+    shared_ptr<BulletActorInitializer> bi(new BulletActorInitializer(m_field, m_ship, this/*getPtr()*/));
     m_bullets.reset(new BulletActorPool(512, bi));
 
     auto_ptr<Roll> rollClass(new Roll());
@@ -84,8 +84,8 @@ void AGameManager::InitGame(const FString &MapName, const FString &Options, FStr
 
     m_frame = 0;
     m_interval = INTERVAL_BASE;
-    //m_accFrame = 0;
-    //m_maxSkipFrame = 5;
+    m_maxSkipFrame = 5;
+    m_previousTick = 0;
 }
 
 void AGameManager::StartPlay() {
@@ -104,12 +104,23 @@ void AGameManager::StartPlay() {
 void AGameManager::Tick(float DeltaSeconds) {
     Super::Tick(DeltaSeconds);
 
-    //m_frame = (int)(DeltaSeconds * m_interval);
-    //m_frame += DeltaSeconds;
-    //if (m_frame == TARGET_FPS) {
-    tick();
-    //    m_frame = 0;
-    //}
+    m_deltaSeconds = DeltaSeconds;
+
+    float nowTick = UGameplayStatics::GetRealTimeSeconds(GetWorld()) * 1000.0;
+    m_frame = (int)(nowTick - m_previousTick) / m_interval;
+    if (m_frame <= 0) {
+        m_frame = 1;
+        m_previousTick += m_interval;
+    } else if (m_frame > m_maxSkipFrame) {
+        m_frame = m_maxSkipFrame;
+        m_previousTick = nowTick;
+    } else {
+        m_previousTick += m_frame * m_interval;
+    }
+
+    for (int i = 0; i < m_frame; i++) {
+        tick();
+    }
 }
 
 void AGameManager::tick() {
@@ -133,8 +144,6 @@ void AGameManager::tick() {
 
 void AGameManager::close() {
     m_barrageManager->unloadBulletMLFiles();
-
-    //Ship::deleteDisplayLists();
 }
 
 void AGameManager::startStage(int difficulty, int parsecSlot, int startParsec, int mode) {
@@ -310,17 +319,14 @@ void AGameManager::inGameTick() {
 
     // set pause
 
-    if (!m_nowait) {
-        if (BulletActor::m_totalBulletsSpeed > SLOWDOWN_START_BULLETS_SPEED[m_mode]) {
-            float sm = BulletActor::m_totalBulletsSpeed / SLOWDOWN_START_BULLETS_SPEED[m_mode];
-            if (sm > 1.75) {
-                sm = 1.75;
-            }
-            m_interval += (sm * INTERVAL_BASE - m_interval) * 0.1;
-        } else {
-            m_interval += (INTERVAL_BASE - m_interval) * 0.08;
+    if (BulletActor::m_totalBulletsSpeed > SLOWDOWN_START_BULLETS_SPEED[m_mode]) {
+        float sm = BulletActor::m_totalBulletsSpeed / SLOWDOWN_START_BULLETS_SPEED[m_mode];
+        if (sm > 1.75) {
+            sm = 1.75;
         }
-        //UE_LOG(LogTemp, Warning, TEXT(" ][ m_interval ][ %f "), m_interval);
+        m_interval += (sm * INTERVAL_BASE - m_interval) * 0.1;
+    } else {
+        m_interval += (INTERVAL_BASE - m_interval) * 0.08;
     }
 }
 

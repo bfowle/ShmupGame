@@ -71,8 +71,8 @@ public:
 
     FVector2D m_collisionSize;
     bool m_wingCollision;
+    float m_retroSize;
     //float r, g, b;
-    //float retroSize;
 
 private:
     enum {

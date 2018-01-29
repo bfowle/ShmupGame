@@ -11,15 +11,15 @@
 #include <memory>
 
 class AActor;
-class BulletMLParser;
-class BulletMLRunner;
+class AGameManager;
 class Field;
 class Ship;
+class BulletMLParser;
+class BulletMLRunner;
 
 class BulletActor : public Actor {
 public:
     BulletActor() :
-        m_actor(nullptr),
         SHIP_HIT_WIDTH(0.2),
         RETRO_COUNT(24) {
     };
@@ -56,7 +56,6 @@ public:
         BULLET_COLOR_NUM = 4
     };
 
-    AActor *m_actor;
     std::shared_ptr<ShmupBullet> m_bullet;
     static float m_totalBulletsSpeed;
 
@@ -75,8 +74,10 @@ private:
     //static const float SHAPE_BASE_COLOR_G;
     //static const float SHAPE_BASE_COLOR_B;
 
+    AActor *m_actor;
     std::shared_ptr<Field> m_field;
     std::shared_ptr<Ship> m_ship;
+    AGameManager *m_gameManager;
     BulletMLParser *m_parser;
 
     static int m_nextId;

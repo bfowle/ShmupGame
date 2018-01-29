@@ -94,8 +94,8 @@ private:
     std::shared_ptr<EnemyType> m_mediumBossType;
     std::shared_ptr<EnemyType> m_largeBossType;
 
-    int m_apNum;
-    FVector2D m_apos;
+    int m_appearanceNum;
+    FVector2D m_appearancePosition;
     int m_sectionCnt, m_sectionIntervalCnt, m_section;
     float m_rank, m_rankInc;
     int m_mediumRushSectionNum;
