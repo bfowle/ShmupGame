@@ -8,6 +8,7 @@
 
 #include "Engine/World.h"
 #include "GameFramework/Actor.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 
 #include "bulletml/bulletml.h"
 #include "bulletml/bulletmlparser.h"
@@ -69,7 +70,9 @@ void Enemy::set(const FVector2D &position, float direction, shared_ptr<EnemyType
     }
 
     m_actor = m_gameManager->m_world->SpawnActor<AActor>(m_gameManager->bp_enemyClass,
-        FVector::ZeroVector, FRotator::ZeroRotator);
+        FVector(m_position.X, 100.0, m_position.Y), FRotator::ZeroRotator);
+
+    m_movement = m_actor->FindComponentByClass<UProjectileMovementComponent>();
 
     m_cnt = 0;
     m_shield = type->m_shield;
@@ -97,15 +100,27 @@ void Enemy::tick() {
     EnemyType::m_exists[m_type->m_id] = true;
 
     if (!m_isBoss) {
-        m_position.X = m_moveBullet->m_bullet->m_position.X;
-        m_position.Y = m_moveBullet->m_bullet->m_position.Y;
+        //m_position.X = m_moveBullet->m_bullet->m_position.X;
+        //m_position.Y = m_moveBullet->m_bullet->m_position.Y;
 
-        try {
-            if (m_actor.IsValid()) {
-                m_actor->SetActorLocation(FVector(m_position.X, 100.0, m_position.Y),
-                    false, nullptr, ETeleportType::TeleportPhysics);
+        if (m_movement.IsValid() &&
+            m_movement->UpdatedComponent) {
+            FVector vel = (m_movement->UpdatedComponent->GetForwardVector() *
+                (sin(m_moveBullet->m_bullet->m_direction) + m_moveBullet->m_bullet->m_acceleration.X) * m_moveBullet->m_bullet->m_xReverse) +
+                (m_movement->UpdatedComponent->GetUpVector() *
+                (cos(m_moveBullet->m_bullet->m_direction) - m_moveBullet->m_bullet->m_acceleration.Y));
+            vel.Y = 0;
+                
+            if (!vel.IsNearlyZero()) {
+                vel.Normalize();
+                vel *= m_moveBullet->m_bullet->m_speed * m_movement->GetMaxSpeed() * m_gameManager->m_world->DeltaTimeSeconds;
+                m_movement->MoveUpdatedComponent(vel, FRotator::ZeroRotator, true, 0, ETeleportType::TeleportPhysics);
+                m_movement->UpdateComponentVelocity();
             }
-        } catch (...) {}
+        }
+
+        m_position.X = m_actor->GetActorLocation().X;
+        m_position.Y = m_actor->GetActorLocation().Z;
     } else {
         tickBoss();
     }
@@ -137,6 +152,8 @@ void Enemy::tick() {
 
             if (m_actor.IsValid()) {
                 m_gameManager->m_world->DestroyActor(m_actor.Get());
+                //m_actor->Destroy();
+                //m_actor->ConditionalBeginDestroy();
             }
             return;
         }

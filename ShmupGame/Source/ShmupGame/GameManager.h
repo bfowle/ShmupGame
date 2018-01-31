@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Tickable.h"
-#include "GameFramework/GameMode.h"
+#include "GameFramework/GameModeBase.h"
 
 #include "ActorPool.h"
 #include "EnemyType.h"
@@ -23,23 +23,35 @@ class BulletActorPool;
 class BulletMLParser;
 
 UCLASS()
-class SHMUPGAME_API AGameManager : public AGameMode /*, public TSharedFromThis<AGameManager>*/ {
+class SHMUPGAME_API AGameManager : public AGameModeBase {
     GENERATED_BODY()
 
 public:
     AGameManager();
 
-    //TSharedRef<AGameManager> getPtr();
-
     virtual void InitGame(const FString &MapName, const FString &Options, FString &ErrorMessage) override;
     virtual void StartPlay() override;
     virtual void Tick(float DeltaSeconds) override;
 
+    //GameModeBase:
+    //  ReplicatedWorldTimeSeconds |
+    //  ServerWorldTimeSecondsDelta |
+    //  ServerWorldTimeSecondsUpdateFrequency |
+    //  TimerHandle_UpdateServerTimeSeconds() |
+    //  GetServerWorldTimeSeconds() |
+    //  UpdateServerTimeSeconds()
+    //GameMode:
+    //  ElapsedTime
+
     //InitGameState
-    //InitNewPlayer
+    //HandleBeginPlay | HasBegunPlay | HasMatchStarted
+
     //IsPaused | SetPause
-    //RestartPlayer
+
+    //AddPlayerState | RemovePlayerState
     //SetPlayerDefaults
+    //RestartPlayer
+
     //StartToLeaveMap
 
     void tick();

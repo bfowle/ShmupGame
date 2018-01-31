@@ -8,6 +8,7 @@
 
 #include "Engine/World.h"
 #include "GameFramework/Actor.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 
 #include "bulletml/bulletml.h"
 #include "bulletml/bulletmlparser.h"
@@ -101,6 +102,8 @@ void BulletActor::spawnBulletActor() {
     m_actor = m_gameManager->m_world->SpawnActor<AActor>(m_gameManager->bp_bulletClass,
         FVector(m_bullet->m_position.X, 100.0, m_bullet->m_position.Y), FRotator::ZeroRotator);
 
+    m_movement = m_actor->FindComponentByClass<UProjectileMovementComponent>();
+
     m_actorSpawned = true;
 }
 
@@ -125,6 +128,8 @@ void BulletActor::removeForced() {
         if (m_actorSpawned &&
             m_actor.IsValid()) {
             m_gameManager->m_world->DestroyActor(m_actor.Get());
+            //m_actor->Destroy();
+            //m_actor->ConditionalBeginDestroy();
             m_actorSpawned = false;
         }
     } catch (...) {}
@@ -161,7 +166,6 @@ void BulletActor::tick() {
     }
 
     float sr = 0;
-    /*
     if (m_rtCnt < RETRO_COUNT) {
         sr = m_bullet->m_speedRank * (0.3 + (m_rtCnt / RETRO_COUNT) * 0.7);
         if (m_backToRetro) {
@@ -181,15 +185,14 @@ void BulletActor::tick() {
             return;
         }
     } else {
-    */
-    sr = m_bullet->m_speedRank;
-    //if (m_cnt > BULLET_DISAPPEAR_COUNT) {
-    //    toRetro();
-    //}
-    //}
+        sr = m_bullet->m_speedRank;
+        if (m_cnt > BULLET_DISAPPEAR_COUNT) {
+            toRetro();
+        }
+    }
 
-    m_bullet->m_position.X += (sin(m_bullet->m_direction) * m_bullet->m_speed + m_bullet->m_acceleration.X) * sr * m_bullet->m_xReverse;
-    m_bullet->m_position.Y += (cos(m_bullet->m_direction) * m_bullet->m_speed - m_bullet->m_acceleration.Y) * sr;
+    //m_bullet->m_position.X += (sin(m_bullet->m_direction) * m_bullet->m_speed + m_bullet->m_acceleration.X) * sr * m_bullet->m_xReverse;
+    //m_bullet->m_position.Y += (cos(m_bullet->m_direction) * m_bullet->m_speed - m_bullet->m_acceleration.Y) * sr;
 
     if (m_isVisible) {
         m_totalBulletsSpeed += m_bullet->m_speed * sr;
@@ -203,9 +206,21 @@ void BulletActor::tick() {
             removeForced();
         }
 
-        if (m_actor.IsValid()) {
-            m_actor->SetActorLocation(FVector(m_bullet->m_position.X, 100.0, m_bullet->m_position.Y),
-                false, nullptr, ETeleportType::TeleportPhysics);
+        if (m_movement.IsValid()) {
+            FVector vel = (m_movement->UpdatedComponent->GetForwardVector() *
+                (sin(m_bullet->m_direction) + m_bullet->m_acceleration.X) * sr * m_bullet->m_xReverse) +
+                (m_movement->UpdatedComponent->GetUpVector() *
+                (cos(m_bullet->m_direction) - m_bullet->m_acceleration.Y) * sr);
+            vel.Y = 0;
+            if (!vel.IsNearlyZero()) {
+                vel.Normalize();
+                vel *= m_bullet->m_speed * m_movement->GetMaxSpeed() * m_gameManager->m_world->DeltaTimeSeconds;
+                m_movement->MoveUpdatedComponent(vel, FRotator::ZeroRotator, true, 0, ETeleportType::TeleportPhysics);
+                m_movement->UpdateComponentVelocity();
+            }
+
+            m_bullet->m_position.X = m_actor->GetActorLocation().X;
+            m_bullet->m_position.Y = m_actor->GetActorLocation().Z;
         }
     }
 

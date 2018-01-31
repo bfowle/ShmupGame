@@ -12,6 +12,7 @@
 #include <memory>
 
 class AActor;
+class UProjectileMovementComponent;
 class AGameManager;
 class ActorPool;
 class BulletActor;
@@ -81,6 +82,8 @@ private:
     static Random m_random;
 
     TWeakObjectPtr<AActor> m_actor;
+    TWeakObjectPtr<UProjectileMovementComponent> m_movement;
+
     std::shared_ptr<Field> m_field;
     std::shared_ptr<BulletActorPool> m_bullets;
     //std::shared_ptr<ActorPool> m_shots;

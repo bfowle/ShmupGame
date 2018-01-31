@@ -26,10 +26,6 @@ using namespace std;
 
 const int AGameManager::SLOWDOWN_START_BULLETS_SPEED[2] = {30, 42};
 
-//TSharedRef<AGameManager> AGameManager::getPtr() {
-//    return MakeShareable(new AGameManager);
-//}
-
 AGameManager::AGameManager() {
     static ConstructorHelpers::FClassFinder<APawn> playerPawnBPClass(TEXT("/Game/Blueprints/Player/BP_Player"));
     if (playerPawnBPClass.Class != NULL) {
@@ -45,8 +41,13 @@ AGameManager::AGameManager() {
     if (bulletActorBPClass.Class != NULL) {
         bp_bulletClass = bulletActorBPClass.Class;
     }
+
+    PrimaryActorTick.bStartWithTickEnabled = true;
+    PrimaryActorTick.bCanEverTick = true;
 }
 
+// called before any other scripts (including PreInitializeComponents)
+// used by AGameModeBase to initialize parameters and spawn its helper classes
 void AGameManager::InitGame(const FString &MapName, const FString &Options, FString &ErrorMessage) {
     Super::InitGame(MapName, Options, ErrorMessage);
 
@@ -57,9 +58,9 @@ void AGameManager::InitGame(const FString &MapName, const FString &Options, FStr
     m_field->init();
     
     m_ship.reset(new Ship());
-    m_ship->init(m_field, this/*getPtr()*/);
+    m_ship->init(m_field, this);
 
-    shared_ptr<BulletActorInitializer> bi(new BulletActorInitializer(m_field, m_ship, this/*getPtr()*/));
+    shared_ptr<BulletActorInitializer> bi(new BulletActorInitializer(m_field, m_ship, this));
     m_bullets.reset(new BulletActorPool(512, bi));
 
     unique_ptr<Roll> rollClass(new Roll());
@@ -72,7 +73,7 @@ void AGameManager::InitGame(const FString &MapName, const FString &Options, FStr
     m_locks.reset(new ActorPool(4, lockClass.get(), li));
 
     unique_ptr<Enemy> m_enemyClass(new Enemy());
-    shared_ptr<EnemyInitializer> ei(new EnemyInitializer(m_field, m_ship, m_bullets, m_rolls, m_locks, this/*getPtr()*/));
+    shared_ptr<EnemyInitializer> ei(new EnemyInitializer(m_field, m_ship, m_bullets, m_rolls, m_locks, this));
     m_enemies.reset(new ActorPool(ENEMY_MAX, m_enemyClass.get(), ei));
 
     m_barrageManager.reset(new BarrageManager());
@@ -80,7 +81,7 @@ void AGameManager::InitGame(const FString &MapName, const FString &Options, FStr
     EnemyType::init(m_barrageManager);
 
     m_stageManager.reset(new StageManager());
-    m_stageManager->init(m_field, m_barrageManager, this/*getPtr()*/);
+    m_stageManager->init(m_field, m_barrageManager, this);
 
     m_frame = 0;
     m_interval = INTERVAL_BASE;
@@ -105,8 +106,6 @@ void AGameManager::Tick(float DeltaSeconds) {
     Super::Tick(DeltaSeconds);
 
     m_deltaSeconds = DeltaSeconds;
-
-    //tick();
 
     float nowTick = UGameplayStatics::GetRealTimeSeconds(GetWorld()) * 1000.0;
     m_frame = (int)(nowTick - m_previousTick) / m_interval;

@@ -11,6 +11,7 @@
 #include <memory>
 
 class AActor;
+class UProjectileMovementComponent;
 class AGameManager;
 class Field;
 class Ship;
@@ -22,7 +23,7 @@ public:
     BulletActor() :
         m_actorSpawned(false),
         SHIP_HIT_WIDTH(0.2),
-        RETRO_COUNT(24) {
+        RETRO_COUNT(500) {
     };
 
 private:
@@ -77,6 +78,7 @@ private:
     //static const float SHAPE_BASE_COLOR_B;
 
     TWeakObjectPtr<AActor> m_actor;
+    TWeakObjectPtr<UProjectileMovementComponent> m_movement;
     std::shared_ptr<Field> m_field;
     std::shared_ptr<Ship> m_ship;
     TWeakObjectPtr<AGameManager> m_gameManager;
