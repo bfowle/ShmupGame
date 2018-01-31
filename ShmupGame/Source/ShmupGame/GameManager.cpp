@@ -106,6 +106,8 @@ void AGameManager::Tick(float DeltaSeconds) {
 
     m_deltaSeconds = DeltaSeconds;
 
+    //tick();
+
     float nowTick = UGameplayStatics::GetRealTimeSeconds(GetWorld()) * 1000.0;
     m_frame = (int)(nowTick - m_previousTick) / m_interval;
     if (m_frame <= 0) {
@@ -324,7 +326,7 @@ void AGameManager::inGameTick() {
         if (sm > 1.75) {
             sm = 1.75;
         }
-        m_interval += (sm * INTERVAL_BASE - m_interval) * 0.1;
+        m_interval += (sm * INTERVAL_BASE - m_interval) * 0.01;
     } else {
         m_interval += (INTERVAL_BASE - m_interval) * 0.08;
     }

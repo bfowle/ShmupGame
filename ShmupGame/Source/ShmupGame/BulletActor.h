@@ -20,6 +20,7 @@ class BulletMLRunner;
 class BulletActor : public Actor {
 public:
     BulletActor() :
+        m_actorSpawned(false),
         SHIP_HIT_WIDTH(0.2),
         RETRO_COUNT(24) {
     };
@@ -38,6 +39,7 @@ public:
     void set(float x, float y, float direction, float speed, float rank, float speedRank, int shape, int color, int size, float xReverse);
     void setInvisible();
     void setTop(BulletMLParser *parser);
+    void spawnBulletActor();
     void rewind();
     void remove();
     void toRetro();
@@ -88,6 +90,7 @@ private:
     FVector2D m_previousPosition;
     int m_cnt;
     float m_rtCnt;
+    bool m_actorSpawned;
     bool m_shouldBeRemoved;
     bool m_backToRetro;
 };

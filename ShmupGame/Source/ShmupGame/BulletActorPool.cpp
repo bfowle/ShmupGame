@@ -17,6 +17,7 @@ BulletActorPool::BulletActorPool(int n, shared_ptr<ActorInitializer> initializer
     BulletActor::init();
 }
 
+// called via bulletml createSimpleBullet
 void BulletActorPool::addBullet(float direction, float speed) {
     shared_ptr<BulletActor> bullet = static_pointer_cast<BulletActor>(getInstance());
     if (!bullet) {
@@ -25,6 +26,10 @@ void BulletActorPool::addBullet(float direction, float speed) {
 
     ShmupBullet *rb = static_cast<ShmupBullet *>(Bullet::m_now);
     if (rb->m_isMorph) {
+        // @FIXME: temp fix
+        if (rb->m_morphIdx < 0) {
+            return;
+        }
         BulletMLRunner *runner = BulletMLRunner_new_parser(rb->m_morphParser[rb->m_morphIdx]);
         BulletActorPool::registerFunctions(runner);
         bullet->set(runner, Bullet::m_now->m_position.X, Bullet::m_now->m_position.Y,
@@ -39,8 +44,10 @@ void BulletActorPool::addBullet(float direction, float speed) {
             rb->m_speedRank, rb->m_shape, rb->m_color,
             rb->m_bulletSize, rb->m_xReverse);
     }
+    bullet->spawnBulletActor();
 }
 
+// called via bulletml createBullet
 void BulletActorPool::addBullet(BulletMLState *state, float direction, float speed) {
     shared_ptr<BulletActor> bullet = static_pointer_cast<BulletActor>(getInstance());
     if (!bullet) {
@@ -64,8 +71,10 @@ void BulletActorPool::addBullet(BulletMLState *state, float direction, float spe
             rb->m_speedRank, rb->m_shape, rb->m_color,
             rb->m_bulletSize, rb->m_xReverse);
     }
+    bullet->spawnBulletActor();
 }
 
+// called via enemy move bullet
 shared_ptr<BulletActor> BulletActorPool::addBullet(BulletMLRunner *runner, float x, float y, float direction, float speed, float rank, float speedRank, int shape, int color, float size, float xReverse) {
     shared_ptr<BulletActor> bullet = static_pointer_cast<BulletActor>(getInstance());
     if (!bullet) {
@@ -78,6 +87,7 @@ shared_ptr<BulletActor> BulletActorPool::addBullet(BulletMLRunner *runner, float
     return bullet;
 }
 
+// called via enemy top bullet
 shared_ptr<BulletActor> BulletActorPool::addBullet(BulletMLParser *parser, BulletMLRunner *runner, float x, float y, float direction, float speed, float rank, float speedRank, int shape, int color, float size, float xReverse) {
     shared_ptr<BulletActor> bullet = addBullet(runner, x, y, direction, speed, rank, speedRank, shape, color, size, xReverse);
     if (!bullet) {
@@ -89,6 +99,7 @@ shared_ptr<BulletActor> BulletActorPool::addBullet(BulletMLParser *parser, Bulle
     return bullet;
 }
 
+// called via enemy top bullet battery
 shared_ptr<BulletActor> BulletActorPool::addBullet(BulletMLParser *parser, BulletMLRunner *runner, float x, float y, float direction, float speed, float rank, float speedRank, int shape, int color, float size, float xReverse, array<BulletMLParser *, MorphBullet::MORPH_MAX> morph, int morphNum, int morphCnt) {
     shared_ptr<BulletActor> bullet = static_pointer_cast<BulletActor>(getInstance());
     if (!bullet) {
@@ -111,7 +122,7 @@ int BulletActorPool::getTurn() {
 }
 
 void BulletActorPool::kill(Bullet *bullet) {
-    //assert(dynamic_pointer_cast<BulletActor>(actor[bullet->id])->bullet->id == bullet->id);
+    //assert(static_pointer_cast<BulletActor>(actor[bullet->id])->bullet->id == bullet->id);
     static_pointer_cast<BulletActor>(m_actor[bullet->m_id])->remove();
 }
 
@@ -147,10 +158,9 @@ void BulletActorPool::registerFunctions(BulletMLRunner *runner) {
 extern "C" {
 #endif
     double getAimDirectionWithXRev_(BulletMLRunner *runner) {
-        FVector2D b = Bullet::m_now->m_position;
-        FVector2D t = Bullet::m_target;
         float xrev = static_cast<ShmupBullet *>(Bullet::m_now)->m_xReverse;
-        return rtod(atan2(t.X - b.X, t.Y - b.Y) * xrev);
+        return rtod(atan2(Bullet::m_target.X - Bullet::m_now->m_position.X,
+            Bullet::m_target.Y - Bullet::m_now->m_position.Y) * xrev);
     }
 #ifdef __cplusplus
 }

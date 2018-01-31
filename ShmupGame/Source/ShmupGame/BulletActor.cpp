@@ -15,7 +15,7 @@
 using namespace std;
 
 float BulletActor::m_totalBulletsSpeed;
-const float BulletActor::FIELD_SPACE = 0.5;
+const float BulletActor::FIELD_SPACE = 0.5; //15;
 int BulletActor::m_nextId = 0;
 /*
 const float BulletActor::SHAPE_POINT_SIZE = 0.1;
@@ -49,6 +49,7 @@ void BulletActor::init(shared_ptr<ActorInitializer> initializer) {
     ++m_nextId;
 }
 
+// called via bulletml createBullet
 void BulletActor::set(BulletMLRunner *runner, float x, float y, float direction, float speed, float rank, float speedRank, int shape, int color, int size, float xReverse) {
     m_bullet->set(runner, x, y, direction, speed, rank);
     m_bullet->m_isMorph = false;
@@ -56,13 +57,16 @@ void BulletActor::set(BulletMLRunner *runner, float x, float y, float direction,
     start(speedRank, shape, color, size, xReverse);
 }
 
+// called via bulletml createSimpleBullet as a morph bullet
 void BulletActor::set(BulletMLRunner *runner, float x, float y, float direction, float speed, float rank, float speedRank, int shape, int color, int size, float xReverse, array<BulletMLParser *, MorphBullet::MORPH_MAX> morph, int morphNum, int morphIdx, int morphCnt) {
+    //UE_LOG(LogTemp, Warning, TEXT(" BulletActor::set => morph bullet "));
     m_bullet->set(runner, x, y, direction, speed, rank);
     m_bullet->setMorph(morph, morphNum, morphIdx, morphCnt);
     m_isSimple = false;
     start(speedRank, shape, color, size, xReverse);
 }
 
+// called via bulletml createSimpleBullet
 void BulletActor::set(float x, float y, float direction, float speed, float rank, float speedRank, int shape, int color, int size, float xReverse) {
     m_bullet->set(x, y, direction, speed, rank);
     m_bullet->m_isMorph = false;
@@ -81,9 +85,6 @@ void BulletActor::start(float speedRank, int shape, int color, float size, float
     m_rtCnt = 0;
     m_shouldBeRemoved = false;
     m_backToRetro = false;
-
-    m_actor = m_gameManager->m_world->SpawnActor<AActor>(m_gameManager->bp_bulletClass,
-        FVector(m_bullet->m_position.X, 100.0, m_bullet->m_position.Y), FRotator::ZeroRotator);
 }
 
 void BulletActor::setInvisible() {
@@ -96,14 +97,15 @@ void BulletActor::setTop(BulletMLParser *parser) {
     setInvisible();
 }
 
+void BulletActor::spawnBulletActor() {
+    m_actor = m_gameManager->m_world->SpawnActor<AActor>(m_gameManager->bp_bulletClass,
+        FVector(m_bullet->m_position.X, 100.0, m_bullet->m_position.Y), FRotator::ZeroRotator);
+
+    m_actorSpawned = true;
+}
+
 void BulletActor::rewind() {
     m_bullet->remove();
-
-    m_gameManager->m_world->DestroyActor(m_actor);
-    //if (m_actor != nullptr) {
-    //    m_actor->Destroy();
-    //    //m_actor = nullptr;
-    //}
 
     BulletMLRunner *runner = BulletMLRunner_new_parser(m_parser);
     BulletActorPool::registerFunctions(runner);
@@ -116,16 +118,18 @@ void BulletActor::remove() {
 }
 
 void BulletActor::removeForced() {
-    if (!m_isSimple) {
-        m_bullet->remove();
-
-        m_gameManager->m_world->DestroyActor(m_actor);
-        //if (m_actor != nullptr) {
-        //    m_actor->Destroy();
-        //    //m_actor = nullptr;
-        //}
-    }
+    m_bullet->remove();
     m_exists = false;
+
+    try {
+        if (m_actorSpawned &&
+            m_actor != nullptr &&
+            m_actor->IsActorInitialized() &&
+            !m_actor->IsActorBeingDestroyed()) {
+            m_gameManager->m_world->DestroyActor(m_actor, true, true);
+            m_actorSpawned = false;
+        }
+    } catch (...) {}
 }
 
 void BulletActor::toRetro() {
@@ -159,6 +163,7 @@ void BulletActor::tick() {
     }
 
     float sr = 0;
+    /*
     if (m_rtCnt < RETRO_COUNT) {
         sr = m_bullet->m_speedRank * (0.3 + (m_rtCnt / RETRO_COUNT) * 0.7);
         if (m_backToRetro) {
@@ -178,11 +183,12 @@ void BulletActor::tick() {
             return;
         }
     } else {
-        sr = m_bullet->m_speedRank;
-        if (m_cnt > BULLET_DISAPPEAR_COUNT) {
-            toRetro();
-        }
-    }
+    */
+    sr = m_bullet->m_speedRank;
+    //if (m_cnt > BULLET_DISAPPEAR_COUNT) {
+    //    toRetro();
+    //}
+    //}
 
     m_bullet->m_position.X += (sin(m_bullet->m_direction) * m_bullet->m_speed + m_bullet->m_acceleration.X) * sr * m_bullet->m_xReverse;
     m_bullet->m_position.Y += (cos(m_bullet->m_direction) * m_bullet->m_speed - m_bullet->m_acceleration.Y) * sr;
@@ -190,9 +196,9 @@ void BulletActor::tick() {
     if (m_isVisible) {
         m_totalBulletsSpeed += m_bullet->m_speed * sr;
 
-        if (m_rtCnt > RETRO_COUNT) {
-            //checkShipHit();
-        }
+        //if (m_rtCnt > RETRO_COUNT) {
+        //    //checkShipHit();
+        //}
 
         if (m_field->checkHit(m_bullet->m_position, FIELD_SPACE)) {
             //UE_LOG(LogTemp, Warning, TEXT(" __ Bullet :: hit field __ [%s] ... %d "), *m_bullet->m_position.ToString(), m_cnt);

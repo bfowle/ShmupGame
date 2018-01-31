@@ -14,7 +14,7 @@
 
 using namespace std;
 
-const float Enemy::FIELD_SPACE = 1.5;
+const float Enemy::FIELD_SPACE = 1.5; //45;
 Random Enemy::m_random;
 
 const int ENEMY_TYPE_SCORE[] = {
@@ -100,11 +100,14 @@ void Enemy::tick() {
         m_position.X = m_moveBullet->m_bullet->m_position.X;
         m_position.Y = m_moveBullet->m_bullet->m_position.Y;
 
-        if (m_actor != nullptr &&
-            !m_actor->IsActorBeingDestroyed()) {
-            m_actor->SetActorLocation(FVector(m_position.X, 100.0, m_position.Y),
-                false, nullptr, ETeleportType::TeleportPhysics);
-        }
+        try {
+            if (m_actor != nullptr &&
+                m_actor->IsActorInitialized() &&
+                !m_actor->IsActorBeingDestroyed()) {
+                m_actor->SetActorLocation(FVector(m_position.X, 100.0, m_position.Y),
+                    false, nullptr, ETeleportType::TeleportPhysics);
+            }
+        } catch (...) {}
     } else {
         tickBoss();
     }
@@ -133,7 +136,11 @@ void Enemy::tick() {
         if (m_field->checkHit(m_position)) {
             //UE_LOG(LogTemp, Warning, TEXT(" __ [%s] hit field __ [%s] "), *m_actor->GetName(), *m_position.ToString());
             remove();
-            m_gameManager->m_world->DestroyActor(m_actor);
+
+            if (m_actor != nullptr &&
+                !m_actor->IsActorBeingDestroyed()) {
+                m_gameManager->m_world->DestroyActor(m_actor);
+            }
             //if (m_actor != nullptr) {
             //    m_actor->Destroy();
             //    //m_actor = nullptr;
@@ -200,7 +207,7 @@ void Enemy::tickBoss() {
 
 }
 
-shared_ptr<BulletActor> Enemy::setBullet(const Barrage &barrage, const FVector2D *ofs, float xr) {
+shared_ptr<BulletActor> Enemy::setBullet(const Barrage &barrage, const FVector2D *offset, float xReverse) {
     if (barrage.m_rank <= 0) {
         shared_ptr<BulletActor> null;
         return null;
@@ -211,22 +218,22 @@ shared_ptr<BulletActor> Enemy::setBullet(const Barrage &barrage, const FVector2D
     shared_ptr<BulletActor> bullet;
     float bx = m_position.X;
     float by = m_position.Y;
-    if (ofs) {
-        bx += ofs->X;
-        by += ofs->Y;
+    if (offset) {
+        bx += offset->X;
+        by += offset->Y;
     }
 
     if (barrage.m_morphCnt > 0) {
         bullet = m_bullets->addBullet(barrage.m_parser, runner,
             bx, by, m_baseDirection, 0, barrage.m_rank,
             barrage.m_speedRank, barrage.m_shape, barrage.m_color,
-            barrage.m_bulletSize, barrage.m_xReverse * xr,
+            barrage.m_bulletSize, barrage.m_xReverse * xReverse,
             barrage.m_morphParser, barrage.m_morphNum, barrage.m_morphCnt);
     } else {
         bullet = m_bullets->addBullet(barrage.m_parser, runner,
             bx, by, m_baseDirection, 0, barrage.m_rank,
             barrage.m_speedRank, barrage.m_shape, barrage.m_color,
-            barrage.m_bulletSize, barrage.m_xReverse * xr);
+            barrage.m_bulletSize, barrage.m_xReverse * xReverse);
     }
 
     //UE_LOG(LogTemp, Warning, TEXT("- Enemy::setBullet [%s] [%f, %f] (%s)"), *m_position.ToString(), bx, by, *m_bulletActor->GetName());
@@ -234,10 +241,11 @@ shared_ptr<BulletActor> Enemy::setBullet(const Barrage &barrage, const FVector2D
     return bullet;
 }
 
-std::shared_ptr<BulletActor> Enemy::setBullet(const Barrage &barrage, const FVector2D *ofs) {
-    return setBullet(barrage, ofs, 1);
+std::shared_ptr<BulletActor> Enemy::setBullet(const Barrage &barrage, const FVector2D *offset) {
+    return setBullet(barrage, offset, 1);
 }
 
+// top bullet refers to bulletml's <action label="top" />
 void Enemy::setTopBullets() {
     m_topBullet = setBullet(m_type->m_barrage[m_barragePatternIdx], 0);
     for (int i = 0; i < m_type->m_batteryNum; ++i) {

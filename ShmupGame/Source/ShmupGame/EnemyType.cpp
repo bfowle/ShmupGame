@@ -346,42 +346,46 @@ void EnemyType::setBarrageRank(Barrage *barrage, float rank, int intensity, int 
         return;
     }
 
-    barrage->m_rank = sqrt(rank) / (8 - m_random.nextInt(3));
+    barrage->m_rank = sqrt(rank) / (8.0 - m_random.nextInt(3));
     if (barrage->m_rank > 0.8) {
         barrage->m_rank = m_random.nextFloat(0.2) + 0.8;
     }
-    rank /= (barrage->m_rank + 2);
+    rank /= (barrage->m_rank + 2.0);
     if (intensity == WEAK) {
-        barrage->m_rank /= 2;
+        barrage->m_rank /= 2.0;
     }
 
     if (mode == ROLL) {
-        barrage->m_speedRank = sqrt(rank) * (m_random.nextFloat(0.2) + 1);
+        barrage->m_speedRank = sqrt(rank) * (m_random.nextFloat(0.2) + 1.0);
     } else {
         barrage->m_speedRank = sqrt(rank * 0.66) * (m_random.nextFloat(0.2) + 0.8);
     }
-    if (barrage->m_speedRank < 1) {
-        barrage->m_speedRank = 1;
+    if (barrage->m_speedRank < 1.0) {
+        barrage->m_speedRank = 1.0;
     }
-    if (barrage->m_speedRank > 2) {
+
+    if (barrage->m_speedRank > 2.0) {
         barrage->m_speedRank = sqrt(barrage->m_speedRank) + 0.27;
     }
 
     barrage->m_morphRank = rank / barrage->m_speedRank;
     barrage->m_morphCnt = 0;
-    while (barrage->m_morphRank > 1) {
+    while (barrage->m_morphRank > 1.0) {
         barrage->m_morphCnt++;
-        barrage->m_morphRank /= 3;
+        barrage->m_morphRank /= 3.0;
     }
 
     if (intensity == VERY_WEAK) {
-        barrage->m_morphRank /= 2;
+        barrage->m_morphRank /= 2.0;
         barrage->m_morphCnt /= 1.7;
     } else if (intensity == MORPH_WEAK) {
-        barrage->m_morphRank /= 2;
+        barrage->m_morphRank /= 2.0;
     } else if (intensity == WEAK) {
         barrage->m_morphRank /= 1.5;
     }
+
+    //UE_LOG(LogTemp, Warning, TEXT(" -- rank: %f | speedRank: %f | morphRank: %f | morphCnt: %d | morphNum: %d "),
+    //    barrage->m_rank, barrage->m_speedRank, barrage->m_morphRank, barrage->m_morphCnt, barrage->m_morphNum);
 }
 
 void EnemyType::setBarrageRankSlow(Barrage *barrage, float rank, int intensity, int mode, float slowness) {

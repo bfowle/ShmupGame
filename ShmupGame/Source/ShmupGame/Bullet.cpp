@@ -75,7 +75,7 @@ void Bullet::kill() {
 
 void Bullet::remove() {
     if (m_runner) {
-        BulletMLRunner_delete(m_runner);
+    //    BulletMLRunner_delete(m_runner);
     }
 }
 
@@ -95,7 +95,7 @@ double getBulletDirection_(BulletMLRunner *runner) {
 }
 
 double getAimDirection_(BulletMLRunner *runner) {
-    return rtod(atan2(Bullet::m_target.X - Bullet::m_now->m_position.X,
+    return rtod(/*M_PI - */atan2(Bullet::m_target.X - Bullet::m_now->m_position.X,
         Bullet::m_target.Y - Bullet::m_now->m_position.Y));
 }
 

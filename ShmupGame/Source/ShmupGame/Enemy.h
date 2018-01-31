@@ -38,8 +38,8 @@ private:
         bool m_isDamaged;
     };
 
-    std::shared_ptr<BulletActor> setBullet(const Barrage &barrage, const FVector2D *ofs, float xr);
-    std::shared_ptr<BulletActor> setBullet(const Barrage &barrage, const FVector2D *ofs);
+    std::shared_ptr<BulletActor> setBullet(const Barrage &barrage, const FVector2D *offset, float xReverse);
+    std::shared_ptr<BulletActor> setBullet(const Barrage &barrage, const FVector2D *offset);
     void setTopBullets();
     void removeBattery(Battery *battery, const BatteryType &bt);
     void addDamageBattery(int idx, int dmg);
