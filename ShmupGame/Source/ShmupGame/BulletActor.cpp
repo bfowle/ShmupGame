@@ -123,10 +123,8 @@ void BulletActor::removeForced() {
 
     try {
         if (m_actorSpawned &&
-            m_actor != nullptr &&
-            m_actor->IsActorInitialized() &&
-            !m_actor->IsActorBeingDestroyed()) {
-            m_gameManager->m_world->DestroyActor(m_actor, true, true);
+            m_actor.IsValid()) {
+            m_gameManager->m_world->DestroyActor(m_actor.Get());
             m_actorSpawned = false;
         }
     } catch (...) {}
@@ -205,8 +203,7 @@ void BulletActor::tick() {
             removeForced();
         }
 
-        if (m_actor != nullptr &&
-            !m_actor->IsActorBeingDestroyed()) {
+        if (m_actor.IsValid()) {
             m_actor->SetActorLocation(FVector(m_bullet->m_position.X, 100.0, m_bullet->m_position.Y),
                 false, nullptr, ETeleportType::TeleportPhysics);
         }

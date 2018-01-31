@@ -16,7 +16,7 @@ class UWorld;
 
 class EnemyInitializer : public ActorInitializer {
 public:
-    EnemyInitializer(std::shared_ptr<Field> field, std::shared_ptr<Ship> ship, std::shared_ptr<BulletActorPool> bullets, std::shared_ptr<ActorPool> rolls, std::shared_ptr<ActorPool> locks, /*std::shared_ptr<ActorPool> shots,*/ AGameManager *gameManager) :
+    EnemyInitializer(std::shared_ptr<Field> field, std::shared_ptr<Ship> ship, std::shared_ptr<BulletActorPool> bullets, std::shared_ptr<ActorPool> rolls, std::shared_ptr<ActorPool> locks, /*std::shared_ptr<ActorPool> shots,*/ TWeakObjectPtr<AGameManager> gameManager) :
         m_field(field),
         m_ship(ship),
         m_bullets(bullets),
@@ -33,7 +33,7 @@ public:
     std::shared_ptr<ActorPool> m_rolls;
     std::shared_ptr<ActorPool> m_locks;
     //std::shared_ptr<ActorPool> m_shots;
-    AGameManager *m_gameManager; //TSharedPtr<AGameManager>;
+    TWeakObjectPtr<AGameManager> m_gameManager;
 };
 
 #endif

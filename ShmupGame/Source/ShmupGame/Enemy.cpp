@@ -101,9 +101,7 @@ void Enemy::tick() {
         m_position.Y = m_moveBullet->m_bullet->m_position.Y;
 
         try {
-            if (m_actor != nullptr &&
-                m_actor->IsActorInitialized() &&
-                !m_actor->IsActorBeingDestroyed()) {
+            if (m_actor.IsValid()) {
                 m_actor->SetActorLocation(FVector(m_position.X, 100.0, m_position.Y),
                     false, nullptr, ETeleportType::TeleportPhysics);
             }
@@ -137,14 +135,9 @@ void Enemy::tick() {
             //UE_LOG(LogTemp, Warning, TEXT(" __ [%s] hit field __ [%s] "), *m_actor->GetName(), *m_position.ToString());
             remove();
 
-            if (m_actor != nullptr &&
-                !m_actor->IsActorBeingDestroyed()) {
-                m_gameManager->m_world->DestroyActor(m_actor);
+            if (m_actor.IsValid()) {
+                m_gameManager->m_world->DestroyActor(m_actor.Get());
             }
-            //if (m_actor != nullptr) {
-            //    m_actor->Destroy();
-            //    //m_actor = nullptr;
-            //}
             return;
         }
 

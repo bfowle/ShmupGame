@@ -62,16 +62,16 @@ void AGameManager::InitGame(const FString &MapName, const FString &Options, FStr
     shared_ptr<BulletActorInitializer> bi(new BulletActorInitializer(m_field, m_ship, this/*getPtr()*/));
     m_bullets.reset(new BulletActorPool(512, bi));
 
-    auto_ptr<Roll> rollClass(new Roll());
+    unique_ptr<Roll> rollClass(new Roll());
     shared_ptr<RollInitializer> ri(new RollInitializer(m_field, m_ship, this));
     m_rolls.reset(new ActorPool(4, rollClass.get(), ri));
 
     Lock::init();
-    auto_ptr<Lock> lockClass(new Lock());
+    unique_ptr<Lock> lockClass(new Lock());
     shared_ptr<LockInitializer> li(new LockInitializer(m_field, m_ship, this));
     m_locks.reset(new ActorPool(4, lockClass.get(), li));
 
-    auto_ptr<Enemy> m_enemyClass(new Enemy());
+    unique_ptr<Enemy> m_enemyClass(new Enemy());
     shared_ptr<EnemyInitializer> ei(new EnemyInitializer(m_field, m_ship, m_bullets, m_rolls, m_locks, this/*getPtr()*/));
     m_enemies.reset(new ActorPool(ENEMY_MAX, m_enemyClass.get(), ei));
 
@@ -91,8 +91,8 @@ void AGameManager::InitGame(const FString &MapName, const FString &Options, FStr
 void AGameManager::StartPlay() {
     Super::StartPlay();
 
-    APawn *player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-    if (player != nullptr) {
+    TWeakObjectPtr<APawn> player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+    if (player.IsValid()) {
         m_ship->setPlayerPawn(player);
     }
 

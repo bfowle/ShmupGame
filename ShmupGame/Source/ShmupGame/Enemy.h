@@ -80,14 +80,14 @@ private:
 
     static Random m_random;
 
-    AActor *m_actor;
+    TWeakObjectPtr<AActor> m_actor;
     std::shared_ptr<Field> m_field;
     std::shared_ptr<BulletActorPool> m_bullets;
     //std::shared_ptr<ActorPool> m_shots;
     std::shared_ptr<ActorPool> m_rolls;
     std::shared_ptr<ActorPool> m_locks;
     std::shared_ptr<Ship> m_ship;
-    AGameManager *m_gameManager;
+    TWeakObjectPtr<AGameManager> m_gameManager;
 
     int m_cnt;
 

@@ -16,7 +16,7 @@ const float Ship::FIRE_NARROW_BASE_DIRECTION = 0.5;
 const float Ship::TURRET_INTERVAL_LENGTH = 0.2;
 const float Ship::FIELD_SPACE = 1.5;
 
-void Ship::init(shared_ptr<Field> field, AGameManager *gameManager) {
+void Ship::init(shared_ptr<Field> field, TWeakObjectPtr<AGameManager> gameManager) {
     m_field = field;
     m_gameManager = gameManager;
     m_position = FVector2D();

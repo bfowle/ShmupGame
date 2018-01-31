@@ -41,7 +41,7 @@ private:
     std::array<FVector2D, LENGTH> m_velocity;
     std::shared_ptr<Ship> m_ship;
     std::shared_ptr<Field> m_field;
-    AGameManager *m_gameManager;
+    TWeakObjectPtr<AGameManager> m_gameManager;
 
     float m_distance;
 };

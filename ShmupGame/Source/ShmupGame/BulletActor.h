@@ -76,10 +76,10 @@ private:
     //static const float SHAPE_BASE_COLOR_G;
     //static const float SHAPE_BASE_COLOR_B;
 
-    AActor *m_actor;
+    TWeakObjectPtr<AActor> m_actor;
     std::shared_ptr<Field> m_field;
     std::shared_ptr<Ship> m_ship;
-    AGameManager *m_gameManager;
+    TWeakObjectPtr<AGameManager> m_gameManager;
     BulletMLParser *m_parser;
 
     static int m_nextId;

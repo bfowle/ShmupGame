@@ -31,7 +31,7 @@ const int StageManager::m_appearancePattern[][7][3] = {
     }
 };
 
-void StageManager::init(shared_ptr<Field> field, shared_ptr<BarrageManager> barrageManager, AGameManager *gameManager) {
+void StageManager::init(shared_ptr<Field> field, shared_ptr<BarrageManager> barrageManager, TWeakObjectPtr<AGameManager> gameManager) {
     m_field = field;
     m_barrageManager = barrageManager;
     m_gameManager = gameManager;

@@ -15,7 +15,7 @@ class Field;
 
 class StageManager {
 public:
-    void init(std::shared_ptr<Field> field, std::shared_ptr<BarrageManager> barrageManager, AGameManager *gameManager);
+    void init(std::shared_ptr<Field> field, std::shared_ptr<BarrageManager> barrageManager, TWeakObjectPtr<AGameManager> gameManager);
     void setRank(float baseRank, float inc, int startParsec, int type);
     void tick();
 
@@ -81,7 +81,7 @@ private:
     };
 
     Random m_random;
-    AGameManager *m_gameManager;
+    TWeakObjectPtr<AGameManager> m_gameManager;
     std::shared_ptr<BarrageManager> m_barrageManager;
     std::shared_ptr<Field> m_field;
 

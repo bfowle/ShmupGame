@@ -13,9 +13,9 @@ class Field;
 
 class Ship {
 public:
-    void init(std::shared_ptr<Field> field, AGameManager *gameManager);
+    void init(std::shared_ptr<Field> field, TWeakObjectPtr<AGameManager> gameManager);
     void start();
-    void setPlayerPawn(APawn *playerPawn) { m_playerPawn = playerPawn; };
+    void setPlayerPawn(TWeakObjectPtr<APawn> playerPawn) { m_playerPawn = playerPawn; };
     void setSpeedRate(float rate);
     void destroyed();
     void tick();
@@ -46,9 +46,9 @@ private:
     static const float TURRET_INTERVAL_LENGTH;
     static const float FIELD_SPACE;
 
-    APawn *m_playerPawn;
+    TWeakObjectPtr<APawn> m_playerPawn;
     std::shared_ptr<Field> m_field;
-    AGameManager *m_gameManager;
+    TWeakObjectPtr<AGameManager> m_gameManager;
     FVector2D m_prevPosition;
     FVector2D m_velocity;
     FVector2D m_firePosition;

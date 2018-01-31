@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Tickable.h"
 #include "GameFramework/GameMode.h"
 
 #include "ActorPool.h"
@@ -22,7 +23,7 @@ class BulletActorPool;
 class BulletMLParser;
 
 UCLASS()
-class SHMUPGAME_API AGameManager : public AGameMode/*, public TSharedFromThis<AGameManager>*/ {
+class SHMUPGAME_API AGameManager : public AGameMode /*, public TSharedFromThis<AGameManager>*/ {
     GENERATED_BODY()
 
 public:
@@ -30,9 +31,10 @@ public:
 
     //TSharedRef<AGameManager> getPtr();
 
-    void InitGame(const FString &MapName, const FString &Options, FString &ErrorMessage);
-    void StartPlay();
-    void Tick(float DeltaSeconds);
+    virtual void InitGame(const FString &MapName, const FString &Options, FString &ErrorMessage) override;
+    virtual void StartPlay() override;
+    virtual void Tick(float DeltaSeconds) override;
+
     //InitGameState
     //InitNewPlayer
     //IsPaused | SetPause

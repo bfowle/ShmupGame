@@ -12,7 +12,7 @@ using namespace std;
 
 BulletActorPool::BulletActorPool(int n, shared_ptr<ActorInitializer> initializer) :
     m_cnt(0),
-    ActorPool::ActorPool(n, auto_ptr<BulletActor>(new BulletActor()).get(), initializer) {
+    ActorPool::ActorPool(n, unique_ptr<BulletActor>(new BulletActor()).get(), initializer) {
     Bullet::setBulletManager(this);
     BulletActor::init();
 }
