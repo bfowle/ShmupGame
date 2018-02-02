@@ -74,8 +74,8 @@ void Bullet::kill() {
 }
 
 void Bullet::remove() {
-    if (m_runner) {
-    //    BulletMLRunner_delete(m_runner);
+    if (m_runner != nullptr) {
+        BulletMLRunner_delete(m_runner);
     }
 }
 

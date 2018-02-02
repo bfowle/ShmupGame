@@ -4,6 +4,8 @@
 #include "Enemy.h"
 #include "Field.h"
 
+#include "Engine/World.h"
+
 #include "bulletml/bulletmlparser.h"
 #include "bulletml/bulletmlparser-tinyxml.h"
 
@@ -65,9 +67,12 @@ void StageManager::setRank(float baseRank, float inc, int startParsec, int type)
 }
 
 void StageManager::tick() {
+    m_deltaSeconds = m_gameManager->m_world->GetDeltaSeconds();
+
     for (int i = 0; i < m_appearanceNum; ++i) {
         EnemyAppearance *appearance = &m_appearance[i];
         appearance->m_cnt--;
+        //appearance->m_cnt -= m_deltaSeconds;
 
         if (appearance->m_cnt > 0) {
             // add an extra enemy
@@ -144,9 +149,10 @@ void StageManager::tick() {
         }
         m_appearancePosition.X *= 0.88;
 
-        m_gameManager->addEnemy(m_appearancePosition, d, appearance->m_type, appearance->m_moveParser);
+        m_gameManager->addEnemy(m_appearancePosition, d,appearance->m_type, appearance->m_moveParser);
 
         appearance->m_left--;
+        //appearance->m_left -= m_deltaSeconds;
         if (appearance->m_left <= 0) {
             appearance->m_cnt = appearance->m_groupInterval;
             appearance->m_left = appearance->m_num;
@@ -163,6 +169,7 @@ void StageManager::tick() {
         (!EnemyType::m_exists[m_mediumBossType->m_id] &&
          !EnemyType::m_exists[m_largeBossType->m_id])) {
         --m_sectionCnt;
+        //m_sectionCnt -= m_deltaSeconds;
     }
 
     if (m_sectionCnt < m_sectionIntervalCnt) {

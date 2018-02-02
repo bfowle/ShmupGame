@@ -6,8 +6,6 @@
 #include "Field.h"
 #include "Lock.h"
 
-#include "Engine/World.h"
-#include "GameFramework/Actor.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
 #include "bulletml/bulletml.h"
@@ -15,7 +13,7 @@
 
 using namespace std;
 
-const float Enemy::FIELD_SPACE = 1.5; //45;
+const float Enemy::FIELD_SPACE = 45.0; // 1.5; //45;
 Random Enemy::m_random;
 
 const int ENEMY_TYPE_SCORE[] = {
@@ -58,8 +56,7 @@ void Enemy::init(shared_ptr<ActorInitializer> initializer) {
 }
 
 void Enemy::set(const FVector2D &position, float direction, shared_ptr<EnemyType> type, BulletMLParser *moveParser) {
-    m_position.X = position.X;
-    m_position.Y = position.Y;
+    m_position = position;
     m_type = type;
 
     BulletMLRunner *moveRunner = BulletMLRunner_new_parser(moveParser);
@@ -68,11 +65,6 @@ void Enemy::set(const FVector2D &position, float direction, shared_ptr<EnemyType
     if (!m_moveBullet) {
         return;
     }
-
-    m_actor = m_gameManager->m_world->SpawnActor<AActor>(m_gameManager->bp_enemyClass,
-        FVector(m_position.X, 100.0, m_position.Y), FRotator::ZeroRotator);
-
-    m_movement = m_actor->FindComponentByClass<UProjectileMovementComponent>();
 
     m_cnt = 0;
     m_shield = type->m_shield;
@@ -93,7 +85,12 @@ void Enemy::set(const FVector2D &position, float direction, shared_ptr<EnemyType
 }
 
 void Enemy::setBoss(const FVector2D &p, float direction, shared_ptr<EnemyType> type) {
+}
 
+void Enemy::setActor(TWeakObjectPtr<AActor> actor) {
+    m_actor = actor;
+    m_movement = m_actor->FindComponentByClass<UProjectileMovementComponent>();
+    m_uuid = actor->GetUniqueID();
 }
 
 void Enemy::tick() {
@@ -103,7 +100,8 @@ void Enemy::tick() {
         //m_position.X = m_moveBullet->m_bullet->m_position.X;
         //m_position.Y = m_moveBullet->m_bullet->m_position.Y;
 
-        if (m_movement.IsValid() &&
+        if (m_actor.IsValid() && 
+            m_movement.IsValid() &&
             m_movement->UpdatedComponent) {
             FVector vel = (m_movement->UpdatedComponent->GetForwardVector() *
                 (sin(m_moveBullet->m_bullet->m_direction) + m_moveBullet->m_bullet->m_acceleration.X) * m_moveBullet->m_bullet->m_xReverse) +
@@ -113,14 +111,18 @@ void Enemy::tick() {
                 
             if (!vel.IsNearlyZero()) {
                 vel.Normalize();
-                vel *= m_moveBullet->m_bullet->m_speed * m_movement->GetMaxSpeed() * m_gameManager->m_world->DeltaTimeSeconds;
-                m_movement->MoveUpdatedComponent(vel, FRotator::ZeroRotator, true, 0, ETeleportType::TeleportPhysics);
-                m_movement->UpdateComponentVelocity();
+                vel *= m_moveBullet->m_bullet->m_speed * m_movement->GetMaxSpeed() * m_gameManager->m_deltaSeconds;
+                m_movement->MoveUpdatedComponent(vel, FRotator::ZeroRotator, true);
+                if (m_movement.IsValid()) {
+                    m_movement->UpdateComponentVelocity();
+                }
+            }
+
+            if (m_actor.IsValid()) {
+                m_position.X = m_actor->GetActorLocation().X;
+                m_position.Y = m_actor->GetActorLocation().Z;
             }
         }
-
-        m_position.X = m_actor->GetActorLocation().X;
-        m_position.Y = m_actor->GetActorLocation().Z;
     } else {
         tickBoss();
     }
@@ -146,6 +148,7 @@ void Enemy::tick() {
     }
 
     if (!m_isBoss) {
+        /*
         if (m_field->checkHit(m_position)) {
             //UE_LOG(LogTemp, Warning, TEXT(" __ [%s] hit field __ [%s] "), *m_actor->GetName(), *m_position.ToString());
             remove();
@@ -157,6 +160,7 @@ void Enemy::tick() {
             }
             return;
         }
+        */
 
         // @TODO: check that this is the correct Y [Z] positioning
         if (m_position.Y < -m_field->m_size.Y / 4) {
@@ -172,11 +176,13 @@ void Enemy::tick() {
             }
 
             m_appearanceCnt--;
+            //m_appearanceCnt -= m_gameManager->m_deltaSeconds;
             mtr = 1.0 - (float)m_appearanceCnt / APPEARANCE_COUNT;
         } else if (m_dstCnt > 0) {
             m_gameManager->clearBullets();
             m_z += DESTROYED_Z / 60;
             m_dstCnt--;
+            //m_dstCnt -= m_gameManager->m_deltaSeconds;
             if (m_dstCnt <= 0) {
                 remove();
                 //m_gameManager->setBossShieldMeter(0, 0, 0, 0, 0, 0);
@@ -186,6 +192,7 @@ void Enemy::tick() {
         } else if (m_timeoutCnt > 0) {
             m_z += DESTROYED_Z / 60;
             --m_timeoutCnt;
+            //m_timeoutCnt -= m_gameManager->m_deltaSeconds;
             if (m_timeoutCnt <= 0) {
                 remove();
                 return;
@@ -205,6 +212,7 @@ void Enemy::tick() {
     }
 
     ++m_cnt;
+    //m_cnt += m_gameManager->m_deltaSeconds;
 
     //if (appCnt <= 0 &&
     //    dstCnt <= 0 &&
@@ -386,4 +394,5 @@ void Enemy::controlFireCnt() {
         removeTopBullets();
     }
     --m_fireCnt;
+    //m_fireCnt -= m_gameManager->m_deltaSeconds;
 }

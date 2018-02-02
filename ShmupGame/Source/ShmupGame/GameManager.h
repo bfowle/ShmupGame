@@ -33,6 +33,12 @@ public:
     virtual void StartPlay() override;
     virtual void Tick(float DeltaSeconds) override;
 
+    UFUNCTION(BlueprintCallable, Category="Enemy")
+    void RemoveEnemy(AActor *enemy);
+
+    UFUNCTION(BlueprintCallable, Category="Bullet")
+    void RemoveBullet(AActor *bullet);
+
     //GameModeBase:
     //  ReplicatedWorldTimeSeconds |
     //  ServerWorldTimeSecondsDelta |
@@ -103,9 +109,9 @@ public:
 
     const int INTERVAL_BASE = 16;
 
-    UWorld *m_world;
-    UClass *bp_enemyClass;
-    UClass *bp_bulletClass;
+    TWeakObjectPtr<UWorld> m_world;
+    TSubclassOf<AActor> bp_enemyClass;
+    TSubclassOf<AActor> bp_bulletClass;
 
     int m_mode, m_state;
     int m_difficulty, m_parsecSlot;

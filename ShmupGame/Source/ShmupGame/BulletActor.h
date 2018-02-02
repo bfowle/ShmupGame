@@ -11,17 +11,16 @@
 #include <memory>
 
 class AActor;
-class UProjectileMovementComponent;
 class AGameManager;
 class Field;
 class Ship;
 class BulletMLParser;
 class BulletMLRunner;
+class UProjectileMovementComponent;
 
 class BulletActor : public Actor {
 public:
     BulletActor() :
-        m_actorSpawned(false),
         SHIP_HIT_WIDTH(0.2),
         RETRO_COUNT(500) {
     };
@@ -92,7 +91,6 @@ private:
     FVector2D m_previousPosition;
     int m_cnt;
     float m_rtCnt;
-    bool m_actorSpawned;
     bool m_shouldBeRemoved;
     bool m_backToRetro;
 };

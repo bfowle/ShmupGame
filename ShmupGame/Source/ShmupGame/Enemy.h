@@ -12,7 +12,6 @@
 #include <memory>
 
 class AActor;
-class UProjectileMovementComponent;
 class AGameManager;
 class ActorPool;
 class BulletActor;
@@ -20,6 +19,7 @@ class BulletActorPool;
 class Field;
 class Lock;
 class Ship;
+class UProjectileMovementComponent;
 
 class Enemy : public Actor, public std::enable_shared_from_this<Enemy> {
 public:
@@ -29,8 +29,11 @@ public:
     void init(std::shared_ptr<ActorInitializer> initializer);
     void set(const FVector2D &position, float direction, std::shared_ptr<EnemyType> type, BulletMLParser *parser);
     void setBoss(const FVector2D &p, float direction, std::shared_ptr<EnemyType> type);
+    void setActor(TWeakObjectPtr<AActor> actor);
     void tick();
     void tickBoss();
+
+    inline bool shouldSpawnActor() { return m_moveBullet != nullptr; }
 
 private:
     struct Battery {
@@ -92,8 +95,6 @@ private:
     std::shared_ptr<Ship> m_ship;
     TWeakObjectPtr<AGameManager> m_gameManager;
 
-    int m_cnt;
-
     std::shared_ptr<BulletActor> m_topBullet;
     std::shared_ptr<BulletActor> m_moveBullet;
     std::array<FVector2D, MOVE_POINT_MAX> m_movePoint;
@@ -105,9 +106,9 @@ private:
     float m_speed;
     float m_direction, m_baseDirection;
     bool m_onRoute;
-    int m_fireCnt, m_barragePatternIdx;
+    int m_barragePatternIdx;
     float m_fieldLimitX, m_fieldLimitY;
-    int m_appearanceCnt, m_dstCnt, m_timeoutCnt;
+    float m_cnt, m_appearanceCnt, m_dstCnt, m_fireCnt, m_timeoutCnt;
     float m_z;
     bool m_isBoss;
     bool m_isDamaged;

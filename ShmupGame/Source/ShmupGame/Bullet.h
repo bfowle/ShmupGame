@@ -14,7 +14,10 @@ class BulletMLState;
 
 class Bullet {
 public:
-    explicit Bullet(int id) : m_id(id) {};
+    explicit Bullet(int id) :
+        m_id(id),
+        m_runner(nullptr) {
+    };
     virtual ~Bullet() {};
 
 private:

@@ -42,6 +42,7 @@ AGameManager::AGameManager() {
         bp_bulletClass = bulletActorBPClass.Class;
     }
 
+    // @TODO: move this to AGameState
     PrimaryActorTick.bStartWithTickEnabled = true;
     PrimaryActorTick.bCanEverTick = true;
 }
@@ -56,7 +57,7 @@ void AGameManager::InitGame(const FString &MapName, const FString &Options, FStr
 
     m_field.reset(new Field());
     m_field->init();
-    
+
     m_ship.reset(new Ship());
     m_ship->init(m_field, this);
 
@@ -83,10 +84,7 @@ void AGameManager::InitGame(const FString &MapName, const FString &Options, FStr
     m_stageManager.reset(new StageManager());
     m_stageManager->init(m_field, m_barrageManager, this);
 
-    m_frame = 0;
-    m_interval = INTERVAL_BASE;
-    m_maxSkipFrame = 5;
-    m_previousTick = 0;
+    //m_interval = INTERVAL_BASE;
 }
 
 void AGameManager::StartPlay() {
@@ -107,24 +105,6 @@ void AGameManager::Tick(float DeltaSeconds) {
 
     m_deltaSeconds = DeltaSeconds;
 
-    float nowTick = UGameplayStatics::GetRealTimeSeconds(GetWorld()) * 1000.0;
-    m_frame = (int)(nowTick - m_previousTick) / m_interval;
-    if (m_frame <= 0) {
-        m_frame = 1;
-        m_previousTick += m_interval;
-    } else if (m_frame > m_maxSkipFrame) {
-        m_frame = m_maxSkipFrame;
-        m_previousTick = nowTick;
-    } else {
-        m_previousTick += m_frame * m_interval;
-    }
-
-    for (int i = 0; i < m_frame; i++) {
-        tick();
-    }
-}
-
-void AGameManager::tick() {
     switch (m_state) {
     case TITLE:
         titleTick();
@@ -140,6 +120,24 @@ void AGameManager::tick() {
         break;
     default:
         break;
+    }
+}
+
+void AGameManager::RemoveEnemy(AActor *enemy) {
+    vector<shared_ptr<Actor>>::iterator it = find_if(m_enemies->m_actor.begin(), m_enemies->m_actor.end(),
+        [&](shared_ptr<Actor> a) { return a->m_uuid == enemy->GetUniqueID(); });
+    if (it != m_enemies->m_actor.end()) {
+        //UE_LOG(LogTemp, Warning, TEXT("Remove Enemy :: %s --- %d"), *enemy->GetName(), enemy->GetUniqueID());
+        (*it)->remove();
+    }
+}
+
+void AGameManager::RemoveBullet(AActor *bullet) {
+    vector<shared_ptr<Actor>>::iterator it = find_if(m_bullets->m_actor.begin(), m_bullets->m_actor.end(),
+        [&](shared_ptr<Actor> a) { return a->m_uuid == bullet->GetUniqueID(); });
+    if (it != m_bullets->m_actor.end()) {
+        //UE_LOG(LogTemp, Warning, TEXT("Remove Bullet :: %s --- %d"), *bullet->GetName(), bullet->GetUniqueID());
+        (*it)->remove();
     }
 }
 
@@ -186,12 +184,20 @@ void AGameManager::addEnemy(const FVector2D &position, float direction, shared_p
     if (!enemy) {
         return;
     }
+
     enemy->set(position, direction, type, moveParser);
+
+    if (enemy->shouldSpawnActor()) {
+        TWeakObjectPtr<AActor> actor = m_world->SpawnActor<AActor>(bp_enemyClass,
+            FVector(position.X, 100.0, position.Y), FRotator::ZeroRotator);
+        enemy->setActor(actor);
+    }
 }
 
 void AGameManager::addBoss(const FVector2D &position, float direction, shared_ptr<EnemyType> type) {
-
 }
+
+
 
 void AGameManager::addRoll() {
     shared_ptr<Roll> roll = static_pointer_cast<Roll>(m_rolls->getInstance());
@@ -302,7 +308,20 @@ void AGameManager::stageTick() {
 }
 
 void AGameManager::inGameTick() {
-    stageTick();
+    float nowTick = UGameplayStatics::GetRealTimeSeconds(GetWorld()) * 1000.0;
+    m_frame = (int)(nowTick - m_previousTick) / m_interval;
+    if (m_frame <= 0) {
+        m_frame = 1;
+        m_previousTick += m_interval;
+    } else if (m_frame > m_maxSkipFrame) {
+        m_frame = m_maxSkipFrame;
+        m_previousTick = nowTick;
+    } else {
+        m_previousTick += m_frame * m_interval;
+    }
+    for (int i = 0; i < m_frame; i++) {
+        stageTick();
+    }
 
     m_field->tick();
     m_ship->tick();
@@ -320,6 +339,7 @@ void AGameManager::inGameTick() {
 
     // set pause
 
+    /*
     if (BulletActor::m_totalBulletsSpeed > SLOWDOWN_START_BULLETS_SPEED[m_mode]) {
         float sm = BulletActor::m_totalBulletsSpeed / SLOWDOWN_START_BULLETS_SPEED[m_mode];
         if (sm > 1.75) {
@@ -329,6 +349,7 @@ void AGameManager::inGameTick() {
     } else {
         m_interval += (INTERVAL_BASE - m_interval) * 0.08;
     }
+    */
 }
 
 void AGameManager::titleTick() {

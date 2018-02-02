@@ -24,6 +24,7 @@ public:
     void init(std::shared_ptr<ActorInitializer> initializer);
     void set();
     void hit();
+    void remove();
     void tick();
 
 private:

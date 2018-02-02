@@ -33,6 +33,9 @@ void Lock::set() {
     m_cnt = 0;
 }
 
+void Lock::remove() {
+}
+
 void Lock::reset() {
     for (int i = 0; i < m_position.size(); ++i) {
         m_position[i].X = m_ship->m_position.X;

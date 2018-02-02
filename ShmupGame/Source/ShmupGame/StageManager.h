@@ -26,8 +26,9 @@ private:
         BulletMLParser *m_moveParser;
         int m_point, m_pattern, m_sequence;
         float m_position;
-        int m_num, m_interval, m_groupInterval;
-        int m_cnt, m_left, m_side;
+        float m_num, m_interval, m_groupInterval;
+        int m_cnt, m_left;
+        int m_side;
     };
 
     void createEnemyData();
@@ -94,9 +95,11 @@ private:
     std::shared_ptr<EnemyType> m_mediumBossType;
     std::shared_ptr<EnemyType> m_largeBossType;
 
+    float m_deltaSeconds;
     int m_appearanceNum;
     FVector2D m_appearancePosition;
-    int m_sectionCnt, m_sectionIntervalCnt, m_section;
+    float m_sectionCnt;
+    int m_sectionIntervalCnt, m_section;
     float m_rank, m_rankInc;
     int m_mediumRushSectionNum;
     bool m_mediumRushSection;

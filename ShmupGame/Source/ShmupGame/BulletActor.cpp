@@ -16,7 +16,7 @@
 using namespace std;
 
 float BulletActor::m_totalBulletsSpeed;
-const float BulletActor::FIELD_SPACE = 0.5; //15;
+const float BulletActor::FIELD_SPACE = 15.0; // 0.5; //15;
 int BulletActor::m_nextId = 0;
 /*
 const float BulletActor::SHAPE_POINT_SIZE = 0.1;
@@ -101,10 +101,8 @@ void BulletActor::setTop(BulletMLParser *parser) {
 void BulletActor::spawnBulletActor() {
     m_actor = m_gameManager->m_world->SpawnActor<AActor>(m_gameManager->bp_bulletClass,
         FVector(m_bullet->m_position.X, 100.0, m_bullet->m_position.Y), FRotator::ZeroRotator);
-
     m_movement = m_actor->FindComponentByClass<UProjectileMovementComponent>();
-
-    m_actorSpawned = true;
+    m_uuid = m_actor->GetUniqueID();
 }
 
 void BulletActor::rewind() {
@@ -124,15 +122,11 @@ void BulletActor::removeForced() {
     m_bullet->remove();
     m_exists = false;
 
-    try {
-        if (m_actorSpawned &&
-            m_actor.IsValid()) {
-            m_gameManager->m_world->DestroyActor(m_actor.Get());
-            //m_actor->Destroy();
-            //m_actor->ConditionalBeginDestroy();
-            m_actorSpawned = false;
-        }
-    } catch (...) {}
+    if (m_actor.IsValid()) {
+        m_gameManager->m_world->DestroyActor(m_actor.Get());
+        //m_actor->Destroy();
+        //m_actor->ConditionalBeginDestroy();
+    }
 }
 
 void BulletActor::toRetro() {
@@ -201,12 +195,14 @@ void BulletActor::tick() {
         //    //checkShipHit();
         //}
 
-        if (m_field->checkHit(m_bullet->m_position, FIELD_SPACE)) {
-            //UE_LOG(LogTemp, Warning, TEXT(" __ Bullet :: hit field __ [%s] ... %d "), *m_bullet->m_position.ToString(), m_cnt);
-            removeForced();
-        }
+        //if (m_field->checkHit(m_bullet->m_position, FIELD_SPACE)) {
+        //    //UE_LOG(LogTemp, Warning, TEXT(" __ Bullet :: hit field __ [%s] ... %d "), *m_bullet->m_position.ToString(), m_cnt);
+        //    removeForced();
+        //}
 
-        if (m_movement.IsValid()) {
+        if (m_actor.IsValid() && 
+            m_movement.IsValid() &&
+            m_movement->UpdatedComponent) {
             FVector vel = (m_movement->UpdatedComponent->GetForwardVector() *
                 (sin(m_bullet->m_direction) + m_bullet->m_acceleration.X) * sr * m_bullet->m_xReverse) +
                 (m_movement->UpdatedComponent->GetUpVector() *
@@ -214,13 +210,17 @@ void BulletActor::tick() {
             vel.Y = 0;
             if (!vel.IsNearlyZero()) {
                 vel.Normalize();
-                vel *= m_bullet->m_speed * m_movement->GetMaxSpeed() * m_gameManager->m_world->DeltaTimeSeconds;
-                m_movement->MoveUpdatedComponent(vel, FRotator::ZeroRotator, true, 0, ETeleportType::TeleportPhysics);
-                m_movement->UpdateComponentVelocity();
+                vel *= m_bullet->m_speed * m_movement->GetMaxSpeed() * m_gameManager->m_deltaSeconds;
+                m_movement->MoveUpdatedComponent(vel, FRotator::ZeroRotator, true);
+                if (m_movement.IsValid()) {
+                    m_movement->UpdateComponentVelocity();
+                }
             }
 
-            m_bullet->m_position.X = m_actor->GetActorLocation().X;
-            m_bullet->m_position.Y = m_actor->GetActorLocation().Z;
+            if (m_actor.IsValid()) {
+                m_bullet->m_position.X = m_actor->GetActorLocation().X;
+                m_bullet->m_position.Y = m_actor->GetActorLocation().Z;
+            }
         }
     }
 

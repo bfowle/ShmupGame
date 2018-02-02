@@ -4,6 +4,7 @@
 #include "Actor.h"
 #include "ActorInitializer.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -14,7 +15,6 @@ public:
 
     std::shared_ptr<Actor> getInstance();
     std::shared_ptr<Actor> getInstanceForced();
-
     void tick();
     void clear();
 

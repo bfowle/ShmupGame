@@ -78,7 +78,10 @@ void Ship::tick() {
         m_restart = false;
     }
 
-    m_position = (FVector2D)m_playerPawn->GetActorLocation();
+    if (m_playerPawn.IsValid()) {
+        m_position.X = m_playerPawn->GetActorLocation().X;
+        m_position.Y = m_playerPawn->GetActorLocation().Z;
+    }
 
     m_velocity.X = 0;
     m_velocity.Y = 0;

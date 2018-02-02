@@ -43,6 +43,9 @@ void Roll::set() {
     m_exists = true;
 }
 
+void Roll::remove() {
+}
+
 void Roll::tick() {
     if (m_released) {
         m_position[0].Y += SPEED;
