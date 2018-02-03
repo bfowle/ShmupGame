@@ -33,10 +33,13 @@ public:
     virtual void StartPlay() override;
     virtual void Tick(float DeltaSeconds) override;
 
-    UFUNCTION(BlueprintCallable, Category="GameManager")
+    UFUNCTION(BlueprintCallable, Category = GameManager)
+    void AddShot(const FVector &position, float direction);
+
+    UFUNCTION(BlueprintCallable, Category = GameManager)
     void RemoveEnemy(AActor *enemy);
 
-    UFUNCTION(BlueprintCallable, Category="GameManager")
+    UFUNCTION(BlueprintCallable, Category = GameManager)
     void RemoveBullet(AActor *bullet);
 
     //GameModeBase:
@@ -60,7 +63,6 @@ public:
 
     //StartToLeaveMap
 
-    void tick();
     void close();
     void startStage(int difficulty, int parsecSlot, int startParsec, int mode);
     void addEnemy(const FVector2D &position, float direction, std::shared_ptr<EnemyType> type, BulletMLParser *moveParser);
@@ -109,9 +111,13 @@ public:
 
     const int INTERVAL_BASE = 16;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = GameManager)
+    TSubclassOf<AActor> BP_EnemyClass;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = GameManager)
+    TSubclassOf<AActor> BP_BulletClass;
+
     TWeakObjectPtr<UWorld> m_world;
-    TSubclassOf<AActor> bp_enemyClass;
-    TSubclassOf<AActor> bp_bulletClass;
 
     int m_mode, m_state;
     int m_difficulty, m_parsecSlot;

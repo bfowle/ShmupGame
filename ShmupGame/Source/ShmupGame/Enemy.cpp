@@ -89,9 +89,11 @@ void Enemy::setBoss(const FVector2D &p, float direction, shared_ptr<EnemyType> t
 
 void Enemy::setActor(TWeakObjectPtr<AActor> actor) {
     m_actor = actor;
-    m_uuid = actor->GetUniqueID();
 
-    m_movement = m_actor->FindComponentByClass<UProjectileMovementComponent>();
+    if (m_actor.IsValid()) {
+        m_uuid = actor->GetUniqueID();
+        m_movement = m_actor->FindComponentByClass<UProjectileMovementComponent>();
+    }
 }
 
 void Enemy::tick() {

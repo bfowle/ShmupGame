@@ -18,7 +18,6 @@
 #include "GameFramework/Actor.h"
 #include "GameFramework/Pawn.h"
 #include "Kismet/GameplayStatics.h"
-#include "UObject/ConstructorHelpers.h"
 
 #include "bulletml/bulletmlparser.h"
 
@@ -27,20 +26,7 @@ using namespace std;
 const int AGameManager::SLOWDOWN_START_BULLETS_SPEED[2] = {30, 42};
 
 AGameManager::AGameManager() {
-    static ConstructorHelpers::FClassFinder<APawn> playerPawnBPClass(TEXT("/Game/Blueprints/Player/BP_Player"));
-    if (playerPawnBPClass.Class != NULL) {
-        DefaultPawnClass = playerPawnBPClass.Class;
-    }
-    static ConstructorHelpers::FClassFinder<AActor> enemyActorBPClass(TEXT("/Game/Blueprints/Enemies/BP_Enemy_Grunt"));
-    if (enemyActorBPClass.Class != NULL) {
-        bp_enemyClass = enemyActorBPClass.Class;
-    }
-    static ConstructorHelpers::FClassFinder<AActor> bulletActorBPClass(TEXT("/Game/Blueprints/Projectiles/BP_ProjectileEnemy_Grunt"));
-    if (bulletActorBPClass.Class != NULL) {
-        bp_bulletClass = bulletActorBPClass.Class;
-    }
-
-    // @TODO: move this to AGameState
+    // @TODO: move this to AGameState?
     PrimaryActorTick.bStartWithTickEnabled = true;
     PrimaryActorTick.bCanEverTick = true;
 }
@@ -122,6 +108,10 @@ void AGameManager::Tick(float DeltaSeconds) {
     }
 }
 
+void AGameManager::AddShot(const FVector &position, float direction) {
+    UE_LOG(LogTemp, Warning, TEXT("FIRING SHOT: %s | %f"), *position.ToString(), direction);
+}
+
 void AGameManager::RemoveEnemy(AActor *enemy) {
     vector<shared_ptr<Actor>>::iterator it = find_if(m_enemies->m_actor.begin(), m_enemies->m_actor.end(),
         [&](shared_ptr<Actor> a) { return a->m_uuid == enemy->GetUniqueID(); });
@@ -187,9 +177,8 @@ void AGameManager::addEnemy(const FVector2D &position, float direction, shared_p
     enemy->set(position, direction, type, moveParser);
 
     if (enemy->shouldSpawnActor()) {
-        TWeakObjectPtr<AActor> actor = m_world->SpawnActor<AActor>(bp_enemyClass,
-            FVector(position.X, 100.0, position.Y), FRotator::ZeroRotator);
-        enemy->setActor(actor);
+        enemy->setActor(m_world->SpawnActor<AActor>(BP_EnemyClass,
+            FVector(position.X, 100.0, position.Y), FRotator::ZeroRotator));
     }
 }
 

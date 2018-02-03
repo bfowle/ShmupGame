@@ -99,11 +99,13 @@ void BulletActor::setTop(BulletMLParser *parser) {
 }
 
 void BulletActor::spawnBulletActor() {
-    m_actor = m_gameManager->m_world->SpawnActor<AActor>(m_gameManager->bp_bulletClass,
+    m_actor = m_gameManager->m_world->SpawnActor<AActor>(m_gameManager->BP_BulletClass,
         FVector(m_bullet->m_position.X, 100.0, m_bullet->m_position.Y), FRotator::ZeroRotator);
-    m_uuid = m_actor->GetUniqueID();
 
-    m_movement = m_actor->FindComponentByClass<UProjectileMovementComponent>();
+    if (m_actor.IsValid()) {
+        m_uuid = m_actor->GetUniqueID();
+        m_movement = m_actor->FindComponentByClass<UProjectileMovementComponent>();
+    }
 }
 
 void BulletActor::rewind() {
