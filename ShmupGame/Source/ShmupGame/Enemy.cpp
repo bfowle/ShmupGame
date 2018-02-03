@@ -13,7 +13,7 @@
 
 using namespace std;
 
-const float Enemy::FIELD_SPACE = 45.0; // 1.5; //45;
+const float Enemy::FIELD_SPACE = 45.0; // 1.5;
 Random Enemy::m_random;
 
 const int ENEMY_TYPE_SCORE[] = {
@@ -89,8 +89,9 @@ void Enemy::setBoss(const FVector2D &p, float direction, shared_ptr<EnemyType> t
 
 void Enemy::setActor(TWeakObjectPtr<AActor> actor) {
     m_actor = actor;
-    m_movement = m_actor->FindComponentByClass<UProjectileMovementComponent>();
     m_uuid = actor->GetUniqueID();
+
+    m_movement = m_actor->FindComponentByClass<UProjectileMovementComponent>();
 }
 
 void Enemy::tick() {

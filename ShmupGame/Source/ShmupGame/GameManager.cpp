@@ -31,12 +31,10 @@ AGameManager::AGameManager() {
     if (playerPawnBPClass.Class != NULL) {
         DefaultPawnClass = playerPawnBPClass.Class;
     }
-
     static ConstructorHelpers::FClassFinder<AActor> enemyActorBPClass(TEXT("/Game/Blueprints/Enemies/BP_Enemy_Grunt"));
     if (enemyActorBPClass.Class != NULL) {
         bp_enemyClass = enemyActorBPClass.Class;
     }
-
     static ConstructorHelpers::FClassFinder<AActor> bulletActorBPClass(TEXT("/Game/Blueprints/Projectiles/BP_ProjectileEnemy_Grunt"));
     if (bulletActorBPClass.Class != NULL) {
         bp_bulletClass = bulletActorBPClass.Class;
@@ -97,6 +95,7 @@ void AGameManager::StartPlay() {
 
     //startTitle();
     //m_mode = LOCK;
+    //m_difficulty = EXTREME;
     startInGame();
 }
 
@@ -196,8 +195,6 @@ void AGameManager::addEnemy(const FVector2D &position, float direction, shared_p
 
 void AGameManager::addBoss(const FVector2D &position, float direction, shared_ptr<EnemyType> type) {
 }
-
-
 
 void AGameManager::addRoll() {
     shared_ptr<Roll> roll = static_pointer_cast<Roll>(m_rolls->getInstance());
@@ -308,6 +305,7 @@ void AGameManager::stageTick() {
 }
 
 void AGameManager::inGameTick() {
+    /*
     float nowTick = UGameplayStatics::GetRealTimeSeconds(GetWorld()) * 1000.0;
     m_frame = (int)(nowTick - m_previousTick) / m_interval;
     if (m_frame <= 0) {
@@ -322,6 +320,8 @@ void AGameManager::inGameTick() {
     for (int i = 0; i < m_frame; i++) {
         stageTick();
     }
+    */
+    stageTick();
 
     m_field->tick();
     m_ship->tick();

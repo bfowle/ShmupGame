@@ -20,25 +20,25 @@ public:
     void tick();
 
 private:
-    struct EnemyAppearance {
+    struct EnemyFleet {
     public:
         std::shared_ptr<EnemyType> m_type;
         BulletMLParser *m_moveParser;
         int m_point, m_pattern, m_sequence;
         float m_position;
-        float m_num, m_interval, m_groupInterval;
-        int m_cnt, m_left;
         int m_side;
+        int m_total, m_remaining;
+        float m_cnt, m_interval, m_groupInterval;
     };
 
-    void createEnemyData();
-    void setAppearancePattern(EnemyAppearance *appearance);
-    void setSmallAppearance(EnemyAppearance *appearance);
-    void setMediumAppearance(EnemyAppearance *appearance);
-    void setLargeAppearance(EnemyAppearance *appearance);
-    void setAppearance(EnemyAppearance *appearance, int type);
     void createSectionData();
     void createStage();
+    void createEnemyData();
+    void setFleetPattern(EnemyFleet *fleet);
+    void setFleet(EnemyFleet *fleet, int type);
+    void setSmallFleet(EnemyFleet *fleet);
+    void setMediumFleet(EnemyFleet *fleet);
+    void setLargeFleet(EnemyFleet *fleet);
     void gotoNextSection();
 
 public:
@@ -86,9 +86,9 @@ private:
     std::shared_ptr<BarrageManager> m_barrageManager;
     std::shared_ptr<Field> m_field;
 
-    static const int m_appearancePattern[][7][3];
+    static const int m_fleetPatterns[][7][3];
 
-    std::array<EnemyAppearance, SIMULTANEOUS_APPEARANCE_MAX> m_appearance;
+    std::array<EnemyFleet, SIMULTANEOUS_APPEARANCE_MAX> m_fleets;
     std::array<std::shared_ptr<EnemyType>, SMALL_ENEMY_TYPE_MAX> m_smallType;
     std::array<std::shared_ptr<EnemyType>, MEDIUM_ENEMY_TYPE_MAX> m_mediumType;
     std::array<std::shared_ptr<EnemyType>, LARGE_ENEMY_TYPE_MAX> m_largeType;
@@ -96,10 +96,10 @@ private:
     std::shared_ptr<EnemyType> m_largeBossType;
 
     float m_deltaSeconds;
-    int m_appearanceNum;
-    FVector2D m_appearancePosition;
-    float m_sectionCnt;
-    int m_sectionIntervalCnt, m_section;
+    int m_fleetTotal;
+    FVector2D m_fleetPosition;
+    float m_sectionCnt, m_sectionIntervalCnt;
+    int m_section;
     float m_rank, m_rankInc;
     int m_mediumRushSectionNum;
     bool m_mediumRushSection;

@@ -101,8 +101,9 @@ void BulletActor::setTop(BulletMLParser *parser) {
 void BulletActor::spawnBulletActor() {
     m_actor = m_gameManager->m_world->SpawnActor<AActor>(m_gameManager->bp_bulletClass,
         FVector(m_bullet->m_position.X, 100.0, m_bullet->m_position.Y), FRotator::ZeroRotator);
-    m_movement = m_actor->FindComponentByClass<UProjectileMovementComponent>();
     m_uuid = m_actor->GetUniqueID();
+
+    m_movement = m_actor->FindComponentByClass<UProjectileMovementComponent>();
 }
 
 void BulletActor::rewind() {
@@ -160,6 +161,7 @@ void BulletActor::tick() {
     }
 
     float sr = 0;
+#if 0
     if (m_rtCnt < RETRO_COUNT) {
         sr = m_bullet->m_speedRank * (0.3 + (m_rtCnt / RETRO_COUNT) * 0.7);
         if (m_backToRetro) {
@@ -184,6 +186,9 @@ void BulletActor::tick() {
             toRetro();
         }
     }
+#else
+    sr = m_bullet->m_speedRank;
+#endif
 
     //m_bullet->m_position.X += (sin(m_bullet->m_direction) * m_bullet->m_speed + m_bullet->m_acceleration.X) * sr * m_bullet->m_xReverse;
     //m_bullet->m_position.Y += (cos(m_bullet->m_direction) * m_bullet->m_speed - m_bullet->m_acceleration.Y) * sr;
