@@ -33,10 +33,10 @@ public:
     virtual void StartPlay() override;
     virtual void Tick(float DeltaSeconds) override;
 
-    UFUNCTION(BlueprintCallable, Category="Enemy")
+    UFUNCTION(BlueprintCallable, Category="GameManager")
     void RemoveEnemy(AActor *enemy);
 
-    UFUNCTION(BlueprintCallable, Category="Bullet")
+    UFUNCTION(BlueprintCallable, Category="GameManager")
     void RemoveBullet(AActor *bullet);
 
     //GameModeBase:
