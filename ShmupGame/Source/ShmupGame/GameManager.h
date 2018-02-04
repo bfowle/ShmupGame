@@ -139,7 +139,7 @@ private:
     std::shared_ptr<Ship> m_ship;
     std::shared_ptr<ActorPool> m_enemies;
     std::shared_ptr<BulletActorPool> m_bullets;
-    std::shared_ptr<ActorPool> m_shots;
+    //std::shared_ptr<ActorPool> m_shots;
     std::shared_ptr<ActorPool> m_rolls;
     std::shared_ptr<ActorPool> m_locks;
     std::shared_ptr<StageManager> m_stageManager;

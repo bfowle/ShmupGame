@@ -17,7 +17,7 @@ class BulletMLRunner;
 
 class BulletActorPool : public ActorPool, public BulletManager {
 public:
-    BulletActorPool(int n, std::shared_ptr<ActorInitializer> initializer);
+    BulletActorPool(int size, std::shared_ptr<ActorInitializer> initializer);
 
     void addBullet(float direction, float speed);
     void addBullet(BulletMLState *state, float direction, float speed);

@@ -115,18 +115,18 @@ void AGameManager::AddShot(const FVector &position, float direction) {
 }
 
 void AGameManager::RemoveEnemy(AActor *enemy) {
-    vector<shared_ptr<Actor>>::iterator it = find_if(m_enemies->m_actor.begin(), m_enemies->m_actor.end(),
+    vector<shared_ptr<Actor>>::iterator it = find_if(m_enemies->m_pool.begin(), m_enemies->m_pool.end(),
         [&](shared_ptr<Actor> a) { return a->m_uuid == enemy->GetUniqueID(); });
-    if (it != m_enemies->m_actor.end()) {
+    if (it != m_enemies->m_pool.end()) {
         //UE_LOG(LogTemp, Warning, TEXT("Remove Enemy :: %s --- %d"), *enemy->GetName(), enemy->GetUniqueID());
         (*it)->remove();
     }
 }
 
 void AGameManager::RemoveBullet(AActor *bullet) {
-    vector<shared_ptr<Actor>>::iterator it = find_if(m_bullets->m_actor.begin(), m_bullets->m_actor.end(),
+    vector<shared_ptr<Actor>>::iterator it = find_if(m_bullets->m_pool.begin(), m_bullets->m_pool.end(),
         [&](shared_ptr<Actor> a) { return a->m_uuid == bullet->GetUniqueID(); });
-    if (it != m_bullets->m_actor.end()) {
+    if (it != m_bullets->m_pool.end()) {
         //UE_LOG(LogTemp, Warning, TEXT("Remove Bullet :: %s --- %d"), *bullet->GetName(), bullet->GetUniqueID());
         (*it)->remove();
     }
@@ -202,20 +202,20 @@ void AGameManager::addLock() {
 }
 
 void AGameManager::releaseRoll() {
-    for (int i = 0; i < m_rolls->m_actor.size(); ++i) {
-        if (!m_rolls->m_actor[i]->m_exists) {
+    for (int i = 0; i < m_rolls->m_pool.size(); ++i) {
+        if (!m_rolls->m_pool[i]->m_isAlive) {
             continue;
         }
-        static_pointer_cast<Roll>(m_rolls->m_actor[i])->m_released = true;
+        static_pointer_cast<Roll>(m_rolls->m_pool[i])->m_released = true;
     }
 }
 
 void AGameManager::releaseLock() {
-    for (int i = 0; i < m_locks->m_actor.size(); ++i) {
-        if (!m_locks->m_actor[i]->m_exists) {
+    for (int i = 0; i < m_locks->m_pool.size(); ++i) {
+        if (!m_locks->m_pool[i]->m_isAlive) {
             continue;
         }
-        static_pointer_cast<Lock>(m_locks->m_actor[i])->m_released = true;
+        static_pointer_cast<Lock>(m_locks->m_pool[i])->m_released = true;
     }
 }
 
@@ -234,8 +234,8 @@ void AGameManager::shipDestroyed() {
 }
 
 void AGameManager::clearBullets() {
-    for (int i = 0; i < m_bullets->m_actor.size(); i++) {
-        if (!m_bullets->m_actor[i]->m_exists) {
+    for (int i = 0; i < m_bullets->m_pool.size(); i++) {
+        if (!m_bullets->m_pool[i]->m_isAlive) {
             continue;
         }
         //static_pointer_cast<BulletActor>(m_bullets->m_actor[i]->toRetro());
@@ -274,7 +274,7 @@ void AGameManager::startTitle() {
 void AGameManager::startGameOver() {
     m_state = GAME_OVER;
 
-    m_shots->clear();
+    //m_shots->clear();
     m_rolls->clear();
     m_locks->clear();
     

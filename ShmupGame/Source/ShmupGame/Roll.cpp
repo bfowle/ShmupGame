@@ -40,7 +40,7 @@ void Roll::set() {
     m_cnt = 0;
     m_distance = 0;
     m_released = false;
-    m_exists = true;
+    m_isAlive = true;
 }
 
 void Roll::remove() {
@@ -50,7 +50,7 @@ void Roll::tick() {
     if (m_released) {
         m_position[0].Y += SPEED;
         if (m_position[0].Y > m_field->m_size.Y) {
-            m_exists = false;
+            m_isAlive = false;
             return;
         }
 

@@ -10,7 +10,7 @@
 
 class ActorPool {
 public:
-    ActorPool(int n, Actor *actor, std::shared_ptr<ActorInitializer> initializer);
+    ActorPool(int size, Actor *actor, std::shared_ptr<ActorInitializer> initializer);
     virtual ~ActorPool() {};
 
     std::shared_ptr<Actor> getInstance();
@@ -19,7 +19,7 @@ public:
     void clear();
 
 public:
-    std::vector<std::shared_ptr<Actor>> m_actor;
+    std::vector<std::shared_ptr<Actor>> m_pool;
     int m_actorIdx;
 };
 

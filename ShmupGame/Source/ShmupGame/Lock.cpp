@@ -49,7 +49,7 @@ void Lock::reset() {
 
 void Lock::tick() {
     if (m_state == SEARCH) {
-        m_exists = false;
+        m_isAlive = false;
         return;
     } else if (m_state == SEARCHED) {
         m_state = LOCKING;
@@ -83,7 +83,7 @@ void Lock::tick() {
     case FIRED:
     case CANCELED:
         if (m_state != CANCELED) {
-            if (!m_lockedEnemy->m_exists ||
+            if (!m_lockedEnemy->m_isAlive ||
                 m_lockedEnemy->m_shield <= 0 ||
                 (m_lockedPart >= 0 &&
                  m_lockedEnemy->m_battery[m_lockedPart].m_shield <= 0)) {
@@ -110,7 +110,7 @@ void Lock::tick() {
 
         if (m_position[0].Y > m_field->m_size.Y + 5) {
             if (m_state == CANCELED) {
-                m_exists = false;
+                m_isAlive = false;
                 return;
             } else {
                 m_state = LOCKED;
@@ -134,7 +134,7 @@ void Lock::tick() {
                 m_state = LOCKED;
                 reset();
             } else {
-                m_exists = false;
+                m_isAlive = false;
                 return;
             }
         }

@@ -64,7 +64,7 @@ void BulletActor::set(float x, float y, float direction, float speed, float rank
 }
 
 void BulletActor::start(float speedRank, float xReverse) {
-    m_exists = true;
+    m_isAlive = true;
     m_isTop = false;
     m_isVisible = true;
     m_previousPosition.X = m_bullet->m_position.X;
@@ -111,7 +111,7 @@ void BulletActor::remove() {
 
 void BulletActor::removeForced() {
     m_bullet->remove();
-    m_exists = false;
+    m_isAlive = false;
 
     if (m_actor.IsValid()) {
         m_gameManager->m_world->DestroyActor(m_actor.Get());

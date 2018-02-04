@@ -80,7 +80,7 @@ void Enemy::set(const FVector2D &position, float direction, shared_ptr<EnemyType
     m_destroyedCnt = 0;
     m_timeoutCnt = 0;
     m_isBoss = false;
-    m_exists = true;
+    m_isAlive = true;
 }
 
 void Enemy::setBoss(const FVector2D &p, float direction, shared_ptr<EnemyType> type) {
@@ -364,8 +364,7 @@ void Enemy::remove() {
     if (m_moveBullet) {
         m_moveBullet->remove();
     }
-
-    m_exists = false;
+    m_isAlive = false;
 }
 
 void Enemy::gotoNextPoint() {

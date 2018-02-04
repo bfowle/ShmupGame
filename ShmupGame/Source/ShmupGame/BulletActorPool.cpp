@@ -10,9 +10,9 @@
 
 using namespace std;
 
-BulletActorPool::BulletActorPool(int n, shared_ptr<ActorInitializer> initializer) :
+BulletActorPool::BulletActorPool(int size, shared_ptr<ActorInitializer> initializer) :
     m_cnt(0),
-    ActorPool::ActorPool(n, unique_ptr<BulletActor>(new BulletActor()).get(), initializer) {
+    ActorPool::ActorPool(size, unique_ptr<BulletActor>(new BulletActor()).get(), initializer) {
     Bullet::setBulletManager(this);
     BulletActor::init();
 }
@@ -119,13 +119,13 @@ int BulletActorPool::getTurn() {
 
 void BulletActorPool::kill(Bullet *bullet) {
     //assert(static_pointer_cast<BulletActor>(actor[bullet->id])->bullet->id == bullet->id);
-    static_pointer_cast<BulletActor>(m_actor[bullet->m_id])->remove();
+    static_pointer_cast<BulletActor>(m_pool[bullet->m_id])->remove();
 }
 
 void BulletActorPool::clear() {
-    for (int i = 0; i < m_actor.size(); ++i) {
-        if (m_actor[i]->m_exists) {
-            static_pointer_cast<BulletActor>(m_actor[i])->remove();
+    for (int i = 0; i < m_pool.size(); ++i) {
+        if (m_pool[i]->m_isAlive) {
+            static_pointer_cast<BulletActor>(m_pool[i])->remove();
         }
     }
 }
