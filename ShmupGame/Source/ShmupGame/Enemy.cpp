@@ -69,8 +69,8 @@ void Enemy::set(const FVector2D &position, float direction, shared_ptr<EnemyType
     m_cnt = 0;
     m_shield = type->m_shield;
 
-    for (int i = 0; i < type->m_batterySize; ++i) {
-        m_battery[i].m_shield = type->m_batteryType[i].m_shield;
+    for (int i = 0; i < type->m_formationSize; ++i) {
+        m_formation[i].m_shield = type->m_formationType[i].m_shield;
     }
 
     m_fireCnt = 0;
@@ -136,15 +136,15 @@ void Enemy::tick() {
 
     m_isDamaged = false;
 
-    for (int i = 0; i < m_type->m_batterySize; ++i) {
-        const BatteryType *bt = &(m_type->m_batteryType[i]);
-        Battery *battery = &(m_battery[i]);
-        battery->m_isDamaged = false;
+    for (int i = 0; i < m_type->m_formationSize; ++i) {
+        const EnemyFormationType *ft = &(m_type->m_formationType[i]);
+        EnemyFormation *formation = &(m_formation[i]);
+        formation->m_isDamaged = false;
 
-        for (int j = 0; j < bt->m_batterySize; ++j) {
-            if (battery->m_topBullet[j]) {
-                battery->m_topBullet[j]->m_bullet->m_position.X = m_position.X + bt->m_batteryPosition[j].X;
-                battery->m_topBullet[j]->m_bullet->m_position.Y = m_position.Y + bt->m_batteryPosition[j].Y;
+        for (int j = 0; j < ft->m_formationSize; ++j) {
+            if (formation->m_topBullet[j]) {
+                formation->m_topBullet[j]->m_bullet->m_position.X = m_position.X + ft->m_formationPosition[j].X;
+                formation->m_topBullet[j]->m_bullet->m_position.Y = m_position.Y + ft->m_formationPosition[j].Y;
             }
         }
     }
@@ -204,7 +204,7 @@ void Enemy::tick() {
             //    removeTopBullets();
             //}
         }
-        //m_gameManager->setBossShieldMeter(shield, battery[0].shield, battery[1].shield, battery[2].shield, battery[3].shield, mtr);
+        //m_gameManager->setBossShieldMeter(shield, formation[0].shield, formation[1].shield, formation[2].shield, formation[3].shield, mtr);
     }
 
     ++m_cnt;
@@ -248,8 +248,6 @@ shared_ptr<BulletActor> Enemy::setBullet(const Barrage &barrage, const FVector2D
             barrage.m_speedRank, barrage.m_xReverse * xReverse);
     }
 
-    //UE_LOG(LogTemp, Warning, TEXT("- Enemy::setBullet [%s] [%f, %f] (%s)"), *m_position.ToString(), bx, by, *m_bulletActor->GetName());
-
     return bullet;
 }
 
@@ -260,44 +258,44 @@ std::shared_ptr<BulletActor> Enemy::setBullet(const Barrage &barrage, const FVec
 // refers to the root tree bullet in bulletml defined by <action label="top" />
 void Enemy::setTopBullets() {
     m_topBullet = setBullet(m_type->m_barrage[m_barragePatternIdx], 0);
-    for (int i = 0; i < m_type->m_batterySize; ++i) {
-        Battery *battery = &m_battery[i];
-        if (battery->m_shield <= 0) {
+    for (int i = 0; i < m_type->m_formationSize; ++i) {
+        EnemyFormation *formation = &m_formation[i];
+        if (formation->m_shield <= 0) {
             continue;
         }
 
-        const BatteryType *bt = &(m_type->m_batteryType[i]);
+        const EnemyFormationType *ft = &(m_type->m_formationType[i]);
         float xr = 1;
-        for (int j = 0; j < bt->m_batterySize; ++j) {
-            battery->m_topBullet[j] = setBullet(bt->m_barrage[m_barragePatternIdx], &(bt->m_batteryPosition[j]), xr);
-            if (bt->m_xReverseAlternate) {
+        for (int j = 0; j < ft->m_formationSize; ++j) {
+            formation->m_topBullet[j] = setBullet(ft->m_barrage[m_barragePatternIdx], &(ft->m_formationPosition[j]), xr);
+            if (ft->m_xReverseAlternate) {
                 xr *= -1;
             }
         }
     }
 }
 
-void Enemy::removeBattery(Battery *battery, const BatteryType &bt) {
-    for (int i = 0; i < bt.m_batterySize; i++) {
-        if (battery->m_topBullet[i]) {
-            battery->m_topBullet[i]->remove();
-            //battery.m_topBullet[i] = 0;
+void Enemy::removeFormation(EnemyFormation *formation, const EnemyFormationType &ft) {
+    for (int i = 0; i < ft.m_formationSize; i++) {
+        if (formation->m_topBullet[i]) {
+            formation->m_topBullet[i]->remove();
+            //formation.m_topBullet[i] = 0;
             shared_ptr<BulletActor> null;
-            battery->m_topBullet[i] = null;
+            formation->m_topBullet[i] = null;
         }
     }
-    battery->m_isDamaged = true;
+    formation->m_isDamaged = true;
 }
 
 /**
  * @TODO: not in use
- */
-void Enemy::addDamageBattery(int idx, int dmg) {
-    m_battery[idx].m_shield -= dmg;
-    if (m_battery[idx].m_shield <= 0) {
-        FVector2D *p = &(m_type->m_batteryType[idx].m_collisionPosition);
+ *
+void Enemy::addDamageFormation(int idx, int dmg) {
+    m_formation[idx].m_shield -= dmg;
+    if (m_formation[idx].m_shield <= 0) {
+        FVector2D *p = &(m_type->m_formationType[idx].m_collisionPosition);
 
-        removeBattery(&(m_battery[idx]), m_type->m_batteryType[idx]);
+        removeFormation(&(m_formation[idx]), m_type->m_formationType[idx]);
         m_velocity.Y = -p->X / 10;
         m_velocity.Y = -p->X / 10;
         m_velocityCnt = 60;
@@ -307,6 +305,7 @@ void Enemy::addDamageBattery(int idx, int dmg) {
         m_fireCnt = m_velocityCnt + 10;
     }
 }
+*/
 
 int Enemy::checkLocked(const FVector2D &position, float xofs, shared_ptr<Lock> lock) {
     if (fabs(position.X - m_position.Y) < m_type->m_collisionSize.X + xofs &&
@@ -317,12 +316,12 @@ int Enemy::checkLocked(const FVector2D &position, float xofs, shared_ptr<Lock> l
 
     if (m_type->m_wingCollision) {
         int lp = NOHIT;
-        for (int i = 0; i < m_type->m_batterySize; ++i) {
-            if (m_battery[i].m_shield <= 0) {
+        for (int i = 0; i < m_type->m_formationSize; ++i) {
+            if (m_formation[i].m_shield <= 0) {
                 continue;
             }
 
-            const BatteryType *bt = &(m_type->m_batteryType[i]);
+            const EnemyFormationType *bt = &(m_type->m_formationType[i]);
             float by = m_position.Y + bt->m_collisionPosition.Y;
 
             if (fabs(position.X - m_position.X - bt->m_collisionPosition.X) < bt->m_collisionSize.X + xofs &&
@@ -346,13 +345,13 @@ void Enemy::removeTopBullets() {
         m_topBullet.reset();
     }
 
-    for (int i = 0; i < m_type->m_batterySize; ++i) {
-        const BatteryType *bt = &(m_type->m_batteryType[i]);
-        Battery *battery = &(m_battery[i]);
-        for (int j = 0; j < bt->m_batterySize; j++) {
-            if (battery->m_topBullet[j]) {
-                battery->m_topBullet[j]->remove();
-                battery->m_topBullet[j].reset();
+    for (int i = 0; i < m_type->m_formationSize; ++i) {
+        const EnemyFormationType *bt = &(m_type->m_formationType[i]);
+        EnemyFormation *formation = &(m_formation[i]);
+        for (int j = 0; j < bt->m_formationSize; j++) {
+            if (formation->m_topBullet[j]) {
+                formation->m_topBullet[j]->remove();
+                formation->m_topBullet[j].reset();
             }
         }
     }

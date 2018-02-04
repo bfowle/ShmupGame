@@ -2,7 +2,6 @@
 #define ACTORPOOL_H
 
 #include "Actor.h"
-#include "ActorInitializer.h"
 
 #include <algorithm>
 #include <memory>

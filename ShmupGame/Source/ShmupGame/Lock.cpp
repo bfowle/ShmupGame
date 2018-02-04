@@ -1,6 +1,5 @@
 #include "Lock.h"
 
-#include "LockInitializer.h"
 #include "GameManager.h"
 #include "Enemy.h"
 #include "EnemyType.h"
@@ -61,8 +60,8 @@ void Lock::tick() {
             //m_lockedPosition.X = m_lockedEnemy->m_position.X;
             //m_lockedPosition.Y = m_lockedEnemy->m_position.Y;
         } else {
-            //m_lockedPosition.X = m_lockedEnemy->m_position.X + m_lockedEnemy->m_type->m_batteryType[m_lockedPart].m_collisionPosition.X;
-            //m_lockedPosition.Y = m_lockedEnemy->m_position.Y + m_lockedEnemy->m_type->m_batteryType[m_lockedPart].m_collisionPosition.Y;
+            //m_lockedPosition.X = m_lockedEnemy->m_position.X + m_lockedEnemy->m_type->m_formationType[m_lockedPart].m_collisionPosition.X;
+            //m_lockedPosition.Y = m_lockedEnemy->m_position.Y + m_lockedEnemy->m_type->m_formationType[m_lockedPart].m_collisionPosition.Y;
         }
     }
 
@@ -86,7 +85,7 @@ void Lock::tick() {
             if (!m_lockedEnemy->m_isAlive ||
                 m_lockedEnemy->m_shield <= 0 ||
                 (m_lockedPart >= 0 &&
-                 m_lockedEnemy->m_battery[m_lockedPart].m_shield <= 0)) {
+                 m_lockedEnemy->m_formation[m_lockedPart].m_shield <= 0)) {
                 m_state = CANCELED;
             } else {
                 m_velocity.X += (m_lockedPosition.X - m_position[0].X) * SPEED;

@@ -2,7 +2,6 @@
 #define BULLETACTOR_H
 
 #include "Actor.h"
-#include "ActorInitializer.h"
 #include "ShmupBullet.h"
 
 #include "Math/Vector.h"
@@ -17,6 +16,20 @@ class Ship;
 class BulletMLParser;
 class BulletMLRunner;
 class UProjectileMovementComponent;
+
+class BulletActorInitializer : public ActorInitializer {
+public:
+    BulletActorInitializer(std::shared_ptr<Field> field, std::shared_ptr<Ship> ship, TWeakObjectPtr<AGameManager> gameManager) :
+        m_field(field),
+        m_ship(ship),
+        m_gameManager(gameManager) {
+    };
+
+public:
+    std::shared_ptr<Field> m_field;
+    std::shared_ptr<Ship> m_ship;
+    TWeakObjectPtr<AGameManager> m_gameManager;
+};
 
 class BulletActor : public Actor {
 public:

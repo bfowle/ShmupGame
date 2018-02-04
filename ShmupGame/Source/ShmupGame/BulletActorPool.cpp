@@ -1,6 +1,6 @@
 #include "BulletActorPool.h"
 
-#include "ActorInitializer.h"
+#include "Actor.h"
 #include "ActorPool.h"
 #include "Bullet.h"
 #include "BulletActor.h"

@@ -1,11 +1,14 @@
 #ifndef ACTOR_H
 #define ACTOR_H
 
-#include "ActorInitializer.h"
-
 #include "HAL/Platform.h"
 
 #include <memory>
+
+class ActorInitializer {
+public:
+    virtual ~ActorInitializer() {};
+};
 
 class Actor {
 public:

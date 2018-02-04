@@ -1,6 +1,5 @@
 #include "Roll.h"
 
-#include "RollInitializer.h"
 #include "GameManager.h"
 #include "Field.h"
 #include "Ship.h"

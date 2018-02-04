@@ -14,6 +14,20 @@ class Enemy;
 class Field;
 class Ship;
 
+class LockInitializer : public ActorInitializer {
+public:
+    LockInitializer(std::shared_ptr<Field> field, std::shared_ptr<Ship> ship, TWeakObjectPtr<AGameManager> gameManager) :
+        m_field(field),
+        m_ship(ship),
+        m_gameManager(gameManager) {
+    }
+
+public:
+    std::shared_ptr<Field> m_field;
+    std::shared_ptr<Ship> m_ship;
+    TWeakObjectPtr<AGameManager> m_gameManager;
+};
+
 class Lock : public Actor {
 public:
     Lock() {};

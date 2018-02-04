@@ -2,7 +2,7 @@
 #define ENEMY_H
 
 #include "Actor.h"
-#include "EnemyInitializer.h"
+#include "Enemy.h"
 #include "EnemyType.h"
 #include "Random.h"
 
@@ -21,6 +21,28 @@ class Lock;
 class Ship;
 class UProjectileMovementComponent;
 
+class EnemyInitializer : public ActorInitializer {
+public:
+    EnemyInitializer(std::shared_ptr<Field> field, std::shared_ptr<Ship> ship, std::shared_ptr<BulletActorPool> bullets, std::shared_ptr<ActorPool> rolls, std::shared_ptr<ActorPool> locks, /*std::shared_ptr<ActorPool> shots,*/ TWeakObjectPtr<AGameManager> gameManager) :
+        m_field(field),
+        m_ship(ship),
+        m_bullets(bullets),
+        //m_shots(shots),
+        m_rolls(rolls),
+        m_locks(locks),
+        m_gameManager(gameManager) {
+    }
+
+public:
+    std::shared_ptr<Field> m_field;
+    std::shared_ptr<Ship> m_ship;
+    std::shared_ptr<BulletActorPool> m_bullets;
+    std::shared_ptr<ActorPool> m_rolls;
+    std::shared_ptr<ActorPool> m_locks;
+    //std::shared_ptr<ActorPool> m_shots;
+    TWeakObjectPtr<AGameManager> m_gameManager;
+};
+
 class Enemy : public Actor, public std::enable_shared_from_this<Enemy> {
 public:
     std::shared_ptr<Enemy> getPtr();
@@ -36,8 +58,8 @@ public:
     inline bool shouldSpawnActor() { return m_moveBullet != nullptr; }
 
 private:
-    struct Battery {
-        std::array<std::shared_ptr<BulletActor>, BatteryType::WING_BATTERY_MAX> m_topBullet;
+    struct EnemyFormation {
+        std::array<std::shared_ptr<BulletActor>, EnemyFormationType::WING_FORMATION_MAX> m_topBullet;
         int m_shield;
         bool m_isDamaged;
     };
@@ -45,8 +67,8 @@ private:
     std::shared_ptr<BulletActor> setBullet(const Barrage &barrage, const FVector2D *offset, float xReverse);
     std::shared_ptr<BulletActor> setBullet(const Barrage &barrage, const FVector2D *offset);
     void setTopBullets();
-    void removeBattery(Battery *battery, const BatteryType &bt);
-    void addDamageBattery(int idx, int dmg);
+    void removeFormation(EnemyFormation *formation, const EnemyFormationType &ft);
+    //void addDamageFormation(int idx, int dmg);
     //int checkHit(const FVector2D &position, float xofs, float yofs);
     int checkLocked(const FVector2D &position, float xofs, std::shared_ptr<Lock> lock);
     void removeTopBullets();
@@ -59,7 +81,7 @@ public:
 
     FVector2D m_position;
     std::shared_ptr<EnemyType> m_type;
-    std::array<Battery, EnemyType::BATTERY_MAX> m_battery;
+    std::array<EnemyFormation, EnemyType::FORMATION_MAX> m_formation;
     int m_shield;
 
 private:
