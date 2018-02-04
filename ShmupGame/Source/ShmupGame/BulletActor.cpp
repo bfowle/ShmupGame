@@ -15,21 +15,9 @@
 
 using namespace std;
 
+const float BulletActor::FIELD_SPACE = 15.0; // 0.5;
 float BulletActor::m_totalBulletsSpeed;
-const float BulletActor::FIELD_SPACE = 15.0; // 0.5; //15;
 int BulletActor::m_nextId = 0;
-/*
-const float BulletActor::SHAPE_POINT_SIZE = 0.1;
-const float BulletActor::SHAPE_BASE_COLOR_R = 1;
-const float BulletActor::SHAPE_BASE_COLOR_G = 0.9;
-const float BulletActor::SHAPE_BASE_COLOR_B = 0.7;
-const float BulletActor::bulletColor[4][3] = {
-    {1, 0, 0},
-    {0.2, 1, 0.4},
-    {0.3, 0.3, 1},
-    {1, 1, 0}
-};
-*/
 
 shared_ptr<Actor> BulletActor::newActor() {
     return shared_ptr<Actor>(new BulletActor());
@@ -51,37 +39,37 @@ void BulletActor::init(shared_ptr<ActorInitializer> initializer) {
 }
 
 // called via bulletml createBullet
-void BulletActor::set(BulletMLRunner *runner, float x, float y, float direction, float speed, float rank, float speedRank, int shape, int color, int size, float xReverse) {
+void BulletActor::set(BulletMLRunner *runner, float x, float y, float direction, float speed, float rank, float speedRank, float xReverse) {
     m_bullet->set(runner, x, y, direction, speed, rank);
     m_bullet->m_isMorph = false;
     m_isSimple = false;
-    start(speedRank, shape, color, size, xReverse);
+    start(speedRank, xReverse);
 }
 
 // called via bulletml createSimpleBullet as a morph bullet
-void BulletActor::set(BulletMLRunner *runner, float x, float y, float direction, float speed, float rank, float speedRank, int shape, int color, int size, float xReverse, array<BulletMLParser *, MorphBullet::MORPH_MAX> morph, int morphNum, int morphIdx, int morphCnt) {
+void BulletActor::set(BulletMLRunner *runner, float x, float y, float direction, float speed, float rank, float speedRank, float xReverse, array<BulletMLParser *, MorphBullet::MORPH_MAX> morph, int morphSize, int morphIdx, int morphCnt) {
     //UE_LOG(LogTemp, Warning, TEXT(" BulletActor::set => morph bullet "));
     m_bullet->set(runner, x, y, direction, speed, rank);
-    m_bullet->setMorph(morph, morphNum, morphIdx, morphCnt);
+    m_bullet->setMorph(morph, morphSize, morphIdx, morphCnt);
     m_isSimple = false;
-    start(speedRank, shape, color, size, xReverse);
+    start(speedRank, xReverse);
 }
 
 // called via bulletml createSimpleBullet
-void BulletActor::set(float x, float y, float direction, float speed, float rank, float speedRank, int shape, int color, int size, float xReverse) {
+void BulletActor::set(float x, float y, float direction, float speed, float rank, float speedRank, float xReverse) {
     m_bullet->set(x, y, direction, speed, rank);
     m_bullet->m_isMorph = false;
     m_isSimple = true;
-    start(speedRank, shape, color, size, xReverse);
+    start(speedRank, xReverse);
 }
 
-void BulletActor::start(float speedRank, int shape, int color, float size, float xReverse) {
+void BulletActor::start(float speedRank, float xReverse) {
     m_exists = true;
     m_isTop = false;
     m_isVisible = true;
     m_previousPosition.X = m_bullet->m_position.X;
     m_previousPosition.Y = m_bullet->m_position.Y;
-    m_bullet->setParam(speedRank, shape, color, size, xReverse);
+    m_bullet->setParam(speedRank, xReverse);
     m_cnt = 0;
     m_rtCnt = 0;
     m_shouldBeRemoved = false;

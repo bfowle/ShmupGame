@@ -83,6 +83,8 @@ private:
     };
 
     static Random m_random;
+    static const int ENEMY_TYPE_SCORE[];
+    static float BOSS_MOVE_DISTANCE;
 
     TWeakObjectPtr<AActor> m_actor;
     TWeakObjectPtr<UProjectileMovementComponent> m_movement;
@@ -99,22 +101,25 @@ private:
     std::shared_ptr<BulletActor> m_moveBullet;
     std::array<FVector2D, MOVE_POINT_MAX> m_movePoint;
 
-    static const int ENEMY_TYPE_SCORE[];
-    static float BOSS_MOVE_DISTANCE;
-
-    int m_movePointNum, m_movePointIdx;
     float m_speed;
     float m_direction, m_baseDirection;
-    bool m_onRoute;
+
+    int m_movePointSize, m_movePointIdx;
     int m_barragePatternIdx;
-    float m_fieldLimitX, m_fieldLimitY;
-    float m_cnt, m_appearanceCnt, m_dstCnt, m_fireCnt, m_timeoutCnt;
-    float m_z;
-    bool m_isBoss;
+    bool m_onRoute;
+
+    // enemy
+    float m_cnt, m_fireCnt;
     bool m_isDamaged;
     FVector2D m_velocity;
     int m_velocityCnt;
+
+    // boss
+    float m_appearanceCnt, m_destroyedCnt, m_timeoutCnt;
+    bool m_isBoss;
     int m_bossTimer;
+
+    //float m_fieldLimitX, m_fieldLimitY;
 };
 
 #endif

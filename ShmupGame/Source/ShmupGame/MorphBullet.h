@@ -16,7 +16,7 @@ public:
         MORPH_MAX = 8
     };
 
-    void setMorph(std::array<BulletMLParser *, MORPH_MAX> mrp, int num, int idx, int cnt);
+    void setMorph(std::array<BulletMLParser *, MORPH_MAX> parser, int size, int idx, int cnt);
     void resetMorph();
 
 private:
@@ -25,7 +25,7 @@ private:
 
 public:
     std::array<BulletMLParser *, MORPH_MAX> m_morphParser;
-    int m_morphNum;
+    int m_morphSize;
     int m_morphIdx;
     int m_morphCnt;
     int m_baseMorphIdx;

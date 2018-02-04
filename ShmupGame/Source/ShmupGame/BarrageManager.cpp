@@ -32,13 +32,13 @@ void BarrageManager::loadBulletMLFiles() {
             m_parser[i][j] = BulletMLParserTinyXML_new(const_cast<char *>(TCHAR_TO_UTF8(*filePath)));
             BulletMLParserTinyXML_parse(m_parser[i][j]);
         }
-        m_parserNum[i] = j;
+        m_parserSizes[i] = j;
     }
 }
 
 void BarrageManager::unloadBulletMLFiles() {
     for (int i = 0; i < BARRAGE_TYPE; ++i) {
-        for (int j = 0; j < m_parserNum[i]; ++j) {
+        for (int j = 0; j < m_parserSizes[i]; ++j) {
             delete m_parser[i][j];
             m_parser[i][j] = nullptr;
         }

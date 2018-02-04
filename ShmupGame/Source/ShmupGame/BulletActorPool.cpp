@@ -34,15 +34,13 @@ void BulletActorPool::addBullet(float direction, float speed) {
         BulletActorPool::registerFunctions(runner);
         bullet->set(runner, Bullet::m_now->m_position.X, Bullet::m_now->m_position.Y,
             direction, speed, Bullet::m_now->m_rank,
-            rb->m_speedRank, rb->m_shape, rb->m_color,
-            rb->m_bulletSize, rb->m_xReverse,
-            rb->m_morphParser, rb->m_morphNum,
+            rb->m_speedRank, rb->m_xReverse,
+            rb->m_morphParser, rb->m_morphSize,
             rb->m_morphIdx + 1, rb->m_morphCnt - 1);
     } else {
         bullet->set(Bullet::m_now->m_position.X, Bullet::m_now->m_position.Y,
             direction, speed, Bullet::m_now->m_rank,
-            rb->m_speedRank, rb->m_shape, rb->m_color,
-            rb->m_bulletSize, rb->m_xReverse);
+            rb->m_speedRank, rb->m_xReverse);
     }
     bullet->spawnBulletActor();
 }
@@ -61,35 +59,33 @@ void BulletActorPool::addBullet(BulletMLState *state, float direction, float spe
     if (rb->m_isMorph) {
         bullet->set(runner, Bullet::m_now->m_position.X, Bullet::m_now->m_position.Y,
             direction, speed, Bullet::m_now->m_rank,
-            rb->m_speedRank, rb->m_shape, rb->m_color,
-            rb->m_bulletSize, rb->m_xReverse,
-            rb->m_morphParser, rb->m_morphNum,
+            rb->m_speedRank, rb->m_xReverse,
+            rb->m_morphParser, rb->m_morphSize,
             rb->m_morphIdx, rb->m_morphCnt);
     } else {
         bullet->set(runner, Bullet::m_now->m_position.X, Bullet::m_now->m_position.Y,
             direction, speed, Bullet::m_now->m_rank,
-            rb->m_speedRank, rb->m_shape, rb->m_color,
-            rb->m_bulletSize, rb->m_xReverse);
+            rb->m_speedRank, rb->m_xReverse);
     }
     bullet->spawnBulletActor();
 }
 
 // called via enemy move bullet
-shared_ptr<BulletActor> BulletActorPool::addBullet(BulletMLRunner *runner, float x, float y, float direction, float speed, float rank, float speedRank, int shape, int color, float size, float xReverse) {
+shared_ptr<BulletActor> BulletActorPool::addBullet(BulletMLRunner *runner, float x, float y, float direction, float speed, float rank, float speedRank, float xReverse) {
     shared_ptr<BulletActor> bullet = static_pointer_cast<BulletActor>(getInstance());
     if (!bullet) {
         shared_ptr<BulletActor> null;
         return null;
     }
 
-    bullet->set(runner, x, y, direction, speed, rank, speedRank, shape, color, size, xReverse);
+    bullet->set(runner, x, y, direction, speed, rank, speedRank, xReverse);
     bullet->setInvisible();
     return bullet;
 }
 
 // called via enemy top bullet
-shared_ptr<BulletActor> BulletActorPool::addBullet(BulletMLParser *parser, BulletMLRunner *runner, float x, float y, float direction, float speed, float rank, float speedRank, int shape, int color, float size, float xReverse) {
-    shared_ptr<BulletActor> bullet = addBullet(runner, x, y, direction, speed, rank, speedRank, shape, color, size, xReverse);
+shared_ptr<BulletActor> BulletActorPool::addBullet(BulletMLParser *parser, BulletMLRunner *runner, float x, float y, float direction, float speed, float rank, float speedRank, float xReverse) {
+    shared_ptr<BulletActor> bullet = addBullet(runner, x, y, direction, speed, rank, speedRank, xReverse);
     if (!bullet) {
         shared_ptr<BulletActor> null;
         return null;
@@ -100,14 +96,14 @@ shared_ptr<BulletActor> BulletActorPool::addBullet(BulletMLParser *parser, Bulle
 }
 
 // called via enemy top bullet battery
-shared_ptr<BulletActor> BulletActorPool::addBullet(BulletMLParser *parser, BulletMLRunner *runner, float x, float y, float direction, float speed, float rank, float speedRank, int shape, int color, float size, float xReverse, array<BulletMLParser *, MorphBullet::MORPH_MAX> morph, int morphNum, int morphCnt) {
+shared_ptr<BulletActor> BulletActorPool::addBullet(BulletMLParser *parser, BulletMLRunner *runner, float x, float y, float direction, float speed, float rank, float speedRank, float xReverse, array<BulletMLParser *, MorphBullet::MORPH_MAX> morph, int morphSize, int morphCnt) {
     shared_ptr<BulletActor> bullet = static_pointer_cast<BulletActor>(getInstance());
     if (!bullet) {
         shared_ptr<BulletActor> null;
         return null;
     }
 
-    bullet->set(runner, x, y, direction, speed, rank, speedRank, shape, color, size, xReverse, morph, morphNum, 0, morphCnt);
+    bullet->set(runner, x, y, direction, speed, rank, speedRank, xReverse, morph, morphSize, 0, morphCnt);
     bullet->setTop(parser);
     return bullet;
 }

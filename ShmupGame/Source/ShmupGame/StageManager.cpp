@@ -78,17 +78,17 @@ void StageManager::tick() {
 
         if (fleet->m_cnt > 0) {
             // add an extra enemy
-            if (!m_mediumRushSection) {
+            if (!m_isMediumRushSection) {
                 if (fleet->m_type->m_type == EnemyType::SMALL &&
                     !EnemyType::m_exists[fleet->m_type->m_id]) {
-                    UE_LOG(LogTemp, Warning, TEXT(" 3-1.) tick::add::cnt [%f] "), fleet->m_cnt);
+                    //UE_LOG(LogTemp, Warning, TEXT(" 3-1.) tick::add::cnt [%f] "), fleet->m_cnt);
                     fleet->m_cnt = 0;
                     EnemyType::m_exists[fleet->m_type->m_id] = true;
                 }
             } else {
                 if (fleet->m_type->m_type == EnemyType::MEDIUM &&
                     !EnemyType::m_exists[fleet->m_type->m_id]) {
-                    UE_LOG(LogTemp, Warning, TEXT(" 3-2.) tick::add::cnt [%f] "), fleet->m_cnt);
+                    //UE_LOG(LogTemp, Warning, TEXT(" 3-2.) tick::add::cnt [%f] "), fleet->m_cnt);
                     fleet->m_cnt = 0;
                     EnemyType::m_exists[fleet->m_type->m_id] = true;
                 }
@@ -157,7 +157,7 @@ void StageManager::tick() {
 
         fleet->m_remaining--;
         if (fleet->m_remaining <= 0) {
-            UE_LOG(LogTemp, Warning, TEXT(" 2-1.) cnt=groupInterval [%f, %f] "), fleet->m_cnt, fleet->m_groupInterval);
+            //UE_LOG(LogTemp, Warning, TEXT(" 2-1.) cnt=groupInterval [%f, %f] "), fleet->m_cnt, fleet->m_groupInterval);
             fleet->m_cnt = fleet->m_groupInterval;
             fleet->m_remaining = fleet->m_total;
             if (fleet->m_pattern != ONE_SIDE) {
@@ -165,7 +165,7 @@ void StageManager::tick() {
             }
             fleet->m_position = m_random.nextFloat(1);
         } else {
-            UE_LOG(LogTemp, Warning, TEXT(" 2-2.) cnt=interval [%f, %f] "), fleet->m_cnt, fleet->m_interval);
+            //UE_LOG(LogTemp, Warning, TEXT(" 2-2.) cnt=interval [%f, %f] "), fleet->m_cnt, fleet->m_interval);
             fleet->m_cnt = fleet->m_interval;
         }
     }
@@ -227,12 +227,12 @@ void StageManager::createSectionData() {
 
         m_field->m_aimZ = 12;
         return;
-    } else if (m_section == m_mediumRushSectionNum) {
+    } else if (m_section == m_mediumRushSection) {
         // no small enemies in this section
-        m_mediumRushSection = true;
+        m_isMediumRushSection = true;
         m_field->m_aimZ = 9;
     } else {
-        m_mediumRushSection = false;
+        m_isMediumRushSection = false;
         m_field->m_aimZ = 10 + m_random.nextSignedFloat(0.3);
     }
 
@@ -252,7 +252,7 @@ void StageManager::createSectionData() {
 
     if (m_section == 0) {
         ap = 0;
-    } else if (m_mediumRushSection) {
+    } else if (m_isMediumRushSection) {
         ap = MEDIUM_RUSH_SECTION_PATTERN;
     }
 
@@ -273,10 +273,10 @@ void StageManager::createSectionData() {
 void StageManager::createStage() {
     createEnemyData();
 
-    m_mediumRushSectionNum = 2 + m_random.nextInt(6);
+    m_mediumRushSection = 2 + m_random.nextInt(6);
 
-    if (m_mediumRushSectionNum <= 4) {
-        m_mediumRushSectionNum++;
+    if (m_mediumRushSection <= 4) {
+        m_mediumRushSection++;
     }
 
     m_field->setType(m_stageType % Field::TYPE_NUMBER);
@@ -354,7 +354,7 @@ void StageManager::setSmallFleet(EnemyFleet *fleet) {
         mt = BarrageManager::SMALL_SIDE_MOVE;
     }
 
-    fleet->m_moveParser = m_barrageManager->m_parser[mt][m_random.nextInt(m_barrageManager->m_parserNum[mt])];
+    fleet->m_moveParser = m_barrageManager->m_parser[mt][m_random.nextInt(m_barrageManager->m_parserSizes[mt])];
     setFleetPattern(fleet);
 
     if (fleet->m_pattern == ONE_SIDE) {
@@ -379,7 +379,7 @@ void StageManager::setSmallFleet(EnemyFleet *fleet) {
         fleet->m_interval = 25 + m_random.nextInt(5);
         break;
     }
-    UE_LOG(LogTemp, Warning, TEXT(" !!!! setSmallFleet : [tot: %f, grp: %f, int: %f] "), fleet->m_total, fleet->m_groupInterval, fleet->m_interval);
+    //UE_LOG(LogTemp, Warning, TEXT(" !!!! setSmallFleet : [tot: %f, grp: %f, int: %f] "), fleet->m_total, fleet->m_groupInterval, fleet->m_interval);
 }
 
 void StageManager::setMediumFleet(EnemyFleet *appearance) {
@@ -399,7 +399,7 @@ void StageManager::setMediumFleet(EnemyFleet *appearance) {
     appearance->m_point = TOP;
     mt = BarrageManager::MEDIUM_MOVE;
 
-    appearance->m_moveParser = m_barrageManager->m_parser[mt][m_random.nextInt(m_barrageManager->m_parserNum[mt])];
+    appearance->m_moveParser = m_barrageManager->m_parser[mt][m_random.nextInt(m_barrageManager->m_parserSizes[mt])];
     setFleetPattern(appearance);
 
     switch (m_random.nextInt(3)) {
@@ -428,7 +428,7 @@ void StageManager::setLargeFleet(EnemyFleet *appearance) {
     appearance->m_point = TOP;
     mt = BarrageManager::LARGE_MOVE;
 
-    appearance->m_moveParser = m_barrageManager->m_parser[mt][m_random.nextInt(m_barrageManager->m_parserNum[mt])];
+    appearance->m_moveParser = m_barrageManager->m_parser[mt][m_random.nextInt(m_barrageManager->m_parserSizes[mt])];
     setFleetPattern(appearance);
 
     switch (m_random.nextInt(3)) {

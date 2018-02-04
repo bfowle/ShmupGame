@@ -21,9 +21,9 @@ public:
 
     void addBullet(float direction, float speed);
     void addBullet(BulletMLState *state, float direction, float speed);
-    std::shared_ptr<BulletActor> addBullet(BulletMLRunner *runner, float x, float y, float direction, float speed, float rank, float speedRank, int shape, int color, float size, float xReverse);
-    std::shared_ptr<BulletActor> addBullet(BulletMLParser *parser, BulletMLRunner *runner, float x, float y, float direction, float speed, float rank, float speedRank, int shape, int color, float size, float xReverse);
-    std::shared_ptr<BulletActor> addBullet(BulletMLParser *parser, BulletMLRunner *runner, float x, float y, float direction, float speed, float rank, float speedRank, int shape, int color, float size, float xReverse, std::array<BulletMLParser *, MorphBullet::MORPH_MAX> morph, int morphNum, int morphCnt);
+    std::shared_ptr<BulletActor> addBullet(BulletMLRunner *runner, float x, float y, float direction, float speed, float rank, float speedRank, float xReverse);
+    std::shared_ptr<BulletActor> addBullet(BulletMLParser *parser, BulletMLRunner *runner, float x, float y, float direction, float speed, float rank, float speedRank, float xReverse);
+    std::shared_ptr<BulletActor> addBullet(BulletMLParser *parser, BulletMLRunner *runner, float x, float y, float direction, float speed, float rank, float speedRank, float xReverse, std::array<BulletMLParser *, MorphBullet::MORPH_MAX> morph, int morphSize, int morphCnt);
 
     void tick();
     int getTurn();

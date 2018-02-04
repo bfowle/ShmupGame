@@ -2,8 +2,13 @@
 
 #include <ctime>
 
+//using namespace std;
+
 Random::Random() {
-    time_t timer = 0;
+    //unsigned long init[4] = { 0x123, 0x234, 0x345, 0x456 }, length = 4;
+    //init_by_array(init, length);
+
+    time_t timer = time(NULL); // 0
     init_genrand(static_cast<uint>(timer));
 }
 

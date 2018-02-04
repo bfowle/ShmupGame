@@ -47,13 +47,7 @@ email: matumoto@math.keio.ac.jp
 
 Please CC: edwardsac@ieee.org on all correspondence
 */
-/*
-* mt.cpp 2012/04/24
-*
-* Copyright 2012 Koichi Yazawa. All rights reserved.
-*/
 #include <mt.h>
-
 
 uint MIXBITS(uint u, uint v) { return (u & UMASK) | (v & LMASK); }
 uint TWIST(uint u, uint v) { return (MIXBITS(u, v) >> 1) ^ (v & 1 ? MATRIX_A : 0); }
@@ -72,11 +66,11 @@ void init_genrand(uint s) {
     initf = 1;
 }
 
-void init_by_array(uint init_key[], uint key_length) {
+void init_by_array(unsigned long init_key[], uint key_length) {
     int i, j, k;
     init_genrand(19650218UL);
     i = 1; j = 0;
-    k = (N>key_length ? N : key_length);
+    k = (N > key_length ? N : key_length);
     for (; k; k--) {
         state[i] = (state[i] ^ ((state[i - 1] ^ (state[i - 1] >> 30)) * 1664525UL))
             + init_key[j] + j; /* non linear */

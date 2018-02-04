@@ -47,19 +47,12 @@ email: matumoto@math.keio.ac.jp
 
 Please CC: edwardsac@ieee.org on all correspondence
 */
-/*
-* mt.cpp 2012/04/24
-*
-* Copyright 2012 Koichi Yazawa. All rights reserved.
-*/
 #ifndef MT_H
 #define MT_H
 
 #include <stdio.h>
 
-
 typedef unsigned int uint;
-
 
 /* Period parameters */
 const int N = 624;
@@ -82,7 +75,7 @@ void init_genrand(uint s);
 /* key_length is its length */
 //uint init_key[];
 //uint key_length;
-void init_by_array(uint init_key[], uint key_length);
+void init_by_array(unsigned long init_key[], uint key_length);
 
 static void next_state();
 

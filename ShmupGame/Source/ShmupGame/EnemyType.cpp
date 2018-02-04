@@ -42,10 +42,10 @@ void EnemyType::clearExistsList() {
 
 void EnemyType::setSmallEnemyType(float rank, int mode) {
     m_type = SMALL;
-    m_barragePatternNum = 1;
+    m_barragePatternSize = 1;
     m_wingCollision = false;
 
-    setEnemyColorType();
+    //setEnemyColorType();
 
     Barrage *barrage = &(m_barrage[0]);
     if (mode == ROLL) {
@@ -54,7 +54,7 @@ void EnemyType::setSmallEnemyType(float rank, int mode) {
         setBarrageType(barrage, BarrageManager::SMALL_LOCK, mode);
     }
     setBarrageRank(barrage, rank, VERY_WEAK, mode);
-    setBarrageShape(barrage, 0.7);
+    //setBarrageShape(barrage, 0.7);
 
     barrage->m_xReverse = m_random.nextInt(2) * 2 - 1;
 
@@ -71,10 +71,10 @@ void EnemyType::setSmallEnemyType(float rank, int mode) {
 
 void EnemyType::setMediumEnemyType(float rank, int mode) {
     m_type = MEDIUM;
-    m_barragePatternNum = 1;
+    m_barragePatternSize = 1;
     m_wingCollision = false;
     
-    setEnemyColorType();
+    //setEnemyColorType();
 
     Barrage *barrage = &(m_barrage[0]);
     setBarrageType(barrage, BarrageManager::MEDIUM, mode);
@@ -119,7 +119,7 @@ void EnemyType::setMediumEnemyType(float rank, int mode) {
     }
 
     setBarrageRank(barrage, cr, MORPH_WEAK, mode);
-    setBarrageShape(barrage, 0.75);
+    //setBarrageShape(barrage, 0.75);
 
     barrage->m_xReverse = m_random.nextInt(2) * 2 - 1;
 
@@ -144,15 +144,15 @@ void EnemyType::setMediumEnemyType(float rank, int mode) {
 void EnemyType::setLargeEnemyType(float rank, int mode) {
     m_type = LARGE;
 
-    m_barragePatternNum = 2 + m_random.nextInt(3);
+    m_barragePatternSize = 2 + m_random.nextInt(3);
     m_wingCollision = true;
 
-    setEnemyColorType();
+    //setEnemyColorType();
 
     int bn1 = 1 + m_random.nextInt(3);
     int bn2 = 1 + m_random.nextInt(3);
 
-    for (int i = 0; i < m_barragePatternNum; i++) {
+    for (int i = 0; i < m_barragePatternSize; i++) {
         Barrage *barrage = &(m_barrage[i]);
         setBarrageType(barrage, BarrageManager::LARGE, mode);
 
@@ -179,7 +179,7 @@ void EnemyType::setLargeEnemyType(float rank, int mode) {
         }
 
         setBarrageRankSlow(barrage, cr, NORMAL, mode, 0.9);
-        setBarrageShape(barrage, 1.0);
+        //setBarrageShape(barrage, 1.0);
 
         barrage->m_xReverse = m_random.nextInt(2) * 2 - 1;
 
@@ -199,14 +199,14 @@ void EnemyType::setLargeEnemyType(float rank, int mode) {
 void EnemyType::setMediumBossEnemyType(float rank, int mode) {
     m_type = MEDIUM;
 
-    m_barragePatternNum = 2 + m_random.nextInt(2);
+    m_barragePatternSize = 2 + m_random.nextInt(2);
     m_wingCollision = true;
 
-    setEnemyColorType();
+    //setEnemyColorType();
 
     int bn = 1 + m_random.nextInt(2);
 
-    for (int i = 0; i < m_barragePatternNum; ++i) {
+    for (int i = 0; i < m_barragePatternSize; ++i) {
         Barrage *barrage = &(m_barrage[i]);
         setBarrageType(barrage, BarrageManager::LARGE, mode);
 
@@ -228,7 +228,7 @@ void EnemyType::setMediumBossEnemyType(float rank, int mode) {
         }
 
         setBarrageRankSlow(barrage, cr, NORMAL, mode, 0.9);
-        setBarrageShape(barrage, 0.9);
+        //setBarrageShape(barrage, 0.9);
 
         barrage->m_xReverse = m_random.nextInt(2) * 2 - 1;
 
@@ -247,15 +247,15 @@ void EnemyType::setMediumBossEnemyType(float rank, int mode) {
 void EnemyType::setLargeBossEnemyType(float rank, int mode) {
     m_type = LARGE;
 
-    m_barragePatternNum = 2 + m_random.nextInt(3);
+    m_barragePatternSize = 2 + m_random.nextInt(3);
     m_wingCollision = true;
 
-    setEnemyColorType();
+    //setEnemyColorType();
 
     int bn1 = 1 + m_random.nextInt(3);
     int bn2 = 1 + m_random.nextInt(3);
 
-    for (int i = 0; i < m_barragePatternNum; ++i) {
+    for (int i = 0; i < m_barragePatternSize; ++i) {
         Barrage *barrage = &(m_barrage[i]);
         setBarrageType(barrage, BarrageManager::LARGE, mode);
 
@@ -281,7 +281,7 @@ void EnemyType::setLargeBossEnemyType(float rank, int mode) {
         }
 
         setBarrageRankSlow(barrage, cr, NORMAL, mode, 0.9);
-        setBarrageShape(barrage, 1.0);
+        //setBarrageShape(barrage, 1.0);
 
         barrage->m_xReverse = m_random.nextInt(2) * 2 - 1;
 
@@ -300,7 +300,7 @@ void EnemyType::setLargeBossEnemyType(float rank, int mode) {
 
 void EnemyType::setBarrageType(Barrage *barrage, int btn, int mode) {
     barrage->m_parser = reinterpret_cast<BulletMLParser *>(
-        m_barrageManager->m_parser[btn][m_random.nextInt(m_barrageManager->m_parserNum[btn])]);
+        m_barrageManager->m_parser[btn][m_random.nextInt(m_barrageManager->m_parserSizes[btn])]);
     
     for (int i = 0; i < BarrageManager::BARRAGE_MAX; ++i) {
         m_usedMorphParser[i] = false;
@@ -308,9 +308,9 @@ void EnemyType::setBarrageType(Barrage *barrage, int btn, int mode) {
 
     int mpn;
     if (mode == ROLL) {
-        mpn = m_barrageManager->m_parserNum[BarrageManager::MORPH];
+        mpn = m_barrageManager->m_parserSizes[BarrageManager::MORPH];
     } else {
-        mpn = m_barrageManager->m_parserNum[BarrageManager::MORPH_LOCK];
+        mpn = m_barrageManager->m_parserSizes[BarrageManager::MORPH_LOCK];
     }
 
     for (int i = 0; i < barrage->m_morphParser.size(); ++i) {
@@ -337,7 +337,7 @@ void EnemyType::setBarrageType(Barrage *barrage, int btn, int mode) {
         m_usedMorphParser[mi] = true;
     }
 
-    barrage->m_morphNum = barrage->m_morphParser.size();
+    barrage->m_morphSize = barrage->m_morphParser.size();
 }
 
 void EnemyType::setBarrageRank(Barrage *barrage, float rank, int intensity, int mode) {
@@ -383,9 +383,6 @@ void EnemyType::setBarrageRank(Barrage *barrage, float rank, int intensity, int 
     } else if (intensity == WEAK) {
         barrage->m_morphRank /= 1.5;
     }
-
-    //UE_LOG(LogTemp, Warning, TEXT(" -- rank: %f | speedRank: %f | morphRank: %f | morphCnt: %d | morphNum: %d "),
-    //    barrage->m_rank, barrage->m_speedRank, barrage->m_morphRank, barrage->m_morphCnt, barrage->m_morphNum);
 }
 
 void EnemyType::setBarrageRankSlow(Barrage *barrage, float rank, int intensity, int mode, float slowness) {
@@ -393,46 +390,7 @@ void EnemyType::setBarrageRankSlow(Barrage *barrage, float rank, int intensity, 
     barrage->m_speedRank *= slowness;
 }
 
-void EnemyType::setBarrageShape(Barrage *barrage, float size) {
-    /*
-    barrage->m_shape = m_random.nextInt(BULLET_SHAPE_NUM);
-    barrage->m_color = m_random.nextInt(BULLET_COLOR_NUM);
-    */
-    barrage->m_bulletSize = (1.0 + m_random.nextSignedFloat(0.1)) * size;
-}
-
-void EnemyType::setEnemyColorType() {
-    m_enemyColorType = m_random.nextInt(3);
-}
-
-void EnemyType::createEnemyColor() {
-    /*
-    switch (m_enemyColorType) {
-    case 0:
-        er = 1;
-        eg = m_random.nextFloat(0.7) + 0.3;
-        eb = m_random.nextFloat(0.7) + 0.3;
-        break;
-    case 1:
-        er = m_random.nextFloat(0.7) + 0.3;
-        eg = 1;
-        eb = m_random.nextFloat(0.7) + 0.3;
-        break;
-    case 2:
-        er = m_random.nextFloat(0.7) + 0.3;
-        eg = m_random.nextFloat(0.7) + 0.3;
-        eb = 1;
-        break;
-    }
-    */
-}
-
 void EnemyType::setEnemyShapeAndWings(int size) {
-    createEnemyColor();
-    //m_r = m_er;
-    //m_g = m_eg;
-    //m_b = m_eb;
-
     float x1 = m_enemySize[size][0] + m_random.nextSignedFloat(m_enemySize[size][1]);
     float y1 = m_enemySize[size][2] + m_random.nextSignedFloat(m_enemySize[size][3]);
     float x2 = m_enemySize[size][0] + m_random.nextSignedFloat(m_enemySize[size][1]);
@@ -446,16 +404,16 @@ void EnemyType::setEnemyShapeAndWings(int size) {
     m_bodyShapePosition[3].X = -x2;
     m_bodyShapePosition[3].Y = -y2;
 
-    m_retroSize = m_enemySize[size][4];
+    //m_retroSize = m_enemySize[size][4];
     switch (size) {
     case SMALL:
     case MEDIUM:
     case MEDIUM_BOSS:
-        m_batteryNum = 2;
+        m_batterySize = 2;
         break;
     case LARGE:
     case LARGE_BOSS:
-        m_batteryNum = 4;
+        m_batterySize = 4;
         break;
     }
 
@@ -475,12 +433,12 @@ void EnemyType::setEnemyShapeAndWings(int size) {
         m_collisionSize.Y = y2;
     }
 
-    for (int i = 0; i < m_batteryNum; ++i) {
+    for (int i = 0; i < m_batterySize; ++i) {
         BatteryType *bt = &(m_batteryType[i]);
         int wrl = 1;
         if (i % 2 == 0) {
             px = m_enemySize[size][5] + m_random.nextFloat(m_enemySize[size][6]);
-            if (m_batteryNum <= 2) {
+            if (m_batterySize <= 2) {
                 py = m_random.nextSignedFloat(m_enemySize[size][7]);
             } else {
                 if (i < 2) {
@@ -512,8 +470,6 @@ void EnemyType::setEnemyShapeAndWings(int size) {
                 bsl = 200 + m_random.nextInt(50);
                 break;
             }
-
-            createEnemyColor();
 
             wrl = -1;
             if (!m_wingCollision) {
@@ -579,7 +535,7 @@ void EnemyType::setBattery(float rank, int n, int barrageType, int barrageIntens
 
     setBarrageType(barrage, barrageType, mode);
     setBarrageRankSlow(barrage, rank / n, barrageIntensity, mode, slowness);
-    setBarrageShape(barrage, 0.8);
+    //setBarrageShape(barrage, 0.8);
 
     barrage->m_xReverse = m_random.nextInt(2) * 2 - 1;
 
@@ -588,14 +544,12 @@ void EnemyType::setBattery(float rank, int n, int barrageType, int barrageIntens
         barrage2->m_morphParser[i] = barrage->m_morphParser[i];
     }
 
-    barrage2->m_morphNum = barrage->m_morphNum;
+    barrage2->m_morphSize = barrage->m_morphSize;
     barrage2->m_morphCnt = barrage->m_morphCnt;
     barrage2->m_rank = barrage->m_rank;
     barrage2->m_speedRank = barrage->m_speedRank;
     barrage2->m_morphRank = barrage->m_morphRank;
-    //barrage2->m_shape = barrage->m_shape;
-    //barrage2->m_color = barrage->m_color;
-    barrage2->m_bulletSize = barrage->m_bulletSize;
+    //barrage2->m_bulletSize = barrage->m_bulletSize;
     barrage2->m_xReverse = -barrage->m_xReverse;
     
     if (m_random.nextInt(4) == 0) {
@@ -619,6 +573,6 @@ void EnemyType::setBattery(float rank, int n, int barrageType, int barrageIntens
         py += (mpy - py) / (n - 1);
     }
 
-    bt->m_batteryNum = n;
-    bt2->m_batteryNum = n;
+    bt->m_batterySize = n;
+    bt2->m_batterySize = n;
 }

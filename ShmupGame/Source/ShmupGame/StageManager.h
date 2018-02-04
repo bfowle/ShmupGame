@@ -43,6 +43,14 @@ private:
 
 public:
     enum {
+        STAGE_TYPE_NUM = 4,
+        SIMULTANEOUS_APPEARANCE_MAX = 4,
+        SMALL_ENEMY_TYPE_MAX = 3,
+        MEDIUM_ENEMY_TYPE_MAX = 4,
+        LARGE_ENEMY_TYPE_MAX = 2
+    };
+
+    enum {
         TOP,
         SIDE,
         BACK
@@ -63,14 +71,6 @@ public:
         SMALL,
         MEDIUM,
         LARGE
-    };
-
-    enum {
-        STAGE_TYPE_NUM = 4,
-        SIMULTANEOUS_APPEARANCE_MAX = 4,
-        SMALL_ENEMY_TYPE_MAX = 3,
-        MEDIUM_ENEMY_TYPE_MAX = 4,
-        LARGE_ENEMY_TYPE_MAX = 2
     };
 
     int m_parsec;
@@ -100,9 +100,9 @@ private:
     FVector2D m_fleetPosition;
     float m_sectionCnt, m_sectionIntervalCnt;
     int m_section;
-    float m_rank, m_rankInc;
-    int m_mediumRushSectionNum;
-    bool m_mediumRushSection;
+    int m_rank, m_rankInc;
+    int m_mediumRushSection;
+    bool m_isMediumRushSection;
     int m_stageType;
 };
 

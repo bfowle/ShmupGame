@@ -27,7 +27,7 @@ public:
     };
 
     std::array<std::array<BulletMLParserTinyXML *, BARRAGE_MAX>, BARRAGE_TYPE> m_parser;
-    std::array<int, BARRAGE_TYPE> m_parserNum;
+    std::array<int, BARRAGE_TYPE> m_parserSizes;
 
 private:
     static std::array<const std::string, BARRAGE_TYPE> m_dirName;

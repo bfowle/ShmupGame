@@ -51,8 +51,8 @@ void Enemy::init(shared_ptr<ActorInitializer> initializer) {
     m_velocity = FVector2D();
     m_velocityCnt = 0;
 
-    m_fieldLimitX = m_field->m_size.X / 4 * 3;
-    m_fieldLimitY = m_field->m_size.Y / 4 * 3;
+    //m_fieldLimitX = m_field->m_size.X / 4 * 3;
+    //m_fieldLimitY = m_field->m_size.Y / 4 * 3;
 }
 
 void Enemy::set(const FVector2D &position, float direction, shared_ptr<EnemyType> type, BulletMLParser *moveParser) {
@@ -61,7 +61,7 @@ void Enemy::set(const FVector2D &position, float direction, shared_ptr<EnemyType
 
     BulletMLRunner *moveRunner = BulletMLRunner_new_parser(moveParser);
     BulletActorPool::registerFunctions(moveRunner);
-    m_moveBullet = m_bullets->addBullet(moveRunner, m_position.X, m_position.Y, direction, 0, 0.5, 1, 0, 0, 1, 1);
+    m_moveBullet = m_bullets->addBullet(moveRunner, m_position.X, m_position.Y, direction, 0, 0.5, 1, 1);
     if (!m_moveBullet) {
         return;
     }
@@ -69,7 +69,7 @@ void Enemy::set(const FVector2D &position, float direction, shared_ptr<EnemyType
     m_cnt = 0;
     m_shield = type->m_shield;
 
-    for (int i = 0; i < type->m_batteryNum; ++i) {
+    for (int i = 0; i < type->m_batterySize; ++i) {
         m_battery[i].m_shield = type->m_batteryType[i].m_shield;
     }
 
@@ -77,9 +77,8 @@ void Enemy::set(const FVector2D &position, float direction, shared_ptr<EnemyType
     m_barragePatternIdx = 0;
     m_baseDirection = direction;
     m_appearanceCnt = 0;
-    m_dstCnt = 0;
+    m_destroyedCnt = 0;
     m_timeoutCnt = 0;
-    m_z = 0;
     m_isBoss = false;
     m_exists = true;
 }
@@ -137,12 +136,12 @@ void Enemy::tick() {
 
     m_isDamaged = false;
 
-    for (int i = 0; i < m_type->m_batteryNum; ++i) {
+    for (int i = 0; i < m_type->m_batterySize; ++i) {
         const BatteryType *bt = &(m_type->m_batteryType[i]);
         Battery *battery = &(m_battery[i]);
         battery->m_isDamaged = false;
 
-        for (int j = 0; j < bt->m_batteryNum; ++j) {
+        for (int j = 0; j < bt->m_batterySize; ++j) {
             if (battery->m_topBullet[j]) {
                 battery->m_topBullet[j]->m_bullet->m_position.X = m_position.X + bt->m_batteryPosition[j].X;
                 battery->m_topBullet[j]->m_bullet->m_position.Y = m_position.Y + bt->m_batteryPosition[j].Y;
@@ -167,33 +166,27 @@ void Enemy::tick() {
 
         // @TODO: check that this is the correct Y [Z] positioning
         if (m_position.Y < -m_field->m_size.Y / 4) {
-            removeTopBullets();
+            //removeTopBullets();
         } else {
             controlFireCnt();
         }
     } else {
         float mtr;
         if (m_appearanceCnt > 0) {
-            if (m_z < 0) {
-                m_z -= APPEARANCE_Z / 60;
-            }
-
             m_appearanceCnt--;
             //m_appearanceCnt -= m_gameManager->m_deltaSeconds;
             mtr = 1.0 - (float)m_appearanceCnt / APPEARANCE_COUNT;
-        } else if (m_dstCnt > 0) {
+        } else if (m_destroyedCnt > 0) {
             m_gameManager->clearBullets();
-            m_z += DESTROYED_Z / 60;
-            m_dstCnt--;
+            m_destroyedCnt--;
             //m_dstCnt -= m_gameManager->m_deltaSeconds;
-            if (m_dstCnt <= 0) {
+            if (m_destroyedCnt <= 0) {
                 remove();
                 //m_gameManager->setBossShieldMeter(0, 0, 0, 0, 0, 0);
                 return;
             }
-            mtr = static_cast<float>(m_dstCnt) / DESTROYED_COUNT;
+            mtr = static_cast<float>(m_destroyedCnt) / DESTROYED_COUNT;
         } else if (m_timeoutCnt > 0) {
-            m_z += DESTROYED_Z / 60;
             --m_timeoutCnt;
             //m_timeoutCnt -= m_gameManager->m_deltaSeconds;
             if (m_timeoutCnt <= 0) {
@@ -247,14 +240,12 @@ shared_ptr<BulletActor> Enemy::setBullet(const Barrage &barrage, const FVector2D
     if (barrage.m_morphCnt > 0) {
         bullet = m_bullets->addBullet(barrage.m_parser, runner,
             bx, by, m_baseDirection, 0, barrage.m_rank,
-            barrage.m_speedRank, barrage.m_shape, barrage.m_color,
-            barrage.m_bulletSize, barrage.m_xReverse * xReverse,
-            barrage.m_morphParser, barrage.m_morphNum, barrage.m_morphCnt);
+            barrage.m_speedRank, barrage.m_xReverse * xReverse,
+            barrage.m_morphParser, barrage.m_morphSize, barrage.m_morphCnt);
     } else {
         bullet = m_bullets->addBullet(barrage.m_parser, runner,
             bx, by, m_baseDirection, 0, barrage.m_rank,
-            barrage.m_speedRank, barrage.m_shape, barrage.m_color,
-            barrage.m_bulletSize, barrage.m_xReverse * xReverse);
+            barrage.m_speedRank, barrage.m_xReverse * xReverse);
     }
 
     //UE_LOG(LogTemp, Warning, TEXT("- Enemy::setBullet [%s] [%f, %f] (%s)"), *m_position.ToString(), bx, by, *m_bulletActor->GetName());
@@ -266,10 +257,10 @@ std::shared_ptr<BulletActor> Enemy::setBullet(const Barrage &barrage, const FVec
     return setBullet(barrage, offset, 1);
 }
 
-// top bullet refers to bulletml's <action label="top" />
+// refers to the root tree bullet in bulletml defined by <action label="top" />
 void Enemy::setTopBullets() {
     m_topBullet = setBullet(m_type->m_barrage[m_barragePatternIdx], 0);
-    for (int i = 0; i < m_type->m_batteryNum; ++i) {
+    for (int i = 0; i < m_type->m_batterySize; ++i) {
         Battery *battery = &m_battery[i];
         if (battery->m_shield <= 0) {
             continue;
@@ -277,7 +268,7 @@ void Enemy::setTopBullets() {
 
         const BatteryType *bt = &(m_type->m_batteryType[i]);
         float xr = 1;
-        for (int j = 0; j < bt->m_batteryNum; ++j) {
+        for (int j = 0; j < bt->m_batterySize; ++j) {
             battery->m_topBullet[j] = setBullet(bt->m_barrage[m_barragePatternIdx], &(bt->m_batteryPosition[j]), xr);
             if (bt->m_xReverseAlternate) {
                 xr *= -1;
@@ -287,7 +278,7 @@ void Enemy::setTopBullets() {
 }
 
 void Enemy::removeBattery(Battery *battery, const BatteryType &bt) {
-    for (int i = 0; i < bt.m_batteryNum; i++) {
+    for (int i = 0; i < bt.m_batterySize; i++) {
         if (battery->m_topBullet[i]) {
             battery->m_topBullet[i]->remove();
             //battery.m_topBullet[i] = 0;
@@ -298,6 +289,9 @@ void Enemy::removeBattery(Battery *battery, const BatteryType &bt) {
     battery->m_isDamaged = true;
 }
 
+/**
+ * @TODO: not in use
+ */
 void Enemy::addDamageBattery(int idx, int dmg) {
     m_battery[idx].m_shield -= dmg;
     if (m_battery[idx].m_shield <= 0) {
@@ -323,7 +317,7 @@ int Enemy::checkLocked(const FVector2D &position, float xofs, shared_ptr<Lock> l
 
     if (m_type->m_wingCollision) {
         int lp = NOHIT;
-        for (int i = 0; i < m_type->m_batteryNum; ++i) {
+        for (int i = 0; i < m_type->m_batterySize; ++i) {
             if (m_battery[i].m_shield <= 0) {
                 continue;
             }
@@ -352,10 +346,10 @@ void Enemy::removeTopBullets() {
         m_topBullet.reset();
     }
 
-    for (int i = 0; i < m_type->m_batteryNum; ++i) {
+    for (int i = 0; i < m_type->m_batterySize; ++i) {
         const BatteryType *bt = &(m_type->m_batteryType[i]);
         Battery *battery = &(m_battery[i]);
-        for (int j = 0; j < bt->m_batteryNum; j++) {
+        for (int j = 0; j < bt->m_batterySize; j++) {
             if (battery->m_topBullet[j]) {
                 battery->m_topBullet[j]->remove();
                 battery->m_topBullet[j].reset();
@@ -378,7 +372,7 @@ void Enemy::gotoNextPoint() {
     m_onRoute = false;
 
     m_movePointIdx++;
-    if (m_movePointIdx >= m_movePointNum) {
+    if (m_movePointIdx >= m_movePointSize) {
         m_movePointIdx = 0;
     }
 }
@@ -387,15 +381,21 @@ void Enemy::controlFireCnt() {
     if (m_fireCnt <= 0) {
         setTopBullets();
 
+        //UE_LOG(LogTemp, Warning, TEXT(" 1.1 - fireCnt = fireInterval ... %f, %d "), m_fireCnt, m_type->m_fireInterval);
         m_fireCnt = m_type->m_fireInterval;
 
         ++m_barragePatternIdx;
-        if (m_barragePatternIdx >= m_type->m_barragePatternNum) {
+        if (m_barragePatternIdx >= m_type->m_barragePatternSize) {
             m_barragePatternIdx = 0;
         }
     } else if (m_fireCnt < m_type->m_fireInterval - m_type->m_firePeriod) {
+        //UE_LOG(LogTemp, Warning, TEXT(" 1.2 - fireCnt => removeTopBullets [%f, %d] "), m_fireCnt, (m_type->m_fireInterval - m_type->m_firePeriod));
+
         removeTopBullets();
     }
-    --m_fireCnt;
-    //m_fireCnt -= m_gameManager->m_deltaSeconds;
+    //--m_fireCnt;
+    m_fireCnt -= 10.0 * m_gameManager->m_deltaSeconds;
+
+    //UE_LOG(LogTemp, Warning, TEXT(" [%d] fire cnt: %f ... [int: %d, prd: %d]"), m_uuid, m_fireCnt,
+    //    m_type->m_fireInterval, m_type->m_firePeriod);
 }

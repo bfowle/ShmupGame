@@ -29,9 +29,6 @@ private:
     void setBarrageType(Barrage *barrage, int btn, int mode);
     void setBarrageRank(Barrage *barrage, float rank, int intensity, int mode);
     void setBarrageRankSlow(Barrage *barrage, float rank, int intensity, int mode, float slowness);
-    void setBarrageShape(Barrage *barrage, float size);
-    void setEnemyColorType();
-    void createEnemyColor();
     void setEnemyShapeAndWings(int size);
     void setBattery(float rank, int n, int barrageType, int barrageIntensity, int idx, int ptnIdx, float slowness, int mode);
 
@@ -61,8 +58,8 @@ public:
     int m_id;
     int m_type;
     std::array<BatteryType, BATTERY_MAX> m_batteryType;
-    int m_batteryNum;
-    int m_fireInterval, m_firePeriod, m_barragePatternNum;
+    int m_batterySize;
+    int m_fireInterval, m_firePeriod, m_barragePatternSize;
     int m_shield;
 
     std::array<Barrage, BARRAGE_PATTERN_MAX> m_barrage;
@@ -71,8 +68,6 @@ public:
 
     FVector2D m_collisionSize;
     bool m_wingCollision;
-    float m_retroSize;
-    //float r, g, b;
 
 private:
     enum {

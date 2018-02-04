@@ -4,7 +4,7 @@
 
 using namespace std;
 
-void MorphBullet::setMorph(array<BulletMLParser *, MorphBullet::MORPH_MAX> mrp, int num, int idx, int cnt) {
+void MorphBullet::setMorph(array<BulletMLParser *, MorphBullet::MORPH_MAX> parser, int size, int idx, int cnt) {
     if (cnt <= 0) {
         m_isMorph = false;
         return;
@@ -12,14 +12,14 @@ void MorphBullet::setMorph(array<BulletMLParser *, MorphBullet::MORPH_MAX> mrp, 
     m_isMorph = true;
     m_morphCnt = cnt;
     m_baseMorphCnt = cnt;
-    m_morphNum = num;
+    m_morphSize = size;
 
-    for (int i = 0; i < num; ++i) {
-        m_morphParser[i] = mrp[i];
+    for (int i = 0; i < size; ++i) {
+        m_morphParser[i] = parser[i];
     }
 
     m_morphIdx = idx;
-    if (m_morphIdx >= m_morphNum) {
+    if (m_morphIdx >= m_morphSize) {
         m_morphIdx = 0;
     }
     m_baseMorphCnt = m_morphIdx;

@@ -34,9 +34,9 @@ public:
 
     static void init();
     void init(std::shared_ptr<ActorInitializer> initializer);
-    void set(BulletMLRunner *runner, float x, float y, float direction, float speed, float rank, float speedRank, int shape, int color, int size, float xReverse);
-    void set(BulletMLRunner *runner, float x, float y, float direction, float speed, float rank, float speedRank, int shape, int color, int size, float xReverse, std::array<BulletMLParser *, MorphBullet::MORPH_MAX> morph, int morphNum, int morphIdx, int morphCnt);
-    void set(float x, float y, float direction, float speed, float rank, float speedRank, int shape, int color, int size, float xReverse);
+    void set(BulletMLRunner *runner, float x, float y, float direction, float speed, float rank, float speedRank, float xReverse);
+    void set(BulletMLRunner *runner, float x, float y, float direction, float speed, float rank, float speedRank, float xReverse, std::array<BulletMLParser *, MorphBullet::MORPH_MAX> morph, int morphSize, int morphIdx, int morphCnt);
+    void set(float x, float y, float direction, float speed, float rank, float speedRank, float xReverse);
     void setInvisible();
     void setTop(BulletMLParser *parser);
     void spawnBulletActor();
@@ -48,7 +48,7 @@ public:
     static void resetTotalBulletsSpeed();
 
 private:
-    void start(float speedRank, int shape, int color, float size, float xReverse);
+    void start(float speedRank, float xReverse);
     void removeForced();
     //void checkShipHit();
 

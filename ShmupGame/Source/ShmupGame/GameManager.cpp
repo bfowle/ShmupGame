@@ -106,6 +106,8 @@ void AGameManager::Tick(float DeltaSeconds) {
     default:
         break;
     }
+
+    m_cnt++;
 }
 
 void AGameManager::AddShot(const FVector &position, float direction) {
@@ -225,8 +227,8 @@ void AGameManager::shipDestroyed() {
     }
     clearBullets();
 
-    m_left--;
-    if (m_left < 0) {
+    m_shipsRemaining--;
+    if (m_shipsRemaining < 0) {
         startGameOver();
     }
 }
@@ -241,7 +243,7 @@ void AGameManager::clearBullets() {
 }
 
 void AGameManager::initShipState() {
-    m_left = 2;
+    m_shipsRemaining = 2;
     m_score = 0;
     m_extendScore = FIRST_EXTEND;
     m_ship->start();

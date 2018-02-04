@@ -129,8 +129,10 @@ private:
         FIRST_EXTEND = 200000,
         EVERY_EXTEND = 500000,
         LEFT_MAX = 4,
-        BOSS_WING_NUM = 4
+        BOSS_WING_TOTAL = 4
     };
+
+    static const int SLOWDOWN_START_BULLETS_SPEED[2];
 
     Random m_random;
     std::shared_ptr<Field> m_field;
@@ -143,14 +145,12 @@ private:
     std::shared_ptr<StageManager> m_stageManager;
     std::shared_ptr<BarrageManager> m_barrageManager;
 
-    static const int SLOWDOWN_START_BULLETS_SPEED[2];
-
-    int m_left;
-    int m_score, m_extendScore;
     int m_cnt;
+    int m_score, m_extendScore;
+    int m_shipsRemaining;
     int m_pauseCnt;
     int m_bossShield;
-    std::array<int, BOSS_WING_NUM> m_bossWingShield;
+    std::array<int, BOSS_WING_TOTAL> m_bossWingShield;
 
     float m_interval;
     int m_frame, m_maxSkipFrame;
