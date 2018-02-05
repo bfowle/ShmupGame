@@ -13,7 +13,7 @@
 
 using namespace std;
 
-const float Enemy::FIELD_SPACE = 45.0; // 1.5;
+const float Enemy::FIELD_SPACE = 90.0; // 45.0; // 1.5;
 Random Enemy::m_random;
 
 const int ENEMY_TYPE_SCORE[] = {
@@ -106,14 +106,19 @@ void Enemy::tick() {
             m_movement.IsValid() &&
             m_movement->UpdatedComponent) {
             FVector vel = (m_movement->UpdatedComponent->GetForwardVector() *
-                (sin(m_moveBullet->m_bullet->m_direction) + m_moveBullet->m_bullet->m_acceleration.X) * m_moveBullet->m_bullet->m_xReverse) +
+                (sin(m_moveBullet->m_bullet->m_direction) +
+                    m_moveBullet->m_bullet->m_acceleration.X) *
+                    m_moveBullet->m_bullet->m_xReverse) +
                 (m_movement->UpdatedComponent->GetUpVector() *
-                (cos(m_moveBullet->m_bullet->m_direction) - m_moveBullet->m_bullet->m_acceleration.Y));
+                (cos(m_moveBullet->m_bullet->m_direction) -
+                    m_moveBullet->m_bullet->m_acceleration.Y));
             vel.Y = 0;
-                
+
             if (!vel.IsNearlyZero()) {
                 vel.Normalize();
-                vel *= m_moveBullet->m_bullet->m_speed * m_movement->GetMaxSpeed() * m_gameManager->m_deltaSeconds;
+                vel *= m_moveBullet->m_bullet->m_speed *
+                    m_movement->GetMaxSpeed() *
+                    m_gameManager->m_deltaSeconds;
                 m_movement->MoveUpdatedComponent(vel, FRotator::ZeroRotator, true);
                 if (m_movement.IsValid()) {
                     m_movement->UpdateComponentVelocity();
@@ -391,8 +396,8 @@ void Enemy::controlFireCnt() {
 
         removeTopBullets();
     }
-    //--m_fireCnt;
-    m_fireCnt -= 10.0 * m_gameManager->m_deltaSeconds;
+    --m_fireCnt;
+    //m_fireCnt -= 10.0 * m_gameManager->m_deltaSeconds;
 
     //UE_LOG(LogTemp, Warning, TEXT(" [%d] fire cnt: %f ... [int: %d, prd: %d]"), m_uuid, m_fireCnt,
     //    m_type->m_fireInterval, m_type->m_firePeriod);

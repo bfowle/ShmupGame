@@ -125,7 +125,10 @@ public:
 
 private:
     enum {
+        BULLET_MAX = 512,
         ENEMY_MAX = 32,
+        ROLL_MAX = 4,
+        LOCK_MAX = 4,
         FIRST_EXTEND = 200000,
         EVERY_EXTEND = 500000,
         LEFT_MAX = 4,

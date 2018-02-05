@@ -42,16 +42,16 @@ void AGameManager::InitGame(const FString &MapName, const FString &Options, FStr
     m_ship->init(m_field, this);
 
     shared_ptr<BulletActorInitializer> bi(new BulletActorInitializer(m_field, m_ship, this));
-    m_bullets.reset(new BulletActorPool(512, bi));
+    m_bullets.reset(new BulletActorPool(BULLET_MAX, bi));
 
     unique_ptr<Roll> rollClass(new Roll());
     shared_ptr<RollInitializer> ri(new RollInitializer(m_field, m_ship, this));
-    m_rolls.reset(new ActorPool(4, rollClass.get(), ri));
+    m_rolls.reset(new ActorPool(ROLL_MAX, rollClass.get(), ri));
 
     Lock::init();
     unique_ptr<Lock> lockClass(new Lock());
     shared_ptr<LockInitializer> li(new LockInitializer(m_field, m_ship, this));
-    m_locks.reset(new ActorPool(4, lockClass.get(), li));
+    m_locks.reset(new ActorPool(LOCK_MAX, lockClass.get(), li));
 
     unique_ptr<Enemy> m_enemyClass(new Enemy());
     shared_ptr<EnemyInitializer> ei(new EnemyInitializer(m_field, m_ship, m_bullets, m_rolls, m_locks, this));

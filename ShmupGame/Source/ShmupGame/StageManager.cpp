@@ -174,7 +174,7 @@ void StageManager::tick() {
         (!EnemyType::m_exists[m_mediumBossType->m_id] &&
          !EnemyType::m_exists[m_largeBossType->m_id])) {
         //--m_sectionCnt;
-        m_sectionCnt -= 100.0 * m_deltaSeconds;
+        m_sectionCnt -= 10.0 * m_deltaSeconds;
         //UE_LOG(LogTemp, Warning, TEXT(" [*] sectionCnt: %f ... [< sectionInt? => %f ] "), m_sectionCnt, m_sectionIntervalCnt);
     }
 

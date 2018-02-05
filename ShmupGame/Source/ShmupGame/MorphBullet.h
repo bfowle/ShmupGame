@@ -25,11 +25,8 @@ private:
 
 public:
     std::array<BulletMLParser *, MORPH_MAX> m_morphParser;
-    int m_morphSize;
-    int m_morphIdx;
-    int m_morphCnt;
-    int m_baseMorphIdx;
-    int m_baseMorphCnt;
+    int m_morphSize, m_morphCnt, m_morphIdx;
+    int m_baseMorphIdx, m_baseMorphCnt;
     bool m_isMorph;
 };
 

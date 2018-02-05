@@ -151,7 +151,7 @@ void BulletActor::tick() {
     }
 
     float sr = 0;
-#if 0
+#if 1
     if (m_rtCnt < RETRO_COUNT) {
         sr = m_bullet->m_speedRank * (0.3 + (m_rtCnt / RETRO_COUNT) * 0.7);
         if (m_backToRetro) {
@@ -199,13 +199,18 @@ void BulletActor::tick() {
             m_movement.IsValid() &&
             m_movement->UpdatedComponent) {
             FVector vel = (m_movement->UpdatedComponent->GetForwardVector() *
-                (sin(m_bullet->m_direction) + m_bullet->m_acceleration.X) * sr * m_bullet->m_xReverse) +
+                (sin(m_bullet->m_direction) +
+                    m_bullet->m_acceleration.X) * sr *
+                    m_bullet->m_xReverse) +
                 (m_movement->UpdatedComponent->GetUpVector() *
-                (cos(m_bullet->m_direction) - m_bullet->m_acceleration.Y) * sr);
+                (cos(m_bullet->m_direction) -
+                    m_bullet->m_acceleration.Y) * sr);
             vel.Y = 0;
             if (!vel.IsNearlyZero()) {
                 vel.Normalize();
-                vel *= m_bullet->m_speed * m_movement->GetMaxSpeed() * m_gameManager->m_deltaSeconds;
+                vel *= m_bullet->m_speed *
+                    m_movement->GetMaxSpeed() *
+                    m_gameManager->m_deltaSeconds;
                 m_movement->MoveUpdatedComponent(vel, FRotator::ZeroRotator, true);
                 if (m_movement.IsValid()) {
                     m_movement->UpdateComponentVelocity();
