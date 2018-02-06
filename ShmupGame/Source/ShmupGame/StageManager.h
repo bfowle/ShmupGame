@@ -26,9 +26,10 @@ private:
         BulletMLParser *m_moveParser;
         int m_point, m_pattern, m_sequence;
         float m_position;
+        int m_id;
         int m_side;
-        int m_total, m_remaining;
-        float m_cnt, m_interval, m_groupInterval;
+        int m_total, m_cnt, m_remaining;
+        float m_interval, m_groupInterval;
     };
 
     void createSectionData();

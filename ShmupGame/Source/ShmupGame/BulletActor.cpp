@@ -203,7 +203,7 @@ void BulletActor::tick() {
                     m_bullet->m_acceleration.X) * sr *
                     m_bullet->m_xReverse) +
                 (m_movement->UpdatedComponent->GetUpVector() *
-                (cos(m_bullet->m_direction) -
+                (cos(m_bullet->m_direction) +
                     m_bullet->m_acceleration.Y) * sr);
             vel.Y = 0;
             if (!vel.IsNearlyZero()) {

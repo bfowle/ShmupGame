@@ -155,7 +155,7 @@ private:
     int m_bossShield;
     std::array<int, BOSS_WING_TOTAL> m_bossWingShield;
 
-    float m_interval;
+    int m_interval;
     int m_frame, m_maxSkipFrame;
     long m_previousTick;
 };

@@ -110,7 +110,7 @@ void Enemy::tick() {
                     m_moveBullet->m_bullet->m_acceleration.X) *
                     m_moveBullet->m_bullet->m_xReverse) +
                 (m_movement->UpdatedComponent->GetUpVector() *
-                (cos(m_moveBullet->m_bullet->m_direction) -
+                (cos(m_moveBullet->m_bullet->m_direction) +
                     m_moveBullet->m_bullet->m_acceleration.Y));
             vel.Y = 0;
 

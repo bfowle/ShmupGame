@@ -69,11 +69,15 @@ void StageManager::setRank(float baseRank, float inc, int startParsec, int type)
 void StageManager::tick() {
     m_deltaSeconds = m_gameManager->m_world->GetDeltaSeconds();
 
+    //UE_LOG(LogTemp, Warning, TEXT("::StageManager(tick) -> fleet total: %d "), m_fleetTotal);
     for (int i = 0; i < m_fleetTotal; ++i) {
         EnemyFleet *fleet = &m_fleets[i];
+        //UE_LOG(LogTemp, Warning, TEXT("`--> fleet[%d] (tot: %d, cnt: %d, remain: %d) [int: %f, grpint: %f]"),
+        //    fleet->m_id, fleet->m_total, fleet->m_cnt, fleet->m_remaining, fleet->m_interval, fleet->m_groupInterval/*,
+        //    *fleet->m_moveParser->getName().c_str()*/);
 
-        //fleet->m_cnt--;
-        fleet->m_cnt -= 10.0 * m_gameManager->m_deltaSeconds;
+        fleet->m_cnt--;
+        //fleet->m_cnt -= 10.0 * m_gameManager->m_deltaSeconds;
         //UE_LOG(LogTemp, Warning, TEXT(" 1.) [%d] tick::cnt [%f] -- (%f) "), m_fleetTotal, fleet->m_cnt, m_gameManager->m_deltaSeconds);
 
         if (fleet->m_cnt > 0) {
@@ -81,6 +85,7 @@ void StageManager::tick() {
             if (!m_isMediumRushSection) {
                 if (fleet->m_type->m_type == EnemyType::SMALL &&
                     !EnemyType::m_exists[fleet->m_type->m_id]) {
+                    //UE_LOG(LogTemp, Warning, TEXT("`----> [%d] ADD EXTRA ENEMY "), fleet->m_id);
                     //UE_LOG(LogTemp, Warning, TEXT(" 3-1.) tick::add::cnt [%f] "), fleet->m_cnt);
                     fleet->m_cnt = 0;
                     EnemyType::m_exists[fleet->m_type->m_id] = true;
@@ -173,8 +178,8 @@ void StageManager::tick() {
     if (!m_bossSection ||
         (!EnemyType::m_exists[m_mediumBossType->m_id] &&
          !EnemyType::m_exists[m_largeBossType->m_id])) {
-        //--m_sectionCnt;
-        m_sectionCnt -= 10.0 * m_deltaSeconds;
+        --m_sectionCnt;
+        //m_sectionCnt -= 10.0 * m_deltaSeconds;
         //UE_LOG(LogTemp, Warning, TEXT(" [*] sectionCnt: %f ... [< sectionInt? => %f ] "), m_sectionCnt, m_sectionIntervalCnt);
     }
 
@@ -323,6 +328,8 @@ void StageManager::setFleetPattern(EnemyFleet *appearance) {
     }
 }
 
+static int fleetCnt = 0;
+
 void StageManager::setFleet(EnemyFleet *fleet, int type) {
     switch (type) {
     case SMALL:
@@ -336,6 +343,7 @@ void StageManager::setFleet(EnemyFleet *fleet, int type) {
         break;
     }
 
+    fleet->m_id = ++fleetCnt;
     fleet->m_cnt = 0;
     fleet->m_remaining = fleet->m_total;
     fleet->m_side = m_random.nextInt(2) * 2 - 1;

@@ -64,7 +64,8 @@ void AGameManager::InitGame(const FString &MapName, const FString &Options, FStr
     m_stageManager.reset(new StageManager());
     m_stageManager->init(m_field, m_barrageManager, this);
 
-    //m_interval = INTERVAL_BASE;
+    m_interval = INTERVAL_BASE;
+    m_maxSkipFrame = 5;
 }
 
 void AGameManager::StartPlay() {
@@ -292,8 +293,8 @@ void AGameManager::stageTick() {
 }
 
 void AGameManager::inGameTick() {
-    /*
-    float nowTick = UGameplayStatics::GetRealTimeSeconds(GetWorld()) * 1000.0;
+#if 0
+    long nowTick = (long)UGameplayStatics::GetRealTimeSeconds(GetWorld()) * 1000.0;
     m_frame = (int)(nowTick - m_previousTick) / m_interval;
     if (m_frame <= 0) {
         m_frame = 1;
@@ -307,8 +308,9 @@ void AGameManager::inGameTick() {
     for (int i = 0; i < m_frame; i++) {
         stageTick();
     }
-    */
+#else
     stageTick();
+#endif
 
     m_field->tick();
     m_ship->tick();
@@ -326,7 +328,6 @@ void AGameManager::inGameTick() {
 
     // set pause
 
-    /*
     if (BulletActor::m_totalBulletsSpeed > SLOWDOWN_START_BULLETS_SPEED[m_mode]) {
         float sm = BulletActor::m_totalBulletsSpeed / SLOWDOWN_START_BULLETS_SPEED[m_mode];
         if (sm > 1.75) {
@@ -336,7 +337,6 @@ void AGameManager::inGameTick() {
     } else {
         m_interval += (INTERVAL_BASE - m_interval) * 0.08;
     }
-    */
 }
 
 void AGameManager::titleTick() {
