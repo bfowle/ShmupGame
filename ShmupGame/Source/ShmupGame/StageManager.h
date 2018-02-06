@@ -75,7 +75,7 @@ public:
     };
 
     int m_parsec;
-    bool m_bossSection;
+    bool m_isBossSection;
 
 private:
     enum {

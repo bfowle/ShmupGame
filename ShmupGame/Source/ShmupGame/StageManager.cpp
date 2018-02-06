@@ -175,7 +175,7 @@ void StageManager::tick() {
         }
     }
 
-    if (!m_bossSection ||
+    if (!m_isBossSection ||
         (!EnemyType::m_exists[m_mediumBossType->m_id] &&
          !EnemyType::m_exists[m_largeBossType->m_id])) {
         --m_sectionCnt;
@@ -206,14 +206,12 @@ void StageManager::createSectionData() {
 
     m_field->m_aimSpeed = 0.1 + m_section * 0.02;
 
-    UE_LOG(LogTemp, Warning, TEXT("!!!!!!!!!! StageManager::createSectionData => %d"), m_section);
-
     if (m_section == 4) {
         // set the medium boss
         FVector2D pos(0, m_field->m_size.Y / 4 * 3);
 
         m_gameManager->addBoss(pos, M_PI, m_mediumBossType);
-        m_bossSection = true;
+        m_isBossSection = true;
 
         m_sectionIntervalCnt = 2 * 60;
         m_sectionCnt = 2 * 60;
@@ -225,7 +223,7 @@ void StageManager::createSectionData() {
         FVector2D pos(0, m_field->m_size.Y / 4 * 3);
 
         m_gameManager->addBoss(pos, M_PI, m_largeBossType);
-        m_bossSection = true;
+        m_isBossSection = true;
 
         m_sectionIntervalCnt = 3 * 60;
         m_sectionCnt = 3 * 60;
@@ -241,7 +239,7 @@ void StageManager::createSectionData() {
         m_field->m_aimZ = 10 + m_random.nextSignedFloat(0.3);
     }
 
-    m_bossSection = false;
+    m_isBossSection = false;
     if (m_section == 2) {
         m_sectionIntervalCnt = 2 * 60;
     } else if (m_section == 3) {
@@ -260,6 +258,13 @@ void StageManager::createSectionData() {
     } else if (m_isMediumRushSection) {
         ap = MEDIUM_RUSH_SECTION_PATTERN;
     }
+
+    UE_LOG(LogTemp, Warning, TEXT("!!!!!!!!!! StageManager::createSectionData => %d ... [small: %d, medium: %d, large: %d; boss? %s]"),
+        m_section,
+        m_fleetPatterns[m_gameManager->m_mode][ap][0],
+        m_fleetPatterns[m_gameManager->m_mode][ap][1],
+        m_fleetPatterns[m_gameManager->m_mode][ap][2],
+        (m_isBossSection ? TEXT("Y") : TEXT("N")));
 
     for (int i = 0; i < m_fleetPatterns[m_gameManager->m_mode][ap][0]; ++i, ++m_fleetTotal) {
         EnemyFleet *appearance = &m_fleets[m_fleetTotal];
