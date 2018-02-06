@@ -80,7 +80,7 @@ void Bullet::remove() {
 }
 
 const float VEL_SS_SDM_RATIO = 62.0 / 100;
-const float VEL_SDM_SS_RATIO = 100.0 / 62;
+const float VEL_SDM_SS_RATIO = 2.0; // 100.0 / 62;
 
 float rtod(float a) {
     return a * 180 / M_PI;
@@ -136,39 +136,19 @@ void doChangeSpeed_(BulletMLRunner *runner, double speed) {
 }
 
 void doAccelX_(BulletMLRunner *runner, double accelX) {
-#if 1
     Bullet::m_now->m_acceleration.X = accelX * VEL_SDM_SS_RATIO;
-#else
-    double sy = getBulletSpeedY_(runner);
-    Bullet::m_now->m_direction = atan2(sy, accelX);
-    Bullet::m_now->m_speed = sqrt(accelX * accelX + sy * sy);
-#endif
 }
 
 void doAccelY_(BulletMLRunner *runner, double accelY) {
-#if 1
     Bullet::m_now->m_acceleration.Y = accelY * VEL_SDM_SS_RATIO;
-#else
-    double sx = getBulletSpeedX_(runner);
-    Bullet::m_now->m_direction = atan2(accelY, sx);
-    Bullet::m_now->m_speed = sqrt(sx * sx + accelY * accelY);
-#endif
 }
 
 double getBulletSpeedX_(BulletMLRunner *runner) {
-#if 1
     return Bullet::m_now->m_acceleration.X;
-#else
-    return Bullet::m_now->m_speed * sin(Bullet::m_now->m_direction);
-#endif
 }
 
 double getBulletSpeedY_(BulletMLRunner *runner) {
-#if 1
     return Bullet::m_now->m_acceleration.Y;
-#else
-    return -Bullet::m_now->m_speed * cos(Bullet::m_now->m_direction);
-#endif
 }
 
 double getRand_(BulletMLRunner *runner) {

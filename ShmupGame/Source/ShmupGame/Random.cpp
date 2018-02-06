@@ -9,7 +9,7 @@ Random::Random() {
     //init_by_array(init, length);
 
     time_t timer = time(NULL);
-    init_genrand(static_cast<uint>(timer));
+    init_genrand(static_cast<uint>(1517880596/*timer*/));
 }
 
 void Random::setSeed(long n) {
