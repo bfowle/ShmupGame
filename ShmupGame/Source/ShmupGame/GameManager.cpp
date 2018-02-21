@@ -32,6 +32,7 @@ AGameManager::AGameManager() {
 void AGameManager::InitGame(const FString &MapName, const FString &Options, FString &ErrorMessage) {
     Super::InitGame(MapName, Options, ErrorMessage);
 
+#if 0
     m_random = Random();
     m_world = GetWorld();
 
@@ -66,11 +67,13 @@ void AGameManager::InitGame(const FString &MapName, const FString &Options, FStr
 
     m_interval = INTERVAL_BASE;
     m_maxSkipFrame = 5;
+#endif
 }
 
 void AGameManager::StartPlay() {
     Super::StartPlay();
 
+#if 0
     TWeakObjectPtr<APawn> player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
     if (player.IsValid()) {
         m_ship->setPlayerPawn(player);
@@ -80,11 +83,13 @@ void AGameManager::StartPlay() {
     //m_mode = LOCK;
     //m_difficulty = EXTREME;
     startInGame();
+#endif
 }
 
 void AGameManager::Tick(float DeltaSeconds) {
     Super::Tick(DeltaSeconds);
 
+#if 0
     m_deltaSeconds = DeltaSeconds;
 
     switch (m_state) {
@@ -105,6 +110,7 @@ void AGameManager::Tick(float DeltaSeconds) {
     }
 
     m_cnt++;
+#endif
 }
 
 void AGameManager::AddShot(const FVector &position, float direction) {
