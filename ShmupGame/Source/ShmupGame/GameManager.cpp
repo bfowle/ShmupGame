@@ -32,7 +32,7 @@ AGameManager::AGameManager() {
 void AGameManager::InitGame(const FString &MapName, const FString &Options, FString &ErrorMessage) {
     Super::InitGame(MapName, Options, ErrorMessage);
 
-#if 0
+#if DO_IT
     m_random = Random();
     m_world = GetWorld();
 
@@ -73,7 +73,7 @@ void AGameManager::InitGame(const FString &MapName, const FString &Options, FStr
 void AGameManager::StartPlay() {
     Super::StartPlay();
 
-#if 0
+#if DO_IT
     TWeakObjectPtr<APawn> player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
     if (player.IsValid()) {
         m_ship->setPlayerPawn(player);
@@ -89,7 +89,7 @@ void AGameManager::StartPlay() {
 void AGameManager::Tick(float DeltaSeconds) {
     Super::Tick(DeltaSeconds);
 
-#if 0
+#if DO_IT
     m_deltaSeconds = DeltaSeconds;
 
     switch (m_state) {
@@ -182,8 +182,17 @@ void AGameManager::addEnemy(const FVector2D &position, float direction, shared_p
     enemy->set(position, direction, type, moveParser);
 
     if (enemy->shouldSpawnActor()) {
-        enemy->setActor(m_world->SpawnActor<AActor>(BP_EnemyClass,
-            FVector(position.X, 100.0, position.Y), FRotator::ZeroRotator));
+        TWeakObjectPtr<AActor> actor = m_world->SpawnActor<AActor>(BP_EnemyClass,
+            FVector(position.X, 100.0, position.Y), FRotator::ZeroRotator);
+        TWeakObjectPtr<APawn> player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+        if (player.IsValid() &&
+            player->GetAttachParentActor()) {
+            actor->AttachToActor(player->GetAttachParentActor(),
+                FAttachmentTransformRules::KeepWorldTransform);
+                //FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+            //actor->SetActorRelativeLocation(FVector(position.X, 0, position.Y));
+        }
+        enemy->setActor(actor);
     }
 }
 
@@ -321,7 +330,7 @@ void AGameManager::inGameTick() {
     m_field->tick();
     m_ship->tick();
     //m_shots->tick();
-    m_enemies->tick();
+    //m_enemies->tick();
 
     if (m_mode == ROLL) {
         m_rolls->tick();

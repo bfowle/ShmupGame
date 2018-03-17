@@ -5,7 +5,7 @@
 using namespace std;
 
 void Field::init() {
-    m_size = FVector2D(360, 700); //800
+    m_size = FVector2D(700, 360); //800
     m_eyeZ = 20;
     m_roll = 0;
     m_yaw = 0;

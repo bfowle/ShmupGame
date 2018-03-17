@@ -22,6 +22,8 @@ class Ship;
 class BulletActorPool;
 class BulletMLParser;
 
+#define DO_IT 0
+
 UCLASS()
 class SHMUPGAME_API AGameManager : public AGameModeBase {
     GENERATED_BODY()
