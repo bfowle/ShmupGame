@@ -20,7 +20,7 @@ public:
     void tick();
 
 private:
-    struct EnemyFleet {
+    struct EnemySquadron {
     public:
         std::shared_ptr<EnemyType> m_type;
         BulletMLParser *m_moveParser;
@@ -35,11 +35,11 @@ private:
     void createSectionData();
     void createStage();
     void createEnemyData();
-    void setFleetPattern(EnemyFleet *fleet);
-    void setFleet(EnemyFleet *fleet, int type);
-    void setSmallFleet(EnemyFleet *fleet);
-    void setMediumFleet(EnemyFleet *fleet);
-    void setLargeFleet(EnemyFleet *fleet);
+    void setSquadronPattern(EnemySquadron *squadron);
+    void setSquadron(EnemySquadron *squadron, int type);
+    void setSmallSquadron(EnemySquadron *squadron);
+    void setMediumSquadron(EnemySquadron *squadron);
+    void setLargeSquadron(EnemySquadron *squadron);
     void gotoNextSection();
 
 public:
@@ -87,9 +87,9 @@ private:
     std::shared_ptr<BarrageManager> m_barrageManager;
     std::shared_ptr<Field> m_field;
 
-    static const int m_fleetPatterns[][7][3];
+    static const int m_squadronPatterns[][7][3];
 
-    std::array<EnemyFleet, SIMULTANEOUS_APPEARANCE_MAX> m_fleets;
+    std::array<EnemySquadron, SIMULTANEOUS_APPEARANCE_MAX> m_squadrons;
     std::array<std::shared_ptr<EnemyType>, SMALL_ENEMY_TYPE_MAX> m_smallType;
     std::array<std::shared_ptr<EnemyType>, MEDIUM_ENEMY_TYPE_MAX> m_mediumType;
     std::array<std::shared_ptr<EnemyType>, LARGE_ENEMY_TYPE_MAX> m_largeType;
@@ -97,8 +97,8 @@ private:
     std::shared_ptr<EnemyType> m_largeBossType;
 
     float m_deltaSeconds;
-    int m_fleetTotal;
-    FVector2D m_fleetPosition;
+    int m_squadronTotal;
+    FVector2D m_squadronPosition;
     float m_sectionCnt, m_sectionIntervalCnt;
     int m_section;
     int m_rank, m_rankInc;

@@ -32,7 +32,6 @@ AGameManager::AGameManager() {
 void AGameManager::InitGame(const FString &MapName, const FString &Options, FString &ErrorMessage) {
     Super::InitGame(MapName, Options, ErrorMessage);
 
-#if DO_IT
     m_random = Random();
     m_world = GetWorld();
 
@@ -42,6 +41,7 @@ void AGameManager::InitGame(const FString &MapName, const FString &Options, FStr
     m_ship.reset(new Ship());
     m_ship->init(m_field, this);
 
+#if DO_IT
     shared_ptr<BulletActorInitializer> bi(new BulletActorInitializer(m_field, m_ship, this));
     m_bullets.reset(new BulletActorPool(BULLET_MAX, bi));
 
@@ -73,12 +73,12 @@ void AGameManager::InitGame(const FString &MapName, const FString &Options, FStr
 void AGameManager::StartPlay() {
     Super::StartPlay();
 
-#if DO_IT
     TWeakObjectPtr<APawn> player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
     if (player.IsValid()) {
         m_ship->setPlayerPawn(player);
     }
 
+#if DO_IT
     //startTitle();
     //m_mode = LOCK;
     //m_difficulty = EXTREME;
@@ -304,7 +304,7 @@ void AGameManager::resumePause() {
 }
 
 void AGameManager::stageTick() {
-    m_stageManager->tick();
+    //m_stageManager->tick();
 }
 
 void AGameManager::inGameTick() {

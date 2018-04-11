@@ -11,7 +11,7 @@
 
 using namespace std;
 
-const int StageManager::m_fleetPatterns[][7][3] = {
+const int StageManager::m_squadronPatterns[][7][3] = {
     // 0: roll | 1: lock
     {
         // 0: small | 1: medium | 2: large
@@ -39,7 +39,7 @@ void StageManager::init(shared_ptr<Field> field, shared_ptr<BarrageManager> barr
     m_gameManager = gameManager;
 
     m_random = Random();
-    m_fleetPosition = FVector2D();
+    m_squadronPosition = FVector2D();
 
     for (int i = 0; i < m_smallType.size(); ++i) {
         m_smallType[i].reset(new EnemyType());
@@ -69,109 +69,97 @@ void StageManager::setRank(float baseRank, float inc, int startParsec, int type)
 void StageManager::tick() {
     m_deltaSeconds = m_gameManager->m_world->GetDeltaSeconds();
 
-    //UE_LOG(LogTemp, Warning, TEXT("::StageManager(tick) -> fleet total: %d "), m_fleetTotal);
-    for (int i = 0; i < m_fleetTotal; ++i) {
-        EnemyFleet *fleet = &m_fleets[i];
-        //UE_LOG(LogTemp, Warning, TEXT("`--> fleet[%d] (tot: %d, cnt: %d, remain: %d) [int: %f, grpint: %f]"),
-        //    fleet->m_id, fleet->m_total, fleet->m_cnt, fleet->m_remaining, fleet->m_interval, fleet->m_groupInterval/*,
-        //    *fleet->m_moveParser->getName().c_str()*/);
+    for (int i = 0; i < m_squadronTotal; ++i) {
+        EnemySquadron *squadron = &m_squadrons[i];
+        squadron->m_cnt--;
 
-        fleet->m_cnt--;
-        //fleet->m_cnt -= 10.0 * m_gameManager->m_deltaSeconds;
-        //UE_LOG(LogTemp, Warning, TEXT(" 1.) [%d] tick::cnt [%f] -- (%f) "), m_fleetTotal, fleet->m_cnt, m_gameManager->m_deltaSeconds);
-
-        if (fleet->m_cnt > 0) {
+        if (squadron->m_cnt > 0) {
             // add an extra enemy
             if (!m_isMediumRushSection) {
-                if (fleet->m_type->m_type == EnemyType::SMALL &&
-                    !EnemyType::m_exists[fleet->m_type->m_id]) {
-                    //UE_LOG(LogTemp, Warning, TEXT("`----> [%d] ADD EXTRA ENEMY "), fleet->m_id);
-                    //UE_LOG(LogTemp, Warning, TEXT(" 3-1.) tick::add::cnt [%f] "), fleet->m_cnt);
-                    fleet->m_cnt = 0;
-                    EnemyType::m_exists[fleet->m_type->m_id] = true;
+                if (squadron->m_type->m_type == EnemyType::SMALL &&
+                    !EnemyType::m_exists[squadron->m_type->m_id]) {
+                    squadron->m_cnt = 0;
+                    EnemyType::m_exists[squadron->m_type->m_id] = true;
                 }
             } else {
-                if (fleet->m_type->m_type == EnemyType::MEDIUM &&
-                    !EnemyType::m_exists[fleet->m_type->m_id]) {
-                    //UE_LOG(LogTemp, Warning, TEXT(" 3-2.) tick::add::cnt [%f] "), fleet->m_cnt);
-                    fleet->m_cnt = 0;
-                    EnemyType::m_exists[fleet->m_type->m_id] = true;
+                if (squadron->m_type->m_type == EnemyType::MEDIUM &&
+                    !EnemyType::m_exists[squadron->m_type->m_id]) {
+                    squadron->m_cnt = 0;
+                    EnemyType::m_exists[squadron->m_type->m_id] = true;
                 }
             }
             continue;
         }
 
         float pos = 0;
-        switch (fleet->m_sequence) {
+        switch (squadron->m_sequence) {
         case RANDOM:
             pos = m_random.nextFloat(1);
             break;
         case FIXED:
-            pos = fleet->m_position;
+            pos = squadron->m_position;
             break;
         }
 
         float direction = 0;
-        switch (fleet->m_point) {
+        switch (squadron->m_point) {
         case TOP:
-            switch (fleet->m_pattern) {
+            switch (squadron->m_pattern) {
             case BOTH_SIDES:
-                m_fleetPosition.X = (pos - 0.5) * m_field->m_size.X * 1.8;
+                m_squadronPosition.X = (pos - 0.5) * m_field->m_size.X * 1.8;
                 break;
             default:
-                m_fleetPosition.X = (pos * 0.6 + 0.2) * m_field->m_size.X * fleet->m_side;
+                m_squadronPosition.X = (pos * 0.6 + 0.2) * m_field->m_size.X * squadron->m_side;
                 break;
             }
-            m_fleetPosition.Y = m_field->m_size.Y - Enemy::FIELD_SPACE;
+            m_squadronPosition.Y = m_field->m_size.Y - Enemy::FIELD_SPACE;
             direction = M_PI;
             break;
 
         case BACK:
-            switch (fleet->m_pattern) {
+            switch (squadron->m_pattern) {
             case BOTH_SIDES:
-                m_fleetPosition.X = (pos - 0.5) * m_field->m_size.X * 1.8;
+                m_squadronPosition.X = (pos - 0.5) * m_field->m_size.X * 1.8;
                 break;
             default:
-                m_fleetPosition.X = (pos * 0.6 + 0.2) * m_field->m_size.X * fleet->m_side;
+                m_squadronPosition.X = (pos * 0.6 + 0.2) * m_field->m_size.X * squadron->m_side;
                 break;
             }
-            m_fleetPosition.Y = -m_field->m_size.Y + Enemy::FIELD_SPACE;
+            m_squadronPosition.Y = -m_field->m_size.Y + Enemy::FIELD_SPACE;
             direction = 0;
             break;
 
         case SIDE:
-            switch (fleet->m_pattern) {
+            switch (squadron->m_pattern) {
             case BOTH_SIDES:
-                m_fleetPosition.X = (m_field->m_size.X - Enemy::FIELD_SPACE) * (m_random.nextInt(2) * 2 - 1);
+                m_squadronPosition.X = (m_field->m_size.X - Enemy::FIELD_SPACE) * (m_random.nextInt(2) * 2 - 1);
                 break;
             default:
-                m_fleetPosition.X = (m_field->m_size.X - Enemy::FIELD_SPACE) * fleet->m_side;
+                m_squadronPosition.X = (m_field->m_size.X - Enemy::FIELD_SPACE) * squadron->m_side;
                 break;
             }
-            m_fleetPosition.Y = (pos * 0.4 + 0.4) * m_field->m_size.Y;
-            if (m_fleetPosition.X < 0) {
+            m_squadronPosition.Y = (pos * 0.4 + 0.4) * m_field->m_size.Y;
+            if (m_squadronPosition.X < 0) {
                 direction = M_PI / 2.0;
             } else {
                 direction = M_PI / 2.0 * 3.0;
             }
             break;
         }
-        m_fleetPosition.X *= 0.88;
+        m_squadronPosition.X *= 0.88;
 
-        m_gameManager->addEnemy(m_fleetPosition, direction, fleet->m_type, fleet->m_moveParser);
+        m_gameManager->addEnemy(m_squadronPosition, direction, squadron->m_type, squadron->m_moveParser);
 
-        fleet->m_remaining--;
-        if (fleet->m_remaining <= 0) {
-            //UE_LOG(LogTemp, Warning, TEXT(" 2-1.) cnt=groupInterval [%f, %f] "), fleet->m_cnt, fleet->m_groupInterval);
-            fleet->m_cnt = fleet->m_groupInterval;
-            fleet->m_remaining = fleet->m_total;
-            if (fleet->m_pattern != ONE_SIDE) {
-                fleet->m_side *= -1;
+        squadron->m_remaining--;
+        if (squadron->m_remaining <= 0) {
+            squadron->m_cnt = squadron->m_groupInterval;
+            squadron->m_remaining = squadron->m_total;
+            if (squadron->m_pattern != ONE_SIDE) {
+                squadron->m_side *= -1;
             }
-            fleet->m_position = m_random.nextFloat(1);
+            squadron->m_position = m_random.nextFloat(1);
         } else {
-            //UE_LOG(LogTemp, Warning, TEXT(" 2-2.) cnt=interval [%f, %f] "), fleet->m_cnt, fleet->m_interval);
-            fleet->m_cnt = fleet->m_interval;
+            squadron->m_cnt = squadron->m_interval;
         }
     }
 
@@ -180,7 +168,6 @@ void StageManager::tick() {
          !EnemyType::m_exists[m_largeBossType->m_id])) {
         --m_sectionCnt;
         //m_sectionCnt -= 10.0 * m_deltaSeconds;
-        //UE_LOG(LogTemp, Warning, TEXT(" [*] sectionCnt: %f ... [< sectionInt? => %f ] "), m_sectionCnt, m_sectionIntervalCnt);
     }
 
     if (m_sectionCnt < m_sectionIntervalCnt) {
@@ -188,7 +175,7 @@ void StageManager::tick() {
             m_sectionCnt == m_sectionIntervalCnt - 1) {
             // do stuff
         }
-        m_fleetTotal = 0;
+        m_squadronTotal = 0;
 
         if (m_sectionCnt <= 0) {
             gotoNextSection();
@@ -199,7 +186,7 @@ void StageManager::tick() {
 }
 
 void StageManager::createSectionData() {
-    m_fleetTotal = 0;
+    m_squadronTotal = 0;
     if (m_rank <= 0) {
         return;
     }
@@ -261,22 +248,22 @@ void StageManager::createSectionData() {
 
     UE_LOG(LogTemp, Warning, TEXT("!!!!!!!!!! StageManager::createSectionData => %d ... [small: %d, medium: %d, large: %d; boss? %s]"),
         m_section,
-        m_fleetPatterns[m_gameManager->m_mode][ap][0],
-        m_fleetPatterns[m_gameManager->m_mode][ap][1],
-        m_fleetPatterns[m_gameManager->m_mode][ap][2],
+        m_squadronPatterns[m_gameManager->m_mode][ap][0],
+        m_squadronPatterns[m_gameManager->m_mode][ap][1],
+        m_squadronPatterns[m_gameManager->m_mode][ap][2],
         (m_isBossSection ? TEXT("Y") : TEXT("N")));
 
-    for (int i = 0; i < m_fleetPatterns[m_gameManager->m_mode][ap][0]; ++i, ++m_fleetTotal) {
-        EnemyFleet *appearance = &m_fleets[m_fleetTotal];
-        setFleet(appearance, SMALL);
+    for (int i = 0; i < m_squadronPatterns[m_gameManager->m_mode][ap][0]; ++i, ++m_squadronTotal) {
+        EnemySquadron *squadron = &m_squadrons[m_squadronTotal];
+        setSquadron(squadron, SMALL);
     }
-    for (int i = 0; i < m_fleetPatterns[m_gameManager->m_mode][ap][1]; ++i, ++m_fleetTotal) {
-        EnemyFleet *appearance = &m_fleets[m_fleetTotal];
-        setFleet(appearance, MEDIUM);
+    for (int i = 0; i < m_squadronPatterns[m_gameManager->m_mode][ap][1]; ++i, ++m_squadronTotal) {
+        EnemySquadron *squadron = &m_squadrons[m_squadronTotal];
+        setSquadron(squadron, MEDIUM);
     }
-    for (int i = 0; i < m_fleetPatterns[m_gameManager->m_mode][ap][2]; ++i, ++m_fleetTotal) {
-        EnemyFleet *appearance = &m_fleets[m_fleetTotal];
-        setFleet(appearance, LARGE);
+    for (int i = 0; i < m_squadronPatterns[m_gameManager->m_mode][ap][2]; ++i, ++m_squadronTotal) {
+        EnemySquadron *squadron = &m_squadrons[m_squadronTotal];
+        setSquadron(squadron, LARGE);
     }
 }
 
@@ -307,158 +294,158 @@ void StageManager::createEnemyData() {
     m_largeBossType->setMediumBossEnemyType(m_rank, m_gameManager->m_mode);
 }
 
-void StageManager::setFleetPattern(EnemyFleet *appearance) {
+void StageManager::setSquadronPattern(EnemySquadron *squadron) {
     switch (m_random.nextInt(5)) {
     case 0:
-        appearance->m_pattern = ONE_SIDE;
+        squadron->m_pattern = ONE_SIDE;
         break;
     case 1:
     case 2:
-        appearance->m_pattern = ALTERNATE;
+        squadron->m_pattern = ALTERNATE;
         break;
     case 3:
     case 4:
-        appearance->m_pattern = BOTH_SIDES;
+        squadron->m_pattern = BOTH_SIDES;
         break;
     }
 
     switch (m_random.nextInt(3)) {
     case 0:
-        appearance->m_sequence = RANDOM;
+        squadron->m_sequence = RANDOM;
         break;
     case 1:
     case 2:
-        appearance->m_sequence = FIXED;
+        squadron->m_sequence = FIXED;
         break;
     }
 }
 
-static int fleetCnt = 0;
+static int squadronCnt = 0;
 
-void StageManager::setFleet(EnemyFleet *fleet, int type) {
+void StageManager::setSquadron(EnemySquadron *squadron, int type) {
     switch (type) {
     case SMALL:
-        setSmallFleet(fleet);
+        setSmallSquadron(squadron);
         break;
     case MEDIUM:
-        setMediumFleet(fleet);
+        setMediumSquadron(squadron);
         break;
     case LARGE:
-        setLargeFleet(fleet);
+        setLargeSquadron(squadron);
         break;
     }
 
-    fleet->m_id = ++fleetCnt;
-    fleet->m_cnt = 0;
-    fleet->m_remaining = fleet->m_total;
-    fleet->m_side = m_random.nextInt(2) * 2 - 1;
-    fleet->m_position = m_random.nextFloat(1);
+    squadron->m_id = ++squadronCnt;
+    squadron->m_cnt = 0;
+    squadron->m_remaining = squadron->m_total;
+    squadron->m_side = m_random.nextInt(2) * 2 - 1;
+    squadron->m_position = m_random.nextFloat(1);
 }
 
-void StageManager::setSmallFleet(EnemyFleet *fleet) {
-    fleet->m_type = m_smallType[m_random.nextInt(m_smallType.size())];
+void StageManager::setSmallSquadron(EnemySquadron *squadron) {
+    squadron->m_type = m_smallType[m_random.nextInt(m_smallType.size())];
 
     int mt;
     if (m_random.nextFloat(1) > 0.2) {
-        fleet->m_point = TOP;
+        squadron->m_point = TOP;
         mt = BarrageManager::SMALL_MOVE;
     } else {
-        fleet->m_point = SIDE;
+        squadron->m_point = SIDE;
         mt = BarrageManager::SMALL_SIDE_MOVE;
     }
 
-    fleet->m_moveParser = m_barrageManager->m_parser[mt][m_random.nextInt(m_barrageManager->m_parserSizes[mt])];
-    setFleetPattern(fleet);
+    squadron->m_moveParser = m_barrageManager->m_parser[mt][m_random.nextInt(m_barrageManager->m_parserSizes[mt])];
+    setSquadronPattern(squadron);
 
-    if (fleet->m_pattern == ONE_SIDE) {
-        fleet->m_pattern = ALTERNATE;
+    if (squadron->m_pattern == ONE_SIDE) {
+        squadron->m_pattern = ALTERNATE;
     }
 
     switch (m_random.nextInt(4)) {
     case 0:
-        fleet->m_total = 7 + m_random.nextInt(5);
-        fleet->m_groupInterval = 72 + m_random.nextInt(15);
-        fleet->m_interval = 15 + m_random.nextInt(5);
+        squadron->m_total = 7 + m_random.nextInt(5);
+        squadron->m_groupInterval = 72 + m_random.nextInt(15);
+        squadron->m_interval = 15 + m_random.nextInt(5);
         break;
     case 1:
-        fleet->m_total = 5 + m_random.nextInt(3);
-        fleet->m_groupInterval = 56 + m_random.nextInt(10);
-        fleet->m_interval = 20 + m_random.nextInt(5);
+        squadron->m_total = 5 + m_random.nextInt(3);
+        squadron->m_groupInterval = 56 + m_random.nextInt(10);
+        squadron->m_interval = 20 + m_random.nextInt(5);
         break;
     case 2:
     case 3:
-        fleet->m_total = 2 + m_random.nextInt(2);
-        fleet->m_groupInterval = 45 + m_random.nextInt(20);
-        fleet->m_interval = 25 + m_random.nextInt(5);
+        squadron->m_total = 2 + m_random.nextInt(2);
+        squadron->m_groupInterval = 45 + m_random.nextInt(20);
+        squadron->m_interval = 25 + m_random.nextInt(5);
         break;
     }
-    //UE_LOG(LogTemp, Warning, TEXT(" !!!! setSmallFleet : [tot: %f, grp: %f, int: %f] "), fleet->m_total, fleet->m_groupInterval, fleet->m_interval);
+    //UE_LOG(LogTemp, Warning, TEXT(" !!!! setSmallFleet : [tot: %f, grp: %f, int: %f] "), squadron->m_total, squadron->m_groupInterval, squadron->m_interval);
 }
 
-void StageManager::setMediumFleet(EnemyFleet *appearance) {
-    appearance->m_type = m_mediumType[m_random.nextInt(m_mediumType.size())];
+void StageManager::setMediumSquadron(EnemySquadron *squadron) {
+    squadron->m_type = m_mediumType[m_random.nextInt(m_mediumType.size())];
 
     int mt;
     /*
-    @NOTE: appearance from behind is disabled for medium enemies
+    @NOTE: disabled for medium enemies
     if (m_random.nextFloat(1) > 0.1) {
-        appearance->m_point = TOP;
+        squadron->m_point = TOP;
         mt = BarrageManager::MEDIUM_MOVE;
     } else {
-        appearance->m_point = BACK;
+        squadron->m_point = BACK;
         mt = BarrageManager::MEDIUM_BACK_MOVE;
     }
     */
-    appearance->m_point = TOP;
+    squadron->m_point = TOP;
     mt = BarrageManager::MEDIUM_MOVE;
 
-    appearance->m_moveParser = m_barrageManager->m_parser[mt][m_random.nextInt(m_barrageManager->m_parserSizes[mt])];
-    setFleetPattern(appearance);
+    squadron->m_moveParser = m_barrageManager->m_parser[mt][m_random.nextInt(m_barrageManager->m_parserSizes[mt])];
+    setSquadronPattern(squadron);
 
     switch (m_random.nextInt(3)) {
     case 0:
-        appearance->m_total = 4;
-        appearance->m_groupInterval = 240 + m_random.nextInt(150);
-        appearance->m_interval = 80 + m_random.nextInt(30);
+        squadron->m_total = 4;
+        squadron->m_groupInterval = 240 + m_random.nextInt(150);
+        squadron->m_interval = 80 + m_random.nextInt(30);
         break;
     case 1:
-        appearance->m_total = 2;
-        appearance->m_groupInterval = 180 + m_random.nextInt(60);
-        appearance->m_interval = 180 + m_random.nextInt(20);
+        squadron->m_total = 2;
+        squadron->m_groupInterval = 180 + m_random.nextInt(60);
+        squadron->m_interval = 180 + m_random.nextInt(20);
         break;
     case 2:
-        appearance->m_total = 1;
-        appearance->m_groupInterval = 150 + m_random.nextInt(50);
-        appearance->m_interval = 100;
+        squadron->m_total = 1;
+        squadron->m_groupInterval = 150 + m_random.nextInt(50);
+        squadron->m_interval = 100;
         break;
     }
 }
 
-void StageManager::setLargeFleet(EnemyFleet *appearance) {
-    appearance->m_type = m_largeType[m_random.nextInt(m_largeType.size())];
+void StageManager::setLargeSquadron(EnemySquadron *squadron) {
+    squadron->m_type = m_largeType[m_random.nextInt(m_largeType.size())];
 
     int mt;
-    appearance->m_point = TOP;
+    squadron->m_point = TOP;
     mt = BarrageManager::LARGE_MOVE;
 
-    appearance->m_moveParser = m_barrageManager->m_parser[mt][m_random.nextInt(m_barrageManager->m_parserSizes[mt])];
-    setFleetPattern(appearance);
+    squadron->m_moveParser = m_barrageManager->m_parser[mt][m_random.nextInt(m_barrageManager->m_parserSizes[mt])];
+    setSquadronPattern(squadron);
 
     switch (m_random.nextInt(3)) {
     case 0:
-        appearance->m_total = 3;
-        appearance->m_groupInterval = 400 + m_random.nextInt(100);
-        appearance->m_interval = 240 + m_random.nextInt(40);
+        squadron->m_total = 3;
+        squadron->m_groupInterval = 400 + m_random.nextInt(100);
+        squadron->m_interval = 240 + m_random.nextInt(40);
         break;
     case 1:
-        appearance->m_total = 2;
-        appearance->m_groupInterval = 400 + m_random.nextInt(60);
-        appearance->m_interval = 300 + m_random.nextInt(20);
+        squadron->m_total = 2;
+        squadron->m_groupInterval = 400 + m_random.nextInt(60);
+        squadron->m_interval = 300 + m_random.nextInt(20);
         break;
     case 2:
-        appearance->m_total = 1;
-        appearance->m_groupInterval = 270 + m_random.nextInt(50);
-        appearance->m_interval = 200;
+        squadron->m_total = 1;
+        squadron->m_groupInterval = 270 + m_random.nextInt(50);
+        squadron->m_interval = 200;
         break;
     }
 }
