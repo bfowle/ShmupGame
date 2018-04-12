@@ -15,11 +15,6 @@ class Field;
 
 class StageManager {
 public:
-    void init(std::shared_ptr<Field> field, std::shared_ptr<BarrageManager> barrageManager, TWeakObjectPtr<AGameManager> gameManager);
-    void setRank(float baseRank, float inc, int startParsec, int type);
-    void tick();
-
-private:
     struct EnemySquadron {
     public:
         std::shared_ptr<EnemyType> m_type;
@@ -32,6 +27,11 @@ private:
         float m_interval, m_groupInterval;
     };
 
+    void init(std::shared_ptr<Field> field, std::shared_ptr<BarrageManager> barrageManager, TWeakObjectPtr<AGameManager> gameManager);
+    void setRank(float baseRank, float inc, int startParsec, int type);
+    void tick();
+
+private:
     void createSectionData();
     void createStage();
     void createEnemyData();
@@ -74,6 +74,8 @@ public:
         LARGE
     };
 
+    std::array<EnemySquadron, SIMULTANEOUS_APPEARANCE_MAX> m_squadrons;
+
     int m_parsec;
     bool m_isBossSection;
 
@@ -89,7 +91,6 @@ private:
 
     static const int m_squadronPatterns[][7][3];
 
-    std::array<EnemySquadron, SIMULTANEOUS_APPEARANCE_MAX> m_squadrons;
     std::array<std::shared_ptr<EnemyType>, SMALL_ENEMY_TYPE_MAX> m_smallType;
     std::array<std::shared_ptr<EnemyType>, MEDIUM_ENEMY_TYPE_MAX> m_mediumType;
     std::array<std::shared_ptr<EnemyType>, LARGE_ENEMY_TYPE_MAX> m_largeType;

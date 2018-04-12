@@ -39,6 +39,9 @@ public:
     void AddShot(const FVector &position, float direction);
 
     UFUNCTION(BlueprintCallable, Category = GameManager)
+    void AddEnemy(AActor *enemy, FString moveFilePath);
+
+    UFUNCTION(BlueprintCallable, Category = GameManager)
     void RemoveEnemy(AActor *enemy);
 
     UFUNCTION(BlueprintCallable, Category = GameManager)
@@ -140,6 +143,8 @@ private:
     static const int SLOWDOWN_START_BULLETS_SPEED[2];
 
     Random m_random;
+    TWeakObjectPtr<APawn> m_player;
+
     std::shared_ptr<Field> m_field;
     std::shared_ptr<Ship> m_ship;
     std::shared_ptr<ActorPool> m_enemies;

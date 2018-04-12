@@ -92,6 +92,8 @@ void Enemy::setActor(TWeakObjectPtr<AActor> actor) {
     if (m_actor.IsValid()) {
         m_uuid = actor->GetUniqueID();
         m_movement = m_actor->FindComponentByClass<UProjectileMovementComponent>();
+        if (m_movement != nullptr) {
+        }
     }
 }
 

@@ -110,6 +110,7 @@ private:
 
     TWeakObjectPtr<AActor> m_actor;
     TWeakObjectPtr<UProjectileMovementComponent> m_movement;
+    BulletMLParser *m_moveParser;
 
     std::shared_ptr<Field> m_field;
     std::shared_ptr<BulletActorPool> m_bullets;

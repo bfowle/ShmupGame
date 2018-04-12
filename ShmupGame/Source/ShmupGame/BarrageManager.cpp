@@ -16,7 +16,7 @@ array<const string, BarrageManager::BARRAGE_TYPE> BarrageManager::m_dirName = {
 };
 
 void BarrageManager::loadBulletMLFiles() {
-    FString sourceDir = FPaths::GameSourceDir() + "xml/";
+    FString sourceDir = FPaths::ProjectContentDir() + "BulletML/";
     FPaths::NormalizeDirectoryName(sourceDir);
 
     IFileManager &fileManager = IFileManager::Get();

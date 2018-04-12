@@ -15,6 +15,7 @@
 #include "GameFramework/Pawn.h"
 #include "Kismet/GameplayStatics.h"
 
+#include "bulletml/bulletml.h"
 #include "bulletml/bulletmlparser.h"
 
 using namespace std;
@@ -41,7 +42,6 @@ void AGameManager::InitGame(const FString &MapName, const FString &Options, FStr
     m_ship.reset(new Ship());
     m_ship->init(m_field, this);
 
-#if DO_IT
     shared_ptr<BulletActorInitializer> bi(new BulletActorInitializer(m_field, m_ship, this));
     m_bullets.reset(new BulletActorPool(BULLET_MAX, bi));
 
@@ -67,7 +67,6 @@ void AGameManager::InitGame(const FString &MapName, const FString &Options, FStr
 
     m_interval = INTERVAL_BASE;
     m_maxSkipFrame = 5;
-#endif
 }
 
 void AGameManager::StartPlay() {
@@ -78,18 +77,15 @@ void AGameManager::StartPlay() {
         m_ship->setPlayerPawn(player);
     }
 
-#if DO_IT
     //startTitle();
     //m_mode = LOCK;
     //m_difficulty = EXTREME;
     startInGame();
-#endif
 }
 
 void AGameManager::Tick(float DeltaSeconds) {
     Super::Tick(DeltaSeconds);
 
-#if DO_IT
     m_deltaSeconds = DeltaSeconds;
 
     switch (m_state) {
@@ -110,18 +106,40 @@ void AGameManager::Tick(float DeltaSeconds) {
     }
 
     m_cnt++;
-#endif
 }
 
 void AGameManager::AddShot(const FVector &position, float direction) {
     UE_LOG(LogTemp, Warning, TEXT("FIRING SHOT: %s | %f"), *position.ToString(), direction);
 }
 
+void AGameManager::AddEnemy(AActor *actor, FString moveFilePath) {
+    shared_ptr<Enemy> enemy = static_pointer_cast<Enemy>(m_enemies->getInstance());
+    if (!enemy) {
+        return;
+    }
+
+    // get new squadron from StageManager
+    StageManager::EnemySquadron *squadron = &m_stageManager->m_squadrons[0];
+    BulletMLParserTinyXML *moveParser = BulletMLParserTinyXML_new(const_cast<char *>(TCHAR_TO_UTF8(*moveFilePath)));
+    BulletMLParserTinyXML_parse(moveParser);
+    enemy->set(FVector2D::ZeroVector, M_PI, squadron->m_type, reinterpret_cast<BulletMLParser *>(moveParser));
+
+    /*
+    TWeakObjectPtr<APawn> player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+    if (player.IsValid() &&
+        player->GetAttachParentActor()) {
+        actor->AttachToActor(player->GetAttachParentActor(),
+            FAttachmentTransformRules::KeepWorldTransform);
+        //actor->SetActorRelativeLocation(FVector(position.X, 0, position.Y));
+    }
+    */
+    enemy->setActor(actor);
+}
+
 void AGameManager::RemoveEnemy(AActor *enemy) {
     vector<shared_ptr<Actor>>::iterator it = find_if(m_enemies->m_pool.begin(), m_enemies->m_pool.end(),
         [&](shared_ptr<Actor> a) { return a->m_uuid == enemy->GetUniqueID(); });
     if (it != m_enemies->m_pool.end()) {
-        //UE_LOG(LogTemp, Warning, TEXT("Remove Enemy :: %s --- %d"), *enemy->GetName(), enemy->GetUniqueID());
         (*it)->remove();
     }
 }
@@ -130,7 +148,6 @@ void AGameManager::RemoveBullet(AActor *bullet) {
     vector<shared_ptr<Actor>>::iterator it = find_if(m_bullets->m_pool.begin(), m_bullets->m_pool.end(),
         [&](shared_ptr<Actor> a) { return a->m_uuid == bullet->GetUniqueID(); });
     if (it != m_bullets->m_pool.end()) {
-        //UE_LOG(LogTemp, Warning, TEXT("Remove Bullet :: %s --- %d"), *bullet->GetName(), bullet->GetUniqueID());
         (*it)->remove();
     }
 }
@@ -189,7 +206,6 @@ void AGameManager::addEnemy(const FVector2D &position, float direction, shared_p
             player->GetAttachParentActor()) {
             actor->AttachToActor(player->GetAttachParentActor(),
                 FAttachmentTransformRules::KeepWorldTransform);
-                //FAttachmentTransformRules::SnapToTargetNotIncludingScale);
             //actor->SetActorRelativeLocation(FVector(position.X, 0, position.Y));
         }
         enemy->setActor(actor);
@@ -330,7 +346,7 @@ void AGameManager::inGameTick() {
     m_field->tick();
     m_ship->tick();
     //m_shots->tick();
-    //m_enemies->tick();
+    m_enemies->tick();
 
     if (m_mode == ROLL) {
         m_rolls->tick();

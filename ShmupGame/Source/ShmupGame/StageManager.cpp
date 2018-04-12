@@ -246,7 +246,7 @@ void StageManager::createSectionData() {
         ap = MEDIUM_RUSH_SECTION_PATTERN;
     }
 
-    UE_LOG(LogTemp, Warning, TEXT("!!!!!!!!!! StageManager::createSectionData => %d ... [small: %d, medium: %d, large: %d; boss? %s]"),
+    UE_LOG(LogTemp, Warning, TEXT("[*] StageManager::createSectionData => %d ... [small: %d, medium: %d, large: %d; boss? %s]"),
         m_section,
         m_squadronPatterns[m_gameManager->m_mode][ap][0],
         m_squadronPatterns[m_gameManager->m_mode][ap][1],
