@@ -72,7 +72,9 @@ private:
 
 public:
     static const float FIELD_SPACE;
+    static Enemy *m_now;
 
+    TWeakObjectPtr<AActor> m_actor;
     FVector2D m_position;
     std::shared_ptr<EnemyType> m_type;
     std::array<EnemyFormation, EnemyType::FORMATION_MAX> m_formation;
@@ -100,7 +102,6 @@ private:
     static const int ENEMY_TYPE_SCORE[];
     static float BOSS_MOVE_DISTANCE;
 
-    TWeakObjectPtr<AActor> m_actor;
     TWeakObjectPtr<UProjectileMovementComponent> m_movement;
     BulletMLParser *m_moveParser;
 

@@ -12,6 +12,7 @@
 
 using namespace std;
 
+Enemy *Enemy::m_now;
 const float Enemy::FIELD_SPACE = 90.0;
 Random Enemy::m_random;
 
@@ -59,7 +60,6 @@ void Enemy::set(const FVector2D &position, float direction, shared_ptr<EnemyType
     BulletMLRunner *moveRunner = BulletMLRunner_new_parser(moveParser);
     BulletActorPool::registerFunctions(moveRunner);
 
-    UE_LOG(LogTemp, Warning, TEXT(" Enemy::set -> %s "), *m_position.ToString());
     m_moveBullet = m_bullets->addBullet(moveRunner, m_position.X, m_position.Y, direction, 0, 0.5, 1, 1);
     if (!m_moveBullet) {
         return;
@@ -95,11 +95,12 @@ void Enemy::setActor(TWeakObjectPtr<AActor> actor) {
 }
 
 void Enemy::tick() {
+    m_now = this;
+
     EnemyType::m_exists[m_type->m_id] = true;
 
     if (!m_isBoss) {
-        //m_position.X = m_moveBullet->m_bullet->m_position.X;
-        //m_position.Y = m_moveBullet->m_bullet->m_position.Y;
+        //m_position = m_moveBullet->m_bullet->m_position;
 
         if (m_actor.IsValid() && 
             m_movement.IsValid() &&
@@ -132,10 +133,12 @@ void Enemy::tick() {
     } else {
         tickBoss();
     }
-
+    
+    if (m_moveBullet) {
+        m_moveBullet->m_bullet->m_position = m_position;
+    }
     if (m_topBullet) {
-        m_topBullet->m_bullet->m_position.X = m_position.X;
-        m_topBullet->m_bullet->m_position.Y = m_position.Y;
+        m_topBullet->m_bullet->m_position = m_position;
     }
 
     m_isDamaged = false;

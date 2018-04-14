@@ -43,7 +43,8 @@ void Bullet::addBullet(float direction, float speed) {
 }
 
 void Bullet::addBullet(BulletMLState *state, float direction, float speed) {
-    //UE_LOG(LogTemp, Warning, TEXT(" :: BULLET :: addBullet[with state] [%f, %f] "), *state->getBulletML()->getName().c_str(), direction, speed);
+    //UE_LOG(LogTemp, Warning, TEXT(" :: BULLET :: addBullet[with state] [%f, %f] "),
+    //  *state->getBulletML()->getName().c_str(), direction, speed);
     m_manager->addBullet(state, direction, speed);
 }
 
@@ -82,8 +83,8 @@ void Bullet::remove() {
 
 //-----------------------------------------------------------------------------
 
-const float VEL_SS_SDM_RATIO = 1.0; // 62.0 / 100;
-const float VEL_SDM_SS_RATIO = 1.0; // 100.0 / 62;
+const float VEL_SS_SDM_RATIO = 62.0 / 100;
+const float VEL_SDM_SS_RATIO = 100.0 / 62;
 
 float rtod(float a) {
     return a * 180 / M_PI;

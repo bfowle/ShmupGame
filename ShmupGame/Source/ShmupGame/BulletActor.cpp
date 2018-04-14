@@ -3,6 +3,7 @@
 #include "BulletActor.h"
 #include "BulletActorPool.h"
 #include "GameManager.h"
+#include "Enemy.h"
 #include "Field.h"
 #include "Ship.h"
 
@@ -71,9 +72,7 @@ void BulletActor::start(float speedRank, float xReverse) {
     m_previousPosition.Y = m_bullet->m_position.Y;
     m_bullet->setParam(speedRank, xReverse);
     m_cnt = 0;
-    m_rtCnt = 0;
     m_shouldBeRemoved = false;
-    m_backToRetro = false;
 }
 
 void BulletActor::setInvisible() {
@@ -87,11 +86,15 @@ void BulletActor::setTop(BulletMLParser *parser) {
 }
 
 void BulletActor::spawnBulletActor() {
+    // @TODO: !!!!!!!!!!!!!!!!!!!!!!!!!!!!! replace -650
     m_actor = m_gameManager->m_world->SpawnActor<AActor>(m_gameManager->BP_BulletClass,
         FVector(m_bullet->m_position.X, -650.0, m_bullet->m_position.Y), FRotator::ZeroRotator);
 
     if (m_actor.IsValid()) {
         m_uuid = m_actor->GetUniqueID();
+        m_actor->AttachToActor(Enemy::m_now->m_actor.Get(),
+            FAttachmentTransformRules::KeepWorldTransform);
+
         m_movement = m_actor->FindComponentByClass<UProjectileMovementComponent>();
     }
 }
@@ -120,18 +123,6 @@ void BulletActor::removeForced() {
     }
 }
 
-void BulletActor::toRetro() {
-    if (!m_isVisible ||
-        m_backToRetro) {
-        return;
-    }
-    m_backToRetro = true;
-
-    if (m_rtCnt >= RETRO_COUNT) {
-        m_rtCnt = RETRO_COUNT - 0.1;
-    }
-}
-
 void BulletActor::tick() {
     m_previousPosition.X = m_bullet->m_position.X;
     m_previousPosition.Y = m_bullet->m_position.Y;
@@ -150,45 +141,13 @@ void BulletActor::tick() {
         return;
     }
 
-    float sr = 0;
-#if 0
-    if (m_rtCnt < RETRO_COUNT) {
-        sr = m_bullet->m_speedRank * (0.3 + (m_rtCnt / RETRO_COUNT) * 0.7);
-        if (m_backToRetro) {
-            m_rtCnt -= sr;
-            if (m_rtCnt <= 0) {
-                removeForced();
-                return;
-            }
-        } else {
-            m_rtCnt += sr;
-        }
-
-        if (m_ship->m_cnt < -m_ship->INVINCIBLE_COUNT / 2 &&
-            m_isVisible &&
-            m_rtCnt >= RETRO_COUNT) {
-            removeForced();
-            return;
-        }
-    } else {
-        sr = m_bullet->m_speedRank;
-        if (m_cnt > BULLET_DISAPPEAR_COUNT) {
-            toRetro();
-        }
-    }
-#else
-    sr = m_bullet->m_speedRank;
-#endif
+    float sr = m_bullet->m_speedRank;
 
     //m_bullet->m_position.X += (sin(m_bullet->m_direction) * m_bullet->m_speed + m_bullet->m_acceleration.X) * sr * m_bullet->m_xReverse;
     //m_bullet->m_position.Y += (cos(m_bullet->m_direction) * m_bullet->m_speed - m_bullet->m_acceleration.Y) * sr;
 
     if (m_isVisible) {
         m_totalBulletsSpeed += m_bullet->m_speed * sr;
-
-        //if (m_rtCnt > RETRO_COUNT) {
-        //    //checkShipHit();
-        //}
 
         //if (m_field->checkHit(m_bullet->m_position, FIELD_SPACE)) {
         //    //UE_LOG(LogTemp, Warning, TEXT(" __ Bullet :: hit field __ [%s] ... %d "), *m_bullet->m_position.ToString(), m_cnt);

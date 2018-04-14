@@ -34,8 +34,7 @@ public:
 class BulletActor : public Actor {
 public:
     BulletActor() :
-        SHIP_HIT_WIDTH(0.2),
-        RETRO_COUNT(500) {
+        SHIP_HIT_WIDTH(0.2) {
     };
 
 private:
@@ -55,7 +54,6 @@ public:
     void spawnBulletActor();
     void rewind();
     void remove();
-    void toRetro();
     void tick();
 
     static void resetTotalBulletsSpeed();
@@ -80,7 +78,6 @@ private:
     };
 
     const float SHIP_HIT_WIDTH;
-    const float RETRO_COUNT;
     //static const float FIELD_SPACE;
 
     TWeakObjectPtr<AActor> m_actor;
@@ -97,9 +94,7 @@ private:
 
     FVector2D m_previousPosition;
     int m_cnt;
-    float m_rtCnt;
     bool m_shouldBeRemoved;
-    bool m_backToRetro;
 };
 
 #endif
