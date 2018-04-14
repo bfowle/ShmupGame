@@ -13,7 +13,7 @@
     </changeSpeed>
     <wait>60</wait>
     <accel>
-      <vertical>-2</vertical>
+      <horizontal>-2</horizontal>
       <term>60</term>
     </accel>
   </action>

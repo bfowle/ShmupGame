@@ -55,11 +55,8 @@ void EnemyType::setSmallEnemyType(float rank, int mode) {
     //setEnemyColorType();
 
     Barrage *barrage = &(m_barrage[0]);
-    if (mode == ROLL) {
-        setBarrageType(barrage, BarrageManager::SMALL, mode);
-    } else {
-        setBarrageType(barrage, BarrageManager::SMALL_LOCK, mode);
-    }
+    setBarrageType(barrage, BarrageManager::SMALL, mode);
+    //setBarrageType(barrage, BarrageManager::SMALL_LOCK, mode);
     setBarrageRank(barrage, rank, VERY_WEAK, mode);
     //setBarrageShape(barrage, 0.7);
 
@@ -88,42 +85,41 @@ void EnemyType::setMediumEnemyType(float rank, int mode) {
 
     float cr = 0;
     float sr = 0;
-    if (mode == ROLL) {
-        switch (m_random.nextInt(6)) {
-        case 0:
-        case 1:
-            cr = rank / 3 * 2;
-            sr = 0;
-            break;
-        case 2:
-            cr = rank / 4;
-            sr = rank / 4;
-            break;
-        case 3:
-        case 4:
-        case 5:
-        default:
-            cr = 0;
-            sr = rank / 2;
-            break;
-        }
-    } else {
-        switch (m_random.nextInt(6)) {
-        case 0:
-        case 1:
-            cr = rank / 5;
-            sr = rank / 4;
-            break;
-        case 2:
-        case 3:
-        case 4:
-        case 5:
-        default:
-            cr = 0;
-            sr = rank / 2;
-            break;
-        }
+    switch (m_random.nextInt(6)) {
+    case 0:
+    case 1:
+        cr = rank / 3 * 2;
+        sr = 0;
+        break;
+    case 2:
+        cr = rank / 4;
+        sr = rank / 4;
+        break;
+    case 3:
+    case 4:
+    case 5:
+    default:
+        cr = 0;
+        sr = rank / 2;
+        break;
     }
+    /*
+    switch (m_random.nextInt(6)) {
+    case 0:
+    case 1:
+        cr = rank / 5;
+        sr = rank / 4;
+        break;
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    default:
+        cr = 0;
+        sr = rank / 2;
+        break;
+    }
+    */
 
     setBarrageRank(barrage, cr, MORPH_WEAK, mode);
     //setBarrageShape(barrage, 0.75);
@@ -132,16 +128,15 @@ void EnemyType::setMediumEnemyType(float rank, int mode) {
 
     setEnemyShapeAndWings(MEDIUM);
 
-    if (mode == ROLL) {
-        m_shield = 40 + m_random.nextInt(10);
-        setFormation(sr, 1, BarrageManager::MEDIUM_SUB, NORMAL, 0, 0, 1, mode);
-        m_fireInterval = 72 + m_random.nextInt(60);
-        m_firePeriod = static_cast<int>(m_fireInterval / (1.8 + m_random.nextFloat(0.7)));
-    } else {
-        m_shield = 30 + m_random.nextInt(8);
-        m_fireInterval = 72 + m_random.nextInt(30);
-        m_firePeriod = static_cast<int>(m_fireInterval / 1.2 + m_random.nextFloat(0.2));
-    }
+    m_shield = 40 + m_random.nextInt(10);
+    setFormation(sr, 1, BarrageManager::MEDIUM_SUB, NORMAL, 0, 0, 1, mode);
+    m_fireInterval = 72 + m_random.nextInt(60);
+    m_firePeriod = static_cast<int>(m_fireInterval / (1.8 + m_random.nextFloat(0.7)));
+    /*
+    m_shield = 30 + m_random.nextInt(8);
+    m_fireInterval = 72 + m_random.nextInt(30);
+    m_firePeriod = static_cast<int>(m_fireInterval / 1.2 + m_random.nextFloat(0.2));
+    */
 
     if (rank < 10) {
         m_firePeriod /= (2 - rank * 0.1);
@@ -314,11 +309,8 @@ void EnemyType::setBarrageType(Barrage *barrage, int btn, int mode) {
     }
 
     int mpn;
-    if (mode == ROLL) {
-        mpn = m_barrageManager->m_parserSizes[BarrageManager::MORPH];
-    } else {
-        mpn = m_barrageManager->m_parserSizes[BarrageManager::MORPH_LOCK];
-    }
+    mpn = m_barrageManager->m_parserSizes[BarrageManager::MORPH];
+    //mpn = m_barrageManager->m_parserSizes[BarrageManager::MORPH_LOCK];
 
     for (int i = 0; i < barrage->m_morphParser.size(); ++i) {
         int mi = m_random.nextInt(mpn);
@@ -333,13 +325,10 @@ void EnemyType::setBarrageType(Barrage *barrage, int btn, int mode) {
             }
         }
 
-        if (mode == ROLL) {
-            barrage->m_morphParser[i] = reinterpret_cast<BulletMLParser *>(
-                m_barrageManager->m_parser[BarrageManager::MORPH][mi]);
-        } else {
-            barrage->m_morphParser[i] = reinterpret_cast<BulletMLParser *>(
-                m_barrageManager->m_parser[BarrageManager::MORPH_LOCK][mi]);
-        }
+        barrage->m_morphParser[i] = reinterpret_cast<BulletMLParser *>(
+            m_barrageManager->m_parser[BarrageManager::MORPH][mi]);
+        //barrage->m_morphParser[i] = reinterpret_cast<BulletMLParser *>(
+        //    m_barrageManager->m_parser[BarrageManager::MORPH_LOCK][mi]);
 
         m_usedMorphParser[mi] = true;
     }
@@ -362,11 +351,8 @@ void EnemyType::setBarrageRank(Barrage *barrage, float rank, int intensity, int 
         barrage->m_rank /= 2.0;
     }
 
-    if (mode == ROLL) {
-        barrage->m_speedRank = sqrt(rank) * (m_random.nextFloat(0.2) + 1.0);
-    } else {
-        barrage->m_speedRank = sqrt(rank * 0.66) * (m_random.nextFloat(0.2) + 0.8);
-    }
+    barrage->m_speedRank = sqrt(rank) * (m_random.nextFloat(0.2) + 1.0);
+    //barrage->m_speedRank = sqrt(rank * 0.66) * (m_random.nextFloat(0.2) + 0.8);
     if (barrage->m_speedRank < 1.0) {
         barrage->m_speedRank = 1.0;
     }

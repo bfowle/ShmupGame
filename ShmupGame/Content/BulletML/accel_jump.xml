@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE bulletml SYSTEM "http://www.asahi-net.or.jp/~cs8k-cyu/bulletml/bulletml.dtd">
-<bulletml type="vertical">
+<bulletml type="horizontal">
   <action label="top">
     <repeat>
       <times>5</times>
@@ -54,7 +54,7 @@
   <bullet label="bound">
     <action>
       <accel>
-        <vertical>10</vertical>
+        <horizontal>10</horizontal>
         <term>200</term>
       </accel>
       <wait>60+$rand*40</wait>

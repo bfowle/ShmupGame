@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE bulletml SYSTEM "http://www.asahi-net.or.jp/~cs8k-cyu/bulletml/bulletml.dtd">
-<bulletml xmlns="http://www.asahi-net.or.jp/~cs8k-cyu/bulletml" type="vertical">
+<bulletml xmlns="http://www.asahi-net.or.jp/~cs8k-cyu/bulletml" type="horizontal">
   <bullet label="Dummy">
     <action>
       <vanish/>
@@ -49,25 +49,25 @@
         <action>
           <accel>
             <horizontal type="absolute">0</horizontal>
-            <vertical type="absolute">1</vertical>
+            <horizontal type="absolute">1</horizontal>
             <term>60</term>
           </accel>
           <actionRef label="3way"/>
           <accel>
             <horizontal type="absolute">-2</horizontal>
-            <vertical type="absolute">0</vertical>
+            <horizontal type="absolute">0</horizontal>
             <term>60</term>
           </accel>
           <actionRef label="3way"/>
           <accel>
             <horizontal type="absolute">0</horizontal>
-            <vertical type="absolute">-1</vertical>
+            <horizontal type="absolute">-1</horizontal>
             <term>60</term>
           </accel>
           <actionRef label="3way"/>
           <accel>
             <horizontal type="absolute">2</horizontal>
-            <vertical type="absolute">0</vertical>
+            <horizontal type="absolute">0</horizontal>
             <term>60</term>
           </accel>
           <actionRef label="3way"/>

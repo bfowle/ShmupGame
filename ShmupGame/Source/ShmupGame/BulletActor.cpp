@@ -15,7 +15,7 @@
 
 using namespace std;
 
-const float BulletActor::FIELD_SPACE = 15.0; // 0.5;
+//const float BulletActor::FIELD_SPACE = 15.0; // 0.5;
 float BulletActor::m_totalBulletsSpeed;
 int BulletActor::m_nextId = 0;
 
@@ -88,7 +88,7 @@ void BulletActor::setTop(BulletMLParser *parser) {
 
 void BulletActor::spawnBulletActor() {
     m_actor = m_gameManager->m_world->SpawnActor<AActor>(m_gameManager->BP_BulletClass,
-        FVector(m_bullet->m_position.X, 100.0, m_bullet->m_position.Y), FRotator::ZeroRotator);
+        FVector(m_bullet->m_position.X, -650.0, m_bullet->m_position.Y), FRotator::ZeroRotator);
 
     if (m_actor.IsValid()) {
         m_uuid = m_actor->GetUniqueID();
@@ -151,7 +151,7 @@ void BulletActor::tick() {
     }
 
     float sr = 0;
-#if 1
+#if 0
     if (m_rtCnt < RETRO_COUNT) {
         sr = m_bullet->m_speedRank * (0.3 + (m_rtCnt / RETRO_COUNT) * 0.7);
         if (m_backToRetro) {

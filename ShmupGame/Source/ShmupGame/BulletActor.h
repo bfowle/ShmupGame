@@ -81,7 +81,7 @@ private:
 
     const float SHIP_HIT_WIDTH;
     const float RETRO_COUNT;
-    static const float FIELD_SPACE;
+    //static const float FIELD_SPACE;
 
     TWeakObjectPtr<AActor> m_actor;
     TWeakObjectPtr<UProjectileMovementComponent> m_movement;

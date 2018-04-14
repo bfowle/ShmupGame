@@ -58,7 +58,8 @@ double Bullet::getRand() {
 void Bullet::tick() {
     m_now = this;
 
-    //UE_LOG(LogTemp, Warning, TEXT("  -- Bullet::tick [%d, (%f, %f)]"), m_runner->getTurn(), m_direction, m_speed);
+    //UE_LOG(LogTemp, Warning, TEXT("  -- Bullet::tick [%d, (%f, %f)] :: [%s]"), m_runner->getTurn(),
+    //    m_direction, m_speed, (isEnd() ? TEXT("Y") : TEXT("N")));
 
     if (!isEnd()) {
         BulletMLRunner_run(m_runner);
@@ -79,8 +80,10 @@ void Bullet::remove() {
     }
 }
 
-const float VEL_SS_SDM_RATIO = 62.0 / 100;
-const float VEL_SDM_SS_RATIO = 2.0; // 100.0 / 62;
+//-----------------------------------------------------------------------------
+
+const float VEL_SS_SDM_RATIO = 1.0; // 62.0 / 100;
+const float VEL_SDM_SS_RATIO = 1.0; // 100.0 / 62;
 
 float rtod(float a) {
     return a * 180 / M_PI;
@@ -112,10 +115,27 @@ double getRank_(BulletMLRunner *runner) {
 }
 
 void createSimpleBullet_(BulletMLRunner *runner, double direction, double speed) {
+    //UE_LOG(LogTemp, Warning, TEXT(" 1.) createSimpleBullet :: ADD BULLET "));
     Bullet::addBullet(dtor(direction), speed * VEL_SDM_SS_RATIO);
 }
 
 void createBullet_(BulletMLRunner *runner, BulletMLState *state, double direction, double speed) {
+    //UE_LOG(LogTemp, Warning, TEXT(" 2.) createBullet :: ADD ENEMY "));
+    /*
+    const vector<BulletMLNode *> &acts = state->getNode();
+    vector<BulletMLNode *>::const_iterator ite;
+    for (ite = acts.begin(); ite != acts.end(); ite++) {
+        const BulletMLNode *action = *ite;
+        if (action->findNode(BulletMLNode::fire) ||
+            action->findNode(BulletMLNode::fireRef ||
+            action->findNode(BulletMLNode::actionRef) {
+            break;
+        }
+    }
+
+    if (ite != acts.end()) {...}
+    else {...}
+    */
     Bullet::addBullet(state, dtor(direction), speed * VEL_SDM_SS_RATIO);
 }
 
@@ -144,11 +164,11 @@ void doAccelY_(BulletMLRunner *runner, double accelY) {
 }
 
 double getBulletSpeedX_(BulletMLRunner *runner) {
-    return Bullet::m_now->m_acceleration.X;
+    return Bullet::m_now->m_acceleration.X * VEL_SS_SDM_RATIO;
 }
 
 double getBulletSpeedY_(BulletMLRunner *runner) {
-    return Bullet::m_now->m_acceleration.Y;
+    return Bullet::m_now->m_acceleration.Y * VEL_SS_SDM_RATIO;
 }
 
 double getRand_(BulletMLRunner *runner) {

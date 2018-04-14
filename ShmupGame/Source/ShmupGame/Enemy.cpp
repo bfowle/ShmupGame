@@ -4,7 +4,6 @@
 #include "BulletActor.h"
 #include "BulletActorPool.h"
 #include "Field.h"
-#include "Lock.h"
 
 #include "GameFramework/ProjectileMovementComponent.h"
 
@@ -13,7 +12,7 @@
 
 using namespace std;
 
-const float Enemy::FIELD_SPACE = 90.0; // 45.0; // 1.5;
+const float Enemy::FIELD_SPACE = 90.0;
 Random Enemy::m_random;
 
 const int ENEMY_TYPE_SCORE[] = {
@@ -39,8 +38,6 @@ void Enemy::init(shared_ptr<ActorInitializer> initializer) {
     m_ship = enemy->m_ship;
     m_bullets = enemy->m_bullets;
     //m_shots = enemy->m_shots;
-    m_rolls = enemy->m_rolls;
-    m_locks = enemy->m_locks;
     m_gameManager = enemy->m_gameManager;
 
     m_position = FVector2D();
@@ -61,6 +58,8 @@ void Enemy::set(const FVector2D &position, float direction, shared_ptr<EnemyType
 
     BulletMLRunner *moveRunner = BulletMLRunner_new_parser(moveParser);
     BulletActorPool::registerFunctions(moveRunner);
+
+    UE_LOG(LogTemp, Warning, TEXT(" Enemy::set -> %s "), *m_position.ToString());
     m_moveBullet = m_bullets->addBullet(moveRunner, m_position.X, m_position.Y, direction, 0, 0.5, 1, 1);
     if (!m_moveBullet) {
         return;
@@ -92,8 +91,6 @@ void Enemy::setActor(TWeakObjectPtr<AActor> actor) {
     if (m_actor.IsValid()) {
         m_uuid = actor->GetUniqueID();
         m_movement = m_actor->FindComponentByClass<UProjectileMovementComponent>();
-        if (m_movement != nullptr) {
-        }
     }
 }
 
@@ -156,6 +153,7 @@ void Enemy::tick() {
         }
     }
 
+#if 0
     if (!m_isBoss) {
         /*
         if (m_field->checkHit(m_position)) {
@@ -213,6 +211,7 @@ void Enemy::tick() {
         }
         //m_gameManager->setBossShieldMeter(shield, formation[0].shield, formation[1].shield, formation[2].shield, formation[3].shield, mtr);
     }
+#endif
 
     ++m_cnt;
     //m_cnt += m_gameManager->m_deltaSeconds;
@@ -314,38 +313,6 @@ void Enemy::addDamageFormation(int idx, int dmg) {
 }
 */
 
-int Enemy::checkLocked(const FVector2D &position, float xofs, shared_ptr<Lock> lock) {
-    if (fabs(position.X - m_position.Y) < m_type->m_collisionSize.X + xofs &&
-        m_position.Y < lock->m_lockMinY &&
-        m_position.Y > position.Y) {
-        return HIT;
-    }
-
-    if (m_type->m_wingCollision) {
-        int lp = NOHIT;
-        for (int i = 0; i < m_type->m_formationSize; ++i) {
-            if (m_formation[i].m_shield <= 0) {
-                continue;
-            }
-
-            const EnemyFormationType *bt = &(m_type->m_formationType[i]);
-            float by = m_position.Y + bt->m_collisionPosition.Y;
-
-            if (fabs(position.X - m_position.X - bt->m_collisionPosition.X) < bt->m_collisionSize.X + xofs &&
-                by < lock->m_lockMinY &&
-                by > position.Y) {
-                lock->m_lockMinY = by;
-                lp = i;
-            }
-        }
-        if (lp != NOHIT) {
-            return lp;
-        }
-    }
-
-    return NOHIT;
-}
-
 void Enemy::removeTopBullets() {
     if (m_topBullet) {
         m_topBullet->remove();
@@ -386,7 +353,6 @@ void Enemy::controlFireCnt() {
     if (m_fireCnt <= 0) {
         setTopBullets();
 
-        //UE_LOG(LogTemp, Warning, TEXT(" 1.1 - fireCnt = fireInterval ... %f, %d "), m_fireCnt, m_type->m_fireInterval);
         m_fireCnt = m_type->m_fireInterval;
 
         ++m_barragePatternIdx;
@@ -399,8 +365,4 @@ void Enemy::controlFireCnt() {
         removeTopBullets();
     }
     --m_fireCnt;
-    //m_fireCnt -= 10.0 * m_gameManager->m_deltaSeconds;
-
-    //UE_LOG(LogTemp, Warning, TEXT(" [%d] fire cnt: %f ... [int: %d, prd: %d]"), m_uuid, m_fireCnt,
-    //    m_type->m_fireInterval, m_type->m_firePeriod);
 }

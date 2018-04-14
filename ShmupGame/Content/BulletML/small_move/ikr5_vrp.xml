@@ -4,12 +4,12 @@
   <action label="top">
     <accel>
       <horizontal>$rand*1.0-0.5</horizontal>
-      <vertical>2+$rand</vertical>
+      <horizontal>2+$rand</horizontal>
       <term>1</term>
     </accel>
     <wait>30</wait>
     <accel>
-      <vertical>-2</vertical>
+      <horizontal>-2</horizontal>
       <term>80</term>
     </accel>
   </action>

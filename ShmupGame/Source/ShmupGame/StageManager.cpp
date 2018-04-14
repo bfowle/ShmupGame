@@ -148,7 +148,7 @@ void StageManager::tick() {
         }
         m_squadronPosition.X *= 0.88;
 
-        m_gameManager->addEnemy(m_squadronPosition, direction, squadron->m_type, squadron->m_moveParser);
+        //m_gameManager->addEnemy(m_squadronPosition, direction, squadron->m_type, squadron->m_moveParser);
 
         squadron->m_remaining--;
         if (squadron->m_remaining <= 0) {

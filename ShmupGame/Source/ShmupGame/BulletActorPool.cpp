@@ -25,6 +25,7 @@ void BulletActorPool::addBullet(float direction, float speed) {
     }
 
     ShmupBullet *rb = static_cast<ShmupBullet *>(Bullet::m_now);
+    UE_LOG(LogTemp, Warning, TEXT(" BulletActorPool::addBullet[createSimpleBullet] -> %s "), *Bullet::m_now->m_position.ToString());
     if (rb->m_isMorph) {
         // @FIXME: temp fix
         if (rb->m_morphIdx < 0) {
@@ -56,6 +57,7 @@ void BulletActorPool::addBullet(BulletMLState *state, float direction, float spe
     registerFunctions(runner);
 
     ShmupBullet *rb = static_cast<ShmupBullet *>(Bullet::m_now);
+    UE_LOG(LogTemp, Warning, TEXT(" BulletActorPool::addBullet[createBullet] -> %s "), *Bullet::m_now->m_position.ToString());
     if (rb->m_isMorph) {
         bullet->set(runner, Bullet::m_now->m_position.X, Bullet::m_now->m_position.Y,
             direction, speed, Bullet::m_now->m_rank,
@@ -67,7 +69,7 @@ void BulletActorPool::addBullet(BulletMLState *state, float direction, float spe
             direction, speed, Bullet::m_now->m_rank,
             rb->m_speedRank, rb->m_xReverse);
     }
-    bullet->spawnBulletActor();
+    //bullet->spawnBulletActor();
 }
 
 // called via enemy move bullet
@@ -78,6 +80,7 @@ shared_ptr<BulletActor> BulletActorPool::addBullet(BulletMLRunner *runner, float
         return null;
     }
 
+    UE_LOG(LogTemp, Warning, TEXT(" BulletActorPool::addBullet[moveBullet] -> %f, %f "), x, y);
     bullet->set(runner, x, y, direction, speed, rank, speedRank, xReverse);
     bullet->setInvisible();
     return bullet;
@@ -91,6 +94,7 @@ shared_ptr<BulletActor> BulletActorPool::addBullet(BulletMLParser *parser, Bulle
         return null;
     }
 
+    UE_LOG(LogTemp, Warning, TEXT(" BulletActorPool::addBullet[topBullet] -> %f, %f "), x, y);
     bullet->setTop(parser);
     return bullet;
 }
@@ -103,6 +107,7 @@ shared_ptr<BulletActor> BulletActorPool::addBullet(BulletMLParser *parser, Bulle
         return null;
     }
 
+    UE_LOG(LogTemp, Warning, TEXT(" BulletActorPool::addBullet[topBulletBattery] -> %f, %f "), x, y);
     bullet->set(runner, x, y, direction, speed, rank, speedRank, xReverse, morph, morphSize, 0, morphCnt);
     bullet->setTop(parser);
     return bullet;

@@ -6,8 +6,6 @@
 #include "BulletActorPool.h"
 #include "Enemy.h"
 #include "Field.h"
-#include "Lock.h"
-#include "Roll.h"
 #include "Ship.h"
 
 #include "Engine/World.h"
@@ -45,17 +43,8 @@ void AGameManager::InitGame(const FString &MapName, const FString &Options, FStr
     shared_ptr<BulletActorInitializer> bi(new BulletActorInitializer(m_field, m_ship, this));
     m_bullets.reset(new BulletActorPool(BULLET_MAX, bi));
 
-    unique_ptr<Roll> rollClass(new Roll());
-    shared_ptr<RollInitializer> ri(new RollInitializer(m_field, m_ship, this));
-    m_rolls.reset(new ActorPool(ROLL_MAX, rollClass.get(), ri));
-
-    Lock::init();
-    unique_ptr<Lock> lockClass(new Lock());
-    shared_ptr<LockInitializer> li(new LockInitializer(m_field, m_ship, this));
-    m_locks.reset(new ActorPool(LOCK_MAX, lockClass.get(), li));
-
     unique_ptr<Enemy> m_enemyClass(new Enemy());
-    shared_ptr<EnemyInitializer> ei(new EnemyInitializer(m_field, m_ship, m_bullets, m_rolls, m_locks, this));
+    shared_ptr<EnemyInitializer> ei(new EnemyInitializer(m_field, m_ship, m_bullets, this));
     m_enemies.reset(new ActorPool(ENEMY_MAX, m_enemyClass.get(), ei));
 
     m_barrageManager.reset(new BarrageManager());
@@ -65,8 +54,8 @@ void AGameManager::InitGame(const FString &MapName, const FString &Options, FStr
     m_stageManager.reset(new StageManager());
     m_stageManager->init(m_field, m_barrageManager, this);
 
-    m_interval = INTERVAL_BASE;
-    m_maxSkipFrame = 5;
+    //m_interval = INTERVAL_BASE;
+    //m_maxSkipFrame = 5;
 }
 
 void AGameManager::StartPlay() {
@@ -105,7 +94,7 @@ void AGameManager::Tick(float DeltaSeconds) {
         break;
     }
 
-    m_cnt++;
+    //m_cnt++;
 }
 
 void AGameManager::AddShot(const FVector &position, float direction) {
@@ -118,11 +107,14 @@ void AGameManager::AddEnemy(AActor *actor, FString moveFilePath) {
         return;
     }
 
+    // @TODO: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // get new squadron from StageManager
     StageManager::EnemySquadron *squadron = &m_stageManager->m_squadrons[0];
     BulletMLParserTinyXML *moveParser = BulletMLParserTinyXML_new(const_cast<char *>(TCHAR_TO_UTF8(*moveFilePath)));
     BulletMLParserTinyXML_parse(moveParser);
-    enemy->set(FVector2D::ZeroVector, M_PI, squadron->m_type, reinterpret_cast<BulletMLParser *>(moveParser));
+
+    enemy->set(FVector2D(actor->GetActorLocation().X, actor->GetActorLocation().Z),
+        M_PI, squadron->m_type, reinterpret_cast<BulletMLParser *>(moveParser));
 
     /*
     TWeakObjectPtr<APawn> player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
@@ -190,69 +182,10 @@ void AGameManager::startStage(int difficulty, int parsecSlot, int startParsec, i
     }
 }
 
-void AGameManager::addEnemy(const FVector2D &position, float direction, shared_ptr<EnemyType> type, BulletMLParser *moveParser) {
-    shared_ptr<Enemy> enemy = static_pointer_cast<Enemy>(m_enemies->getInstance());
-    if (!enemy) {
-        return;
-    }
-
-    enemy->set(position, direction, type, moveParser);
-
-    if (enemy->shouldSpawnActor()) {
-        TWeakObjectPtr<AActor> actor = m_world->SpawnActor<AActor>(BP_EnemyClass,
-            FVector(position.X, 100.0, position.Y), FRotator::ZeroRotator);
-        TWeakObjectPtr<APawn> player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-        if (player.IsValid() &&
-            player->GetAttachParentActor()) {
-            actor->AttachToActor(player->GetAttachParentActor(),
-                FAttachmentTransformRules::KeepWorldTransform);
-            //actor->SetActorRelativeLocation(FVector(position.X, 0, position.Y));
-        }
-        enemy->setActor(actor);
-    }
-}
-
 void AGameManager::addBoss(const FVector2D &position, float direction, shared_ptr<EnemyType> type) {
 }
 
-void AGameManager::addRoll() {
-    shared_ptr<Roll> roll = static_pointer_cast<Roll>(m_rolls->getInstance());
-    if (roll) {
-        roll->set();
-    }
-}
-
-void AGameManager::addLock() {
-    shared_ptr<Lock> lock = static_pointer_cast<Lock>(m_locks->getInstance());
-    if (lock) {
-        lock->set();
-    }
-}
-
-void AGameManager::releaseRoll() {
-    for (int i = 0; i < m_rolls->m_pool.size(); ++i) {
-        if (!m_rolls->m_pool[i]->m_isAlive) {
-            continue;
-        }
-        static_pointer_cast<Roll>(m_rolls->m_pool[i])->m_released = true;
-    }
-}
-
-void AGameManager::releaseLock() {
-    for (int i = 0; i < m_locks->m_pool.size(); ++i) {
-        if (!m_locks->m_pool[i]->m_isAlive) {
-            continue;
-        }
-        static_pointer_cast<Lock>(m_locks->m_pool[i])->m_released = true;
-    }
-}
-
 void AGameManager::shipDestroyed() {
-    if (m_mode == ROLL) {
-        releaseRoll();
-    } else {
-        releaseLock();
-    }
     clearBullets();
 
     m_shipsRemaining--;
@@ -303,8 +236,6 @@ void AGameManager::startGameOver() {
     m_state = GAME_OVER;
 
     //m_shots->clear();
-    m_rolls->clear();
-    m_locks->clear();
     
     m_cnt = 0;
 }
@@ -347,12 +278,6 @@ void AGameManager::inGameTick() {
     m_ship->tick();
     //m_shots->tick();
     m_enemies->tick();
-
-    if (m_mode == ROLL) {
-        m_rolls->tick();
-    } else {
-        m_locks->tick();
-    }
 
     BulletActor::resetTotalBulletsSpeed();
     m_bullets->tick();

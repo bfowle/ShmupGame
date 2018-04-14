@@ -9,12 +9,12 @@
   <action label="curve">
     <accel>
       <horizontal>$1</horizontal>
-      <vertical>2.0</vertical>
+      <horizontal>2.0</horizontal>
       <term>20</term>
     </accel>
     <wait>40</wait>
     <accel>
-      <vertical>-2.0</vertical>
+      <horizontal>-2.0</horizontal>
       <term>50</term>
     </accel>
     <wait>10</wait>

@@ -86,11 +86,6 @@ public:
         LARGE_BOSS,
     };
 
-    enum {
-        ROLL,
-        LOCK
-    };
-
     int m_id;
     int m_type;
     std::array<EnemyFormationType, FORMATION_MAX> m_formationType;

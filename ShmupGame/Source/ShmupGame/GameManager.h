@@ -70,13 +70,8 @@ public:
 
     void close();
     void startStage(int difficulty, int parsecSlot, int startParsec, int mode);
-    void addEnemy(const FVector2D &position, float direction, std::shared_ptr<EnemyType> type, BulletMLParser *moveParser);
     void addBoss(const FVector2D &position, float direction, std::shared_ptr<EnemyType> type);
     //void addShot(const FVector2D &position, float direction);
-    void addRoll();
-    void addLock();
-    void releaseRoll();
-    void releaseLock();
     void shipDestroyed();
     void clearBullets();
 
@@ -109,18 +104,13 @@ public:
         QUIT
     };
 
-    enum {
-        ROLL,
-        LOCK
-    };
-
     const int INTERVAL_BASE = 16;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = GameManager)
-    TSubclassOf<AActor> BP_EnemyClass;
+    TSubclassOf<AActor> BP_BulletClass;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = GameManager)
-    TSubclassOf<AActor> BP_BulletClass;
+    TSubclassOf<AActor> BP_BulletClass2;
 
     TWeakObjectPtr<UWorld> m_world;
 
@@ -130,10 +120,8 @@ public:
 
 private:
     enum {
-        BULLET_MAX = 512,
+        BULLET_MAX = 1024 * 1024,
         ENEMY_MAX = 32,
-        ROLL_MAX = 4,
-        LOCK_MAX = 4,
         FIRST_EXTEND = 200000,
         EVERY_EXTEND = 500000,
         LEFT_MAX = 4,
@@ -150,8 +138,6 @@ private:
     std::shared_ptr<ActorPool> m_enemies;
     std::shared_ptr<BulletActorPool> m_bullets;
     //std::shared_ptr<ActorPool> m_shots;
-    std::shared_ptr<ActorPool> m_rolls;
-    std::shared_ptr<ActorPool> m_locks;
     std::shared_ptr<StageManager> m_stageManager;
     std::shared_ptr<BarrageManager> m_barrageManager;
 
