@@ -246,12 +246,14 @@ void StageManager::createSectionData() {
         ap = MEDIUM_RUSH_SECTION_PATTERN;
     }
 
+    /*
     UE_LOG(LogTemp, Warning, TEXT("[*] StageManager::createSectionData => %d ... [small: %d, medium: %d, large: %d; boss? %s]"),
         m_section,
         m_squadronPatterns[m_gameManager->m_mode][ap][0],
         m_squadronPatterns[m_gameManager->m_mode][ap][1],
         m_squadronPatterns[m_gameManager->m_mode][ap][2],
         (m_isBossSection ? TEXT("Y") : TEXT("N")));
+    */
 
     for (int i = 0; i < m_squadronPatterns[m_gameManager->m_mode][ap][0]; ++i, ++m_squadronTotal) {
         EnemySquadron *squadron = &m_squadrons[m_squadronTotal];

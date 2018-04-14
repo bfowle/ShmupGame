@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE bulletml SYSTEM "http://www.asahi-net.or.jp/~cs8k-cyu/bulletml/bulletml.dtd">
-<bulletml xmlns="http://www.asahi-net.or.jp/~cs8k-cyu/bulletml">
+<bulletml type="horizontal" xmlns="http://www.asahi-net.or.jp/~cs8k-cyu/bulletml">
   <action label="top">
     <fire>
       <direction type="absolute">45</direction>
@@ -22,7 +22,6 @@
       </action>
     </repeat>
   </action>
-
   <action label="tops">
     <wait>(16-$rank*10)*22.5</wait>
     <fire>
@@ -45,14 +44,12 @@
       </action>
     </repeat>
   </action>
-
   <action label="topt">
     <wait>(16-$rank*10)*45</wait>
     <fire>
       <bulletRef label="gurugurup"/>
     </fire>
   </action>
-
   <bullet label="gurugurup">
     <action>
       <changeSpeed>
@@ -63,7 +60,6 @@
       <vanish/>
     </action>
   </bullet>
-
   <action label="guru2">
     <fire>
       <direction type="absolute">0</direction>
@@ -122,7 +118,6 @@
         <wait>16-$rank*10</wait>
       </action>
     </repeat>
-
     <repeat>
       <times>3</times>
       <action>
@@ -149,7 +144,6 @@
         <wait>16-$rank*10</wait>
       </action>
     </repeat>
-
     <repeat>
       <times>3</times>
       <action>
@@ -176,7 +170,6 @@
         <wait>16-$rank*10</wait>
       </action>
     </repeat>
-
     <repeat>
       <times>3</times>
       <action>
@@ -333,7 +326,6 @@
         <wait>16-$rank*10</wait>
       </action>
     </repeat>
-
     <repeat>
       <times>7</times>
       <action>
@@ -360,7 +352,6 @@
         <wait>16-$rank*10</wait>
       </action>
     </repeat>
-
     <repeat>
       <times>6</times>
       <action>
@@ -387,7 +378,6 @@
         <wait>16-$rank*10</wait>
       </action>
     </repeat>
-
     <repeat>
       <times>4</times>
       <action>
@@ -414,7 +404,6 @@
         <wait>16-$rank*10</wait>
       </action>
     </repeat>
-
     <repeat>
       <times>4</times>
       <action>
@@ -441,7 +430,6 @@
         <wait>16-$rank*10</wait>
       </action>
     </repeat>
-
     <repeat>
       <times>3</times>
       <action>
@@ -468,7 +456,6 @@
         <wait>16-$rank*10</wait>
       </action>
     </repeat>
-
     <repeat>
       <times>3</times>
       <action>
@@ -495,7 +482,6 @@
         <wait>16-$rank*10</wait>
       </action>
     </repeat>
-
     <repeat>
       <times>3</times>
       <action>
@@ -522,7 +508,6 @@
         <wait>16-$rank*10</wait>
       </action>
     </repeat>
-
     <repeat>
       <times>3</times>
       <action>
@@ -549,7 +534,6 @@
         <wait>16-$rank*10</wait>
       </action>
     </repeat>
-
     <repeat>
       <times>450/(16-$rank*10)</times>
       <action>
@@ -577,7 +561,6 @@
       </action>
     </repeat>
   </action>
-
   <fire label="guru">
     <direction type="sequence">22.5</direction>
     <speed>1+$rank</speed>
@@ -673,14 +656,11 @@
     <speed>1+$rank</speed>
     <bulletRef label="guruc19"/>
   </fire>
-
   <fire label="four">
-
     <direction type="sequence">90</direction>
     <speed>1+$rank*0.5</speed>
     <bullet/>
   </fire>
-
   <bullet label="guruc">
     <action>
       <changeDirection>

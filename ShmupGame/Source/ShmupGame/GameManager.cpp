@@ -278,7 +278,6 @@ void AGameManager::inGameTick() {
     m_ship->tick();
     //m_shots->tick();
     m_enemies->tick();
-
     BulletActor::resetTotalBulletsSpeed();
     m_bullets->tick();
 

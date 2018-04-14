@@ -16,7 +16,7 @@
 
 using namespace std;
 
-//const float BulletActor::FIELD_SPACE = 15.0; // 0.5;
+const float BulletActor::FIELD_SPACE = 15.0; // 0.5;
 float BulletActor::m_totalBulletsSpeed;
 int BulletActor::m_nextId = 0;
 
@@ -34,23 +34,23 @@ void BulletActor::init(shared_ptr<ActorInitializer> initializer) {
     m_ship = bullet->m_ship;
     m_gameManager = bullet->m_gameManager;
 
+    //UE_LOG(LogTemp, Warning, TEXT(" BulletActor::init! %d"), m_nextId);
     m_bullet.reset(new ShmupBullet(m_nextId));
     m_previousPosition = FVector2D();
     ++m_nextId;
 }
 
 // called via bulletml createBullet
-void BulletActor::set(BulletMLRunner *runner, float x, float y, float direction, float speed, float rank, float speedRank, float xReverse) {
-    m_bullet->set(runner, x, y, direction, speed, rank);
+void BulletActor::set(BulletCommand *command, float x, float y, float direction, float speed, float rank, float speedRank, float xReverse) {
+    m_bullet->set(this, command, x, y, direction, speed, rank);
     m_bullet->m_isMorph = false;
     m_isSimple = false;
     start(speedRank, xReverse);
 }
 
 // called via bulletml createSimpleBullet as a morph bullet
-void BulletActor::set(BulletMLRunner *runner, float x, float y, float direction, float speed, float rank, float speedRank, float xReverse, array<BulletMLParser *, MorphBullet::MORPH_MAX> morph, int morphSize, int morphIdx, int morphCnt) {
-    //UE_LOG(LogTemp, Warning, TEXT(" BulletActor::set => morph bullet "));
-    m_bullet->set(runner, x, y, direction, speed, rank);
+void BulletActor::set(BulletCommand *command, float x, float y, float direction, float speed, float rank, float speedRank, float xReverse, array<BulletMLParser *, MorphBullet::MORPH_MAX> morph, int morphSize, int morphIdx, int morphCnt) {
+    m_bullet->set(this, command, x, y, direction, speed, rank);
     m_bullet->setMorph(morph, morphSize, morphIdx, morphCnt);
     m_isSimple = false;
     start(speedRank, xReverse);
@@ -58,7 +58,7 @@ void BulletActor::set(BulletMLRunner *runner, float x, float y, float direction,
 
 // called via bulletml createSimpleBullet
 void BulletActor::set(float x, float y, float direction, float speed, float rank, float speedRank, float xReverse) {
-    m_bullet->set(x, y, direction, speed, rank);
+    m_bullet->set(this, x, y, direction, speed, rank);
     m_bullet->m_isMorph = false;
     m_isSimple = true;
     start(speedRank, xReverse);
@@ -75,6 +75,10 @@ void BulletActor::start(float speedRank, float xReverse) {
     m_shouldBeRemoved = false;
 }
 
+void BulletActor::setActor(TWeakObjectPtr<AActor> actor) {
+    m_actor = actor;
+}
+
 void BulletActor::setInvisible() {
     m_isVisible = false;
 }
@@ -85,16 +89,17 @@ void BulletActor::setTop(BulletMLParser *parser) {
     setInvisible();
 }
 
-void BulletActor::spawnBulletActor() {
+void BulletActor::spawnBulletActor(BulletActor *parent) {
     // @TODO: !!!!!!!!!!!!!!!!!!!!!!!!!!!!! replace -650
     m_actor = m_gameManager->m_world->SpawnActor<AActor>(m_gameManager->BP_BulletClass,
         FVector(m_bullet->m_position.X, -650.0, m_bullet->m_position.Y), FRotator::ZeroRotator);
 
-    if (m_actor.IsValid()) {
+    if (m_actor.IsValid() &&
+        parent->m_actor.IsValid()) {
         m_uuid = m_actor->GetUniqueID();
-        m_actor->AttachToActor(Enemy::m_now->m_actor.Get(),
+        //UE_LOG(LogTemp, Warning, TEXT(" Attaching: %s to %s "), *m_actor->GetName(), *parent->m_actor->GetName());
+        m_actor->AttachToActor(parent->m_actor.Get(),
             FAttachmentTransformRules::KeepWorldTransform);
-
         m_movement = m_actor->FindComponentByClass<UProjectileMovementComponent>();
     }
 }
@@ -102,10 +107,10 @@ void BulletActor::spawnBulletActor() {
 void BulletActor::rewind() {
     m_bullet->remove();
 
-    BulletMLRunner *runner = BulletMLRunner_new_parser(m_parser);
-    BulletActorPool::registerFunctions(runner);
-    m_bullet->setRunner(runner);
-    m_bullet->resetMorph();
+    //BulletMLRunner *runner = BulletMLRunner_new_parser(m_parser);
+    //BulletActorPool::registerFunctions(runner);
+    //m_bullet->setRunner(runner);
+    //m_bullet->resetMorph();
 }
 
 void BulletActor::remove() {
@@ -117,6 +122,7 @@ void BulletActor::removeForced() {
     m_isAlive = false;
 
     if (m_actor.IsValid()) {
+        //UE_LOG(LogTemp, Warning, TEXT(" !!! removing: %s "), *m_actor->GetName());
         m_gameManager->m_world->DestroyActor(m_actor.Get());
         //m_actor->Destroy();
         //m_actor->ConditionalBeginDestroy();
@@ -150,7 +156,7 @@ void BulletActor::tick() {
         m_totalBulletsSpeed += m_bullet->m_speed * sr;
 
         //if (m_field->checkHit(m_bullet->m_position, FIELD_SPACE)) {
-        //    //UE_LOG(LogTemp, Warning, TEXT(" __ Bullet :: hit field __ [%s] ... %d "), *m_bullet->m_position.ToString(), m_cnt);
+        //    UE_LOG(LogTemp, Warning, TEXT(" __ Bullet :: hit field __ [%s] ... %d "), *m_bullet->m_position.ToString(), m_cnt);
         //    removeForced();
         //}
 

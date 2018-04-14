@@ -13,6 +13,7 @@ class AActor;
 class AGameManager;
 class Field;
 class Ship;
+class BulletCommand;
 class BulletMLParser;
 class BulletMLRunner;
 class UProjectileMovementComponent;
@@ -46,12 +47,13 @@ public:
 
     static void init();
     void init(std::shared_ptr<ActorInitializer> initializer);
-    void set(BulletMLRunner *runner, float x, float y, float direction, float speed, float rank, float speedRank, float xReverse);
-    void set(BulletMLRunner *runner, float x, float y, float direction, float speed, float rank, float speedRank, float xReverse, std::array<BulletMLParser *, MorphBullet::MORPH_MAX> morph, int morphSize, int morphIdx, int morphCnt);
+    void set(BulletCommand *command, float x, float y, float direction, float speed, float rank, float speedRank, float xReverse);
+    void set(BulletCommand *command, float x, float y, float direction, float speed, float rank, float speedRank, float xReverse, std::array<BulletMLParser *, MorphBullet::MORPH_MAX> morph, int morphSize, int morphIdx, int morphCnt);
     void set(float x, float y, float direction, float speed, float rank, float speedRank, float xReverse);
+    void setActor(TWeakObjectPtr<AActor> actor);
     void setInvisible();
     void setTop(BulletMLParser *parser);
-    void spawnBulletActor();
+    void spawnBulletActor(BulletActor *parent);
     void rewind();
     void remove();
     void tick();
@@ -78,7 +80,7 @@ private:
     };
 
     const float SHIP_HIT_WIDTH;
-    //static const float FIELD_SPACE;
+    static const float FIELD_SPACE;
 
     TWeakObjectPtr<AActor> m_actor;
     TWeakObjectPtr<UProjectileMovementComponent> m_movement;

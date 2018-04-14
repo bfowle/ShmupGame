@@ -57,10 +57,7 @@ void Enemy::set(const FVector2D &position, float direction, shared_ptr<EnemyType
     m_position = position;
     m_type = type;
 
-    BulletMLRunner *moveRunner = BulletMLRunner_new_parser(moveParser);
-    BulletActorPool::registerFunctions(moveRunner);
-
-    m_moveBullet = m_bullets->addBullet(moveRunner, m_position.X, m_position.Y, direction, 0, 0.5, 1, 1);
+    m_moveBullet = m_bullets->addBullet(moveParser, m_position.X, m_position.Y, direction, 0, 0.5, 1, 1);
     if (!m_moveBullet) {
         return;
     }
@@ -87,6 +84,9 @@ void Enemy::setBoss(const FVector2D &p, float direction, shared_ptr<EnemyType> t
 
 void Enemy::setActor(TWeakObjectPtr<AActor> actor) {
     m_actor = actor;
+    if (m_moveBullet) {
+        m_moveBullet->setActor(actor);
+    }
 
     if (m_actor.IsValid()) {
         m_uuid = actor->GetUniqueID();
@@ -236,8 +236,9 @@ shared_ptr<BulletActor> Enemy::setBullet(const Barrage &barrage, const FVector2D
         return null;
     }
 
-    BulletMLRunner *runner = BulletMLRunner_new_parser(barrage.m_parser);
-    BulletActorPool::registerFunctions(runner);
+    //BulletMLRunner *runner = BulletMLRunner_new_parser(barrage.m_parser);
+    //BulletActorPool::registerFunctions(runner);
+
     shared_ptr<BulletActor> bullet;
     float bx = m_position.X;
     float by = m_position.Y;
@@ -247,12 +248,12 @@ shared_ptr<BulletActor> Enemy::setBullet(const Barrage &barrage, const FVector2D
     }
 
     if (barrage.m_morphCnt > 0) {
-        bullet = m_bullets->addBullet(barrage.m_parser, runner,
+        bullet = m_bullets->addBullet(barrage.m_parser,
             bx, by, m_baseDirection, 0, barrage.m_rank,
             barrage.m_speedRank, barrage.m_xReverse * xReverse,
             barrage.m_morphParser, barrage.m_morphSize, barrage.m_morphCnt);
     } else {
-        bullet = m_bullets->addBullet(barrage.m_parser, runner,
+        bullet = m_bullets->addBullet(barrage.m_parser,
             bx, by, m_baseDirection, 0, barrage.m_rank,
             barrage.m_speedRank, barrage.m_xReverse * xReverse);
     }
@@ -260,7 +261,7 @@ shared_ptr<BulletActor> Enemy::setBullet(const Barrage &barrage, const FVector2D
     return bullet;
 }
 
-std::shared_ptr<BulletActor> Enemy::setBullet(const Barrage &barrage, const FVector2D *offset) {
+shared_ptr<BulletActor> Enemy::setBullet(const Barrage &barrage, const FVector2D *offset) {
     return setBullet(barrage, offset, 1);
 }
 

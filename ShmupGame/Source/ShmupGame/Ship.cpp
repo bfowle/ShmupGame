@@ -92,6 +92,7 @@ void Ship::tick() {
     m_position.Y += m_velocity.Y;
     //m_bank += (m_velocity.X * BANK_BASE - m_bank) * 0.1;
 
+    /*
     if (m_position.X < -m_fieldLimitX) {
         m_position.X = -m_fieldLimitX;
     } else if (m_position.X > m_fieldLimitX) {
@@ -102,9 +103,9 @@ void Ship::tick() {
     } else if (m_position.Y > m_fieldLimitY) {
         m_position.Y = m_fieldLimitY;
     }
+    */
 
-    Bullet::m_target.X = m_position.X;
-    Bullet::m_target.Y = m_position.Y;
+    Bullet::m_target = m_position;
 
     m_ttlCnt++;
 }

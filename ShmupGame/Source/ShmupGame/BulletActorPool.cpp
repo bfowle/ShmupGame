@@ -18,62 +18,56 @@ BulletActorPool::BulletActorPool(int size, shared_ptr<ActorInitializer> initiali
 }
 
 // called via bulletml createSimpleBullet
-void BulletActorPool::addBullet(float direction, float speed) {
+void BulletActorPool::addBullet(float x, float y, float direction, float speed, BulletActor *parent) {
     shared_ptr<BulletActor> bullet = static_pointer_cast<BulletActor>(getInstance());
     if (!bullet) {
         return;
     }
 
-    ShmupBullet *rb = static_cast<ShmupBullet *>(Bullet::m_now);
-    //UE_LOG(LogTemp, Warning, TEXT(" BulletActorPool::addBullet[createSimpleBullet] -> %s "), *Bullet::m_now->m_position.ToString());
+    ShmupBullet *rb = static_cast<ShmupBullet *>(parent->m_bullet.get());
+    //UE_LOG(LogTemp, Warning, TEXT(" BulletActorPool::addBullet[createSimpleBullet] -> %f, %f "), x, y);
     if (rb->m_isMorph) {
         // @FIXME: temp fix
         if (rb->m_morphIdx < 0) {
             return;
         }
-        BulletMLRunner *runner = BulletMLRunner_new_parser(rb->m_morphParser[rb->m_morphIdx]);
-        BulletActorPool::registerFunctions(runner);
-        bullet->set(runner, Bullet::m_now->m_position.X, Bullet::m_now->m_position.Y,
-            direction, speed, Bullet::m_now->m_rank,
+
+        BulletCommand *bc = new BulletCommand(rb->m_morphParser[rb->m_morphIdx], bullet->m_bullet.get());
+        bullet->set(bc, x, y, direction, speed, bullet->m_bullet->m_rank,
             rb->m_speedRank, rb->m_xReverse,
             rb->m_morphParser, rb->m_morphSize,
             rb->m_morphIdx + 1, rb->m_morphCnt - 1);
     } else {
-        bullet->set(Bullet::m_now->m_position.X, Bullet::m_now->m_position.Y,
-            direction, speed, Bullet::m_now->m_rank,
+        bullet->set(x, y, direction, speed, bullet->m_bullet->m_rank,
             rb->m_speedRank, rb->m_xReverse);
     }
-    bullet->spawnBulletActor();
+    bullet->spawnBulletActor(parent);
 }
 
 // called via bulletml createBullet
-void BulletActorPool::addBullet(BulletMLState *state, float direction, float speed) {
+void BulletActorPool::addBullet(BulletMLState *state, float x, float y, float direction, float speed, BulletActor *parent) {
     shared_ptr<BulletActor> bullet = static_pointer_cast<BulletActor>(getInstance());
     if (!bullet) {
         return;
     }
 
-    BulletMLRunner *runner = BulletMLRunner_new_state(state);
-    registerFunctions(runner);
-
-    ShmupBullet *rb = static_cast<ShmupBullet *>(Bullet::m_now);
-    //UE_LOG(LogTemp, Warning, TEXT(" BulletActorPool::addBullet[createBullet] -> %s "), *Bullet::m_now->m_position.ToString());
+    ShmupBullet *rb = static_cast<ShmupBullet *>(parent->m_bullet.get());
+    //UE_LOG(LogTemp, Warning, TEXT(" BulletActorPool::addBullet[createBullet] -> %f, %f "), x, y);
+    BulletCommand *bc = new BulletCommand(state, bullet->m_bullet.get());
     if (rb->m_isMorph) {
-        bullet->set(runner, Bullet::m_now->m_position.X, Bullet::m_now->m_position.Y,
-            direction, speed, Bullet::m_now->m_rank,
+        bullet->set(bc, x, y, direction, speed, bullet->m_bullet->m_rank,
             rb->m_speedRank, rb->m_xReverse,
             rb->m_morphParser, rb->m_morphSize,
             rb->m_morphIdx, rb->m_morphCnt);
     } else {
-        bullet->set(runner, Bullet::m_now->m_position.X, Bullet::m_now->m_position.Y,
-            direction, speed, Bullet::m_now->m_rank,
+        bullet->set(bc, x, y, direction, speed, bullet->m_bullet->m_rank,
             rb->m_speedRank, rb->m_xReverse);
     }
-    //bullet->spawnBulletActor();
+    bullet->spawnBulletActor(parent);
 }
 
 // called via enemy move bullet
-shared_ptr<BulletActor> BulletActorPool::addBullet(BulletMLRunner *runner, float x, float y, float direction, float speed, float rank, float speedRank, float xReverse) {
+shared_ptr<BulletActor> BulletActorPool::addBullet(BulletMLParser *parser, float x, float y, float direction, float speed, float rank, float speedRank, float xReverse) {
     shared_ptr<BulletActor> bullet = static_pointer_cast<BulletActor>(getInstance());
     if (!bullet) {
         shared_ptr<BulletActor> null;
@@ -81,34 +75,24 @@ shared_ptr<BulletActor> BulletActorPool::addBullet(BulletMLRunner *runner, float
     }
 
     //UE_LOG(LogTemp, Warning, TEXT(" BulletActorPool::addBullet[moveBullet] -> %f, %f "), x, y);
-    bullet->set(runner, x, y, direction, speed, rank, speedRank, xReverse);
+    BulletCommand *bc = new BulletCommand(parser, bullet->m_bullet.get());
+    bullet->set(bc, x, y, direction, speed, rank, speedRank, xReverse);
     bullet->setInvisible();
     return bullet;
 }
 
 // called via enemy top bullet
-shared_ptr<BulletActor> BulletActorPool::addBullet(BulletMLParser *parser, BulletMLRunner *runner, float x, float y, float direction, float speed, float rank, float speedRank, float xReverse) {
-    shared_ptr<BulletActor> bullet = addBullet(runner, x, y, direction, speed, rank, speedRank, xReverse);
-    if (!bullet) {
-        shared_ptr<BulletActor> null;
-        return null;
-    }
-
-    //UE_LOG(LogTemp, Warning, TEXT(" BulletActorPool::addBullet[topBullet] -> %f, %f "), x, y);
-    bullet->setTop(parser);
-    return bullet;
-}
-
-// called via enemy top bullet battery
-shared_ptr<BulletActor> BulletActorPool::addBullet(BulletMLParser *parser, BulletMLRunner *runner, float x, float y, float direction, float speed, float rank, float speedRank, float xReverse, array<BulletMLParser *, MorphBullet::MORPH_MAX> morph, int morphSize, int morphCnt) {
+shared_ptr<BulletActor> BulletActorPool::addBullet(BulletMLParser *parser, float x, float y, float direction, float speed, float rank, float speedRank, float xReverse, array<BulletMLParser *, MorphBullet::MORPH_MAX> morph, int morphSize, int morphCnt) {
     shared_ptr<BulletActor> bullet = static_pointer_cast<BulletActor>(getInstance());
     if (!bullet) {
         shared_ptr<BulletActor> null;
         return null;
     }
 
-    //UE_LOG(LogTemp, Warning, TEXT(" BulletActorPool::addBullet[topBulletBattery] -> %f, %f "), x, y);
-    bullet->set(runner, x, y, direction, speed, rank, speedRank, xReverse, morph, morphSize, 0, morphCnt);
+    //UE_LOG(LogTemp, Warning, TEXT(" BulletActorPool::addBullet[topBullet] -> %f, %f "), x, y);
+    BulletCommand *bc = new BulletCommand(parser, bullet->m_bullet.get());
+    bullet->set(bc, x, y, direction, speed, rank, speedRank, xReverse,
+        morph, morphSize, 0, morphCnt);
     bullet->setTop(parser);
     return bullet;
 }
@@ -134,35 +118,3 @@ void BulletActorPool::clear() {
         }
     }
 }
-
-void BulletActorPool::registerFunctions(BulletMLRunner *runner) {
-    BulletMLRunner_set_getBulletDirection(runner, &getBulletDirection_);
-    BulletMLRunner_set_getAimDirection(runner, &getAimDirectionWithXRev_);
-    BulletMLRunner_set_getBulletSpeed(runner, &getBulletSpeed_);
-    BulletMLRunner_set_getDefaultSpeed(runner, &getDefaultSpeed_);
-    BulletMLRunner_set_getRank(runner, &getRank_);
-    BulletMLRunner_set_createSimpleBullet(runner, &createSimpleBullet_);
-    BulletMLRunner_set_createBullet(runner, &createBullet_);
-    BulletMLRunner_set_getTurn(runner, &getTurn_);
-    BulletMLRunner_set_doVanish(runner, &doVanish_);
-
-    BulletMLRunner_set_doChangeDirection(runner, &doChangeDirection_);
-    BulletMLRunner_set_doChangeSpeed(runner, &doChangeSpeed_);
-    BulletMLRunner_set_doAccelX(runner, &doAccelX_);
-    BulletMLRunner_set_doAccelY(runner, &doAccelY_);
-    BulletMLRunner_set_getBulletSpeedX(runner, &getBulletSpeedX_);
-    BulletMLRunner_set_getBulletSpeedY(runner, &getBulletSpeedY_);
-    BulletMLRunner_set_getRand(runner, &getRand_);
-}
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-    double getAimDirectionWithXRev_(BulletMLRunner *runner) {
-        float xrev = static_cast<ShmupBullet *>(Bullet::m_now)->m_xReverse;
-        return rtod(atan2(Bullet::m_target.X - Bullet::m_now->m_position.X,
-            Bullet::m_target.Y - Bullet::m_now->m_position.Y) * xrev);
-    }
-#ifdef __cplusplus
-}
-#endif
