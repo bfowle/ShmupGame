@@ -14,7 +14,7 @@
 #include "Kismet/GameplayStatics.h"
 
 #include "bulletml/bulletml.h"
-#include "bulletml/bulletmlparser.h"
+#include "bulletml/bulletmlparser-tinyxml.h"
 
 using namespace std;
 
@@ -100,12 +100,13 @@ void AGameManager::AddEnemy(AActor *actor, FString moveFilePath) {
     }
 
     //StageManager::EnemySquadron *squadron = &m_stageManager->m_squadrons[0];
-    BulletMLParserTinyXML *moveParser = BulletMLParserTinyXML_new(const_cast<char *>(TCHAR_TO_UTF8(*moveFilePath)));
-    BulletMLParserTinyXML_parse(moveParser);
 
-    enemy->set(FVector2D(actor->GetActorLocation().X, actor->GetActorLocation().Z),
-        M_PI/*, squadron->m_type*/, reinterpret_cast<BulletMLParser *>(moveParser));
-    enemy->setActor(actor);
+    vector<BulletMLParserTinyXML *>::iterator it = find_if(m_barrageManager->m_parser.begin(), m_barrageManager->m_parser.end(),
+        [&](BulletMLParserTinyXML *a) { return a->getName() == const_cast<char *>(TCHAR_TO_UTF8(*moveFilePath)); });
+    if (it != m_barrageManager->m_parser.end()) {
+        enemy->set(FVector2D(actor->GetActorLocation().X, actor->GetActorLocation().Z), M_PI/*, squadron->m_type*/, (*it));
+        enemy->setActor(actor);
+    }
 }
 
 void AGameManager::RemoveEnemy(AActor *enemy) {

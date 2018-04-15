@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include <string>
-#include <array>
+#include <vector>
 
 class BulletMLParserTinyXML;
 
@@ -26,11 +26,7 @@ public:
         BARRAGE_MAX = 64
     };
 
-    std::array<std::array<BulletMLParserTinyXML *, BARRAGE_MAX>, BARRAGE_TYPE> m_parser;
-    std::array<int, BARRAGE_TYPE> m_parserSizes;
-
-private:
-    static std::array<const std::string, BARRAGE_TYPE> m_dirName;
+    std::vector<BulletMLParserTinyXML *> m_parser;
 };
 
 #endif

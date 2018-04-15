@@ -156,7 +156,7 @@ void StageManager::setSmallSquadron(EnemySquadron *squadron) {
         mt = BarrageManager::SMALL_SIDE_MOVE;
     }
 
-    squadron->m_moveParser = m_barrageManager->m_parser[mt][m_random.nextInt(m_barrageManager->m_parserSizes[mt])];
+    //squadron->m_moveParser = m_barrageManager->m_parser[mt][m_random.nextInt(m_barrageManager->m_parserSizes[mt])];
     setSquadronPattern(squadron);
 
     if (squadron->m_pattern == ONE_SIDE) {
@@ -182,7 +182,7 @@ void StageManager::setMediumSquadron(EnemySquadron *squadron) {
 
     int mt = BarrageManager::MEDIUM_MOVE;
     squadron->m_point = TOP;
-    squadron->m_moveParser = m_barrageManager->m_parser[mt][m_random.nextInt(m_barrageManager->m_parserSizes[mt])];
+    //squadron->m_moveParser = m_barrageManager->m_parser[mt][m_random.nextInt(m_barrageManager->m_parserSizes[mt])];
     setSquadronPattern(squadron);
 
     switch (m_random.nextInt(3)) {
@@ -205,7 +205,7 @@ void StageManager::setLargeSquadron(EnemySquadron *squadron) {
     squadron->m_point = TOP;
     mt = BarrageManager::LARGE_MOVE;
 
-    squadron->m_moveParser = m_barrageManager->m_parser[mt][m_random.nextInt(m_barrageManager->m_parserSizes[mt])];
+    //squadron->m_moveParser = m_barrageManager->m_parser[mt][m_random.nextInt(m_barrageManager->m_parserSizes[mt])];
     setSquadronPattern(squadron);
 
     switch (m_random.nextInt(3)) {

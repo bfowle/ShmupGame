@@ -90,9 +90,6 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = GameManager)
     TSubclassOf<AActor> BP_BulletClass;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = GameManager)
-    TSubclassOf<AActor> BP_BulletClass2;
-
     TWeakObjectPtr<UWorld> m_world;
 
     int m_state;

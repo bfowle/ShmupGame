@@ -222,13 +222,14 @@ void EnemyType::setLargeBossEnemyType(float rank) {
 }
 
 void EnemyType::setBarrageType(Barrage *barrage, int btn) {
-    barrage->m_parser = reinterpret_cast<BulletMLParser *>(
-        m_barrageManager->m_parser[btn][m_random.nextInt(m_barrageManager->m_parserSizes[btn])]);
+    //barrage->m_parser = reinterpret_cast<BulletMLParser *>(
+    //    m_barrageManager->m_parser[btn][m_random.nextInt(m_barrageManager->m_parserSizes[btn])]);
     
     for (int i = 0; i < BarrageManager::BARRAGE_MAX; ++i) {
         m_usedMorphParser[i] = false;
     }
 
+    /*
     int mpn;
     mpn = m_barrageManager->m_parserSizes[BarrageManager::MORPH];
 
@@ -245,13 +246,14 @@ void EnemyType::setBarrageType(Barrage *barrage, int btn) {
             }
         }
 
-        barrage->m_morphParser[i] = reinterpret_cast<BulletMLParser *>(
-            m_barrageManager->m_parser[BarrageManager::MORPH][mi]);
+        //barrage->m_morphParser[i] = reinterpret_cast<BulletMLParser *>(
+        //    m_barrageManager->m_parser[BarrageManager::MORPH][mi]);
 
         m_usedMorphParser[mi] = true;
     }
 
     barrage->m_morphSize = barrage->m_morphParser.size();
+    */
 }
 
 void EnemyType::setBarrageRank(Barrage *barrage, float rank, int intensity) {
