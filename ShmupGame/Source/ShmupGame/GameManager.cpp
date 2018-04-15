@@ -18,8 +18,6 @@
 
 using namespace std;
 
-const int AGameManager::SLOWDOWN_START_BULLETS_SPEED[2] = {30, 42};
-
 AGameManager::AGameManager() {
     // @TODO: move this to AGameState?
     PrimaryActorTick.bStartWithTickEnabled = true;
@@ -51,11 +49,8 @@ void AGameManager::InitGame(const FString &MapName, const FString &Options, FStr
     m_barrageManager->loadBulletMLFiles();
     EnemyType::init(m_barrageManager);
 
-    m_stageManager.reset(new StageManager());
-    m_stageManager->init(m_field, m_barrageManager, this);
-
-    //m_interval = INTERVAL_BASE;
-    //m_maxSkipFrame = 5;
+    //m_stageManager.reset(new StageManager());
+    //m_stageManager->init(m_barrageManager, this);
 }
 
 void AGameManager::StartPlay() {
@@ -67,7 +62,6 @@ void AGameManager::StartPlay() {
     }
 
     //startTitle();
-    //m_mode = LOCK;
     //m_difficulty = EXTREME;
     startInGame();
 }
@@ -93,8 +87,6 @@ void AGameManager::Tick(float DeltaSeconds) {
     default:
         break;
     }
-
-    //m_cnt++;
 }
 
 void AGameManager::AddShot(const FVector &position, float direction) {
@@ -107,24 +99,12 @@ void AGameManager::AddEnemy(AActor *actor, FString moveFilePath) {
         return;
     }
 
-    // @TODO: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // get new squadron from StageManager
-    StageManager::EnemySquadron *squadron = &m_stageManager->m_squadrons[0];
+    //StageManager::EnemySquadron *squadron = &m_stageManager->m_squadrons[0];
     BulletMLParserTinyXML *moveParser = BulletMLParserTinyXML_new(const_cast<char *>(TCHAR_TO_UTF8(*moveFilePath)));
     BulletMLParserTinyXML_parse(moveParser);
 
     enemy->set(FVector2D(actor->GetActorLocation().X, actor->GetActorLocation().Z),
-        M_PI, squadron->m_type, reinterpret_cast<BulletMLParser *>(moveParser));
-
-    /*
-    TWeakObjectPtr<APawn> player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-    if (player.IsValid() &&
-        player->GetAttachParentActor()) {
-        actor->AttachToActor(player->GetAttachParentActor(),
-            FAttachmentTransformRules::KeepWorldTransform);
-        //actor->SetActorRelativeLocation(FVector(position.X, 0, position.Y));
-    }
-    */
+        M_PI/*, squadron->m_type*/, reinterpret_cast<BulletMLParser *>(moveParser));
     enemy->setActor(actor);
 }
 
@@ -148,41 +128,36 @@ void AGameManager::close() {
     m_barrageManager->unloadBulletMLFiles();
 }
 
-void AGameManager::startStage(int difficulty, int parsecSlot, int startParsec, int mode) {
+void AGameManager::startStage(int difficulty) {
     m_enemies->clear();
     m_bullets->clear();
 
     m_difficulty = difficulty;
-    m_parsecSlot = parsecSlot;
-    m_mode = mode;
 
-    int stageType = m_random.nextInt(99999);
+    //int stageType = m_random.nextInt(99999);
 
     switch (difficulty) {
     case PRACTICE:
-        m_stageManager->setRank(1, 4, startParsec, stageType);
+        //m_stageManager->setRank(1, 4, stageType);
         m_ship->setSpeedRate(0.7);
         break;
     case NORMAL:
-        m_stageManager->setRank(10, 8, startParsec, stageType);
+        //m_stageManager->setRank(10, 8, stageType);
         m_ship->setSpeedRate(0.9);
         break;
     case HARD:
-        m_stageManager->setRank(22, 12, startParsec, stageType);
+        //m_stageManager->setRank(22, 12, stageType);
         m_ship->setSpeedRate(1);
         break;
     case EXTREME:
-        m_stageManager->setRank(36, 16, startParsec, stageType);
+        //m_stageManager->setRank(36, 16, stageType);
         m_ship->setSpeedRate(1.2);
         break;
     case QUIT:
-        m_stageManager->setRank(0, 0, 0, 0);
+        //m_stageManager->setRank(0, 0, 0);
         m_ship->setSpeedRate(1);
         break;
     }
-}
-
-void AGameManager::addBoss(const FVector2D &position, float direction, shared_ptr<EnemyType> type) {
 }
 
 void AGameManager::shipDestroyed() {
@@ -199,14 +174,13 @@ void AGameManager::clearBullets() {
         if (!m_bullets->m_pool[i]->m_isAlive) {
             continue;
         }
-        //static_pointer_cast<BulletActor>(m_bullets->m_actor[i]->toRetro());
     }
 }
 
 void AGameManager::initShipState() {
     m_shipsRemaining = 2;
     m_score = 0;
-    m_extendScore = FIRST_EXTEND;
+
     m_ship->start();
 }
 
@@ -215,8 +189,7 @@ void AGameManager::startInGame() {
 
     initShipState();
 
-    int startParsec = m_parsecSlot * 10 + 1;
-    startStage(m_difficulty, m_parsecSlot, startParsec/*m_title->getStartParsec(m_difficulty, m_parsecSlot)*/, m_mode);
+    startStage(m_difficulty);
 }
 
 void AGameManager::startTitle() {
@@ -226,72 +199,34 @@ void AGameManager::startTitle() {
     initShipState();
     m_bullets->clear();
     m_ship->m_cnt = 0;
-    m_cnt = 0;
 
-    int startParsec = m_parsecSlot * 10 + 1;
-    startStage(m_difficulty, m_parsecSlot, startParsec/*m_title->getStartParsec(m_difficulty, m_parsecSlot)*/, m_mode);
+    startStage(m_difficulty);
 }
 
 void AGameManager::startGameOver() {
     m_state = GAME_OVER;
 
     //m_shots->clear();
-    
-    m_cnt = 0;
 }
 
 void AGameManager::startPause() {
     m_state = PAUSE;
-
-    m_pauseCnt = 0;
 }
 
 void AGameManager::resumePause() {
     m_state = IN_GAME;
 }
 
-void AGameManager::stageTick() {
-    //m_stageManager->tick();
-}
-
 void AGameManager::inGameTick() {
-#if 0
-    long nowTick = (long)UGameplayStatics::GetRealTimeSeconds(GetWorld()) * 1000.0;
-    m_frame = (int)(nowTick - m_previousTick) / m_interval;
-    if (m_frame <= 0) {
-        m_frame = 1;
-        m_previousTick += m_interval;
-    } else if (m_frame > m_maxSkipFrame) {
-        m_frame = m_maxSkipFrame;
-        m_previousTick = nowTick;
-    } else {
-        m_previousTick += m_frame * m_interval;
-    }
-    for (int i = 0; i < m_frame; i++) {
-        stageTick();
-    }
-#else
-    stageTick();
-#endif
-
     m_field->tick();
     m_ship->tick();
     //m_shots->tick();
     m_enemies->tick();
+
     BulletActor::resetTotalBulletsSpeed();
     m_bullets->tick();
 
     // set pause
-
-    if (BulletActor::m_totalBulletsSpeed > SLOWDOWN_START_BULLETS_SPEED[m_mode]) {
-        float sm = BulletActor::m_totalBulletsSpeed / SLOWDOWN_START_BULLETS_SPEED[m_mode];
-        if (sm > 1.75) {
-            sm = 1.75;
-        }
-        m_interval += (sm * INTERVAL_BASE - m_interval) * 0.01;
-    } else {
-        m_interval += (INTERVAL_BASE - m_interval) * 0.08;
-    }
 }
 
 void AGameManager::titleTick() {

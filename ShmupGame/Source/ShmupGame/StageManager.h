@@ -11,7 +11,6 @@
 
 class AGameManager;
 class BulletMLParser;
-class Field;
 
 class StageManager {
 public:
@@ -19,17 +18,14 @@ public:
     public:
         std::shared_ptr<EnemyType> m_type;
         BulletMLParser *m_moveParser;
-        int m_point, m_pattern, m_sequence;
-        float m_position;
         int m_id;
-        int m_side;
+        float m_position;
+        int m_point, m_pattern, m_sequence, m_side;
         int m_total, m_cnt, m_remaining;
-        float m_interval, m_groupInterval;
     };
 
-    void init(std::shared_ptr<Field> field, std::shared_ptr<BarrageManager> barrageManager, TWeakObjectPtr<AGameManager> gameManager);
-    void setRank(float baseRank, float inc, int startParsec, int type);
-    void tick();
+    void init(std::shared_ptr<BarrageManager> barrageManager, TWeakObjectPtr<AGameManager> gameManager);
+    void setRank(float baseRank, float inc, int type);
 
 private:
     void createSectionData();
@@ -40,7 +36,6 @@ private:
     void setSmallSquadron(EnemySquadron *squadron);
     void setMediumSquadron(EnemySquadron *squadron);
     void setLargeSquadron(EnemySquadron *squadron);
-    void gotoNextSection();
 
 public:
     enum {
@@ -51,45 +46,19 @@ public:
         LARGE_ENEMY_TYPE_MAX = 2
     };
 
-    enum {
-        TOP,
-        SIDE,
-        BACK
-    };
-
-    enum {
-        ONE_SIDE,
-        ALTERNATE,
-        BOTH_SIDES
-    };
-
-    enum {
-        RANDOM,
-        FIXED
-    };
-
-    enum {
-        SMALL,
-        MEDIUM,
-        LARGE
-    };
+    enum { TOP, SIDE, BACK };
+    enum { ONE_SIDE, ALTERNATE, BOTH_SIDES };
+    enum { RANDOM, FIXED };
+    enum { SMALL, MEDIUM, LARGE };
 
     std::array<EnemySquadron, SIMULTANEOUS_APPEARANCE_MAX> m_squadrons;
 
-    int m_parsec;
-    bool m_isBossSection;
-
 private:
-    enum {
-        MEDIUM_RUSH_SECTION_PATTERN = 6
-    };
-
     Random m_random;
     TWeakObjectPtr<AGameManager> m_gameManager;
     std::shared_ptr<BarrageManager> m_barrageManager;
-    std::shared_ptr<Field> m_field;
 
-    static const int m_squadronPatterns[][7][3];
+    static const int m_squadronPatterns[7][3];
 
     std::array<std::shared_ptr<EnemyType>, SMALL_ENEMY_TYPE_MAX> m_smallType;
     std::array<std::shared_ptr<EnemyType>, MEDIUM_ENEMY_TYPE_MAX> m_mediumType;
@@ -97,14 +66,9 @@ private:
     std::shared_ptr<EnemyType> m_mediumBossType;
     std::shared_ptr<EnemyType> m_largeBossType;
 
-    float m_deltaSeconds;
     int m_squadronTotal;
     FVector2D m_squadronPosition;
-    float m_sectionCnt, m_sectionIntervalCnt;
-    int m_section;
     int m_rank, m_rankInc;
-    int m_mediumRushSection;
-    bool m_isMediumRushSection;
     int m_stageType;
 };
 

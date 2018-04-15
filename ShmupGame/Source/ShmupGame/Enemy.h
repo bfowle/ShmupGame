@@ -44,8 +44,8 @@ public:
     std::shared_ptr<Actor> newActor();
 
     void init(std::shared_ptr<ActorInitializer> initializer);
-    void set(const FVector2D &position, float direction, std::shared_ptr<EnemyType> type, BulletMLParser *parser);
-    void setBoss(const FVector2D &p, float direction, std::shared_ptr<EnemyType> type);
+    void set(const FVector2D &position, float direction, BulletMLParser *parser);
+    void setBoss(const FVector2D &p, float direction);
     void setActor(TWeakObjectPtr<AActor> actor);
     void tick();
     void tickBoss();
@@ -61,18 +61,11 @@ private:
 
     std::shared_ptr<BulletActor> setBullet(const Barrage &barrage, const FVector2D *offset, float xReverse);
     std::shared_ptr<BulletActor> setBullet(const Barrage &barrage, const FVector2D *offset);
-    void setTopBullets();
     void removeFormation(EnemyFormation *formation, const EnemyFormationType &ft);
-    //void addDamageFormation(int idx, int dmg);
-    //int checkHit(const FVector2D &position, float xofs, float yofs);
-    void removeTopBullets();
     void remove();
-    void gotoNextPoint();
-    void controlFireCnt();
 
 public:
     static const float FIELD_SPACE;
-    static Enemy *m_now;
 
     TWeakObjectPtr<AActor> m_actor;
     FVector2D m_position;
@@ -81,27 +74,6 @@ public:
     int m_shield;
 
 private:
-    enum {
-        MOVE_POINT_MAX = 8,
-        APPEARANCE_COUNT = 90,
-        APPEARANCE_Z = -15,
-        DESTROYED_COUNT = 90,
-        DESTROYED_Z = -10,
-        TIMEOUT_COUNT = 90,
-        BOSS_TIMEOUT = 1800,
-        ENEMY_WING_SCORE = 1000,
-        SHOT_DAMAGE = 1
-    };
-
-    enum {
-        NOHIT = -2,
-        HIT = -1
-    };
-
-    static Random m_random;
-    static const int ENEMY_TYPE_SCORE[];
-    static float BOSS_MOVE_DISTANCE;
-
     TWeakObjectPtr<UProjectileMovementComponent> m_movement;
     BulletMLParser *m_moveParser;
 
@@ -113,17 +85,11 @@ private:
 
     std::shared_ptr<BulletActor> m_topBullet;
     std::shared_ptr<BulletActor> m_moveBullet;
-    std::array<FVector2D, MOVE_POINT_MAX> m_movePoint;
 
     float m_speed;
     float m_direction, m_baseDirection;
 
-    int m_movePointSize, m_movePointIdx;
-    int m_barragePatternIdx;
-    bool m_onRoute;
-
     // enemy
-    float m_cnt, m_fireCnt;
     bool m_isDamaged;
     FVector2D m_velocity;
     int m_velocityCnt;

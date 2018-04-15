@@ -22,8 +22,6 @@ class Ship;
 class BulletActorPool;
 class BulletMLParser;
 
-#define DO_IT 0
-
 UCLASS()
 class SHMUPGAME_API AGameManager : public AGameModeBase {
     GENERATED_BODY()
@@ -69,9 +67,7 @@ public:
     //StartToLeaveMap
 
     void close();
-    void startStage(int difficulty, int parsecSlot, int startParsec, int mode);
-    void addBoss(const FVector2D &position, float direction, std::shared_ptr<EnemyType> type);
-    //void addShot(const FVector2D &position, float direction);
+    void startStage(int difficulty);
     void shipDestroyed();
     void clearBullets();
 
@@ -82,29 +78,14 @@ private:
     void startGameOver();
     void startPause();
     void resumePause();
-    void stageTick();
     void inGameTick();
     void titleTick();
     void gameOverTick();
     void pauseTick();
 
 public:
-    enum {
-        TITLE,
-        IN_GAME,
-        GAME_OVER,
-        PAUSE
-    };
-
-    enum {
-        PRACTICE,
-        NORMAL,
-        HARD,
-        EXTREME,
-        QUIT
-    };
-
-    const int INTERVAL_BASE = 16;
+    enum { TITLE, IN_GAME, GAME_OVER, PAUSE };
+    enum { PRACTICE, NORMAL, HARD, EXTREME, QUIT };
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = GameManager)
     TSubclassOf<AActor> BP_BulletClass;
@@ -114,21 +95,15 @@ public:
 
     TWeakObjectPtr<UWorld> m_world;
 
-    int m_mode, m_state;
-    int m_difficulty, m_parsecSlot;
+    int m_state;
+    int m_difficulty;
     float m_deltaSeconds;
 
 private:
     enum {
-        BULLET_MAX = 1024 * 1024,
-        ENEMY_MAX = 32,
-        FIRST_EXTEND = 200000,
-        EVERY_EXTEND = 500000,
-        LEFT_MAX = 4,
-        BOSS_WING_TOTAL = 4
+        BULLET_MAX = 1024,
+        ENEMY_MAX = 32
     };
-
-    static const int SLOWDOWN_START_BULLETS_SPEED[2];
 
     Random m_random;
     TWeakObjectPtr<APawn> m_player;
@@ -141,14 +116,6 @@ private:
     std::shared_ptr<StageManager> m_stageManager;
     std::shared_ptr<BarrageManager> m_barrageManager;
 
-    int m_cnt;
-    int m_score, m_extendScore;
+    int m_score;
     int m_shipsRemaining;
-    int m_pauseCnt;
-    int m_bossShield;
-    std::array<int, BOSS_WING_TOTAL> m_bossWingShield;
-
-    int m_interval;
-    int m_frame, m_maxSkipFrame;
-    long m_previousTick;
 };

@@ -21,8 +21,7 @@ class Bullet {
 public:
     explicit Bullet(int id) :
         m_id(id),
-        m_rank(1.0)/*,
-        m_runner(nullptr)*/ {
+        m_rank(1.0) {
     };
     virtual ~Bullet() {};
 
