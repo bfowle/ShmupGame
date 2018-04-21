@@ -38,10 +38,11 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = GameManager)
     void AddEnemy(AActor *enemy, FString moveFilePath);
-
     UFUNCTION(BlueprintCallable, Category = GameManager)
     void RemoveEnemy(AActor *enemy);
 
+    UFUNCTION(BlueprintImplementableEvent, Category = GameManager)
+    AActor *AddBullet(FVector Position);
     UFUNCTION(BlueprintCallable, Category = GameManager)
     void RemoveBullet(AActor *bullet);
 
@@ -98,7 +99,7 @@ public:
 
 private:
     enum {
-        BULLET_MAX = 1024,
+        BULLET_MAX = 1024 << 8,
         ENEMY_MAX = 32
     };
 

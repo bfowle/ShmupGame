@@ -41,7 +41,7 @@ void BulletActorPool::addBullet(float x, float y, float direction, float speed, 
         bullet->set(x, y, direction, speed, bullet->m_bullet->m_rank,
             rb->m_speedRank, rb->m_xReverse);
     }
-    bullet->spawnBulletActor(parent);
+    bullet->spawnBulletActor();
 }
 
 // called via bulletml createBullet
@@ -63,7 +63,7 @@ void BulletActorPool::addBullet(BulletMLState *state, float x, float y, float di
         bullet->set(bc, x, y, direction, speed, bullet->m_bullet->m_rank,
             rb->m_speedRank, rb->m_xReverse);
     }
-    bullet->spawnBulletActor(parent);
+    bullet->spawnBulletActor();
 }
 
 // called via enemy move bullet

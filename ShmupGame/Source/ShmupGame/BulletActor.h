@@ -53,7 +53,7 @@ public:
     void setActor(TWeakObjectPtr<AActor> actor);
     void setInvisible();
     void setTop(BulletMLParser *parser);
-    void spawnBulletActor(BulletActor *parent);
+    void spawnBulletActor();
     void rewind();
     void remove();
     void tick();
@@ -95,7 +95,6 @@ private:
     bool m_isVisible;
 
     FVector2D m_previousPosition;
-    int m_cnt;
     bool m_shouldBeRemoved;
 };
 

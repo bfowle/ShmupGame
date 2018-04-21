@@ -16,7 +16,7 @@
 
 using namespace std;
 
-const float BulletActor::FIELD_SPACE = 15.0; // 0.5;
+const float BulletActor::FIELD_SPACE = 15.0;
 float BulletActor::m_totalBulletsSpeed;
 int BulletActor::m_nextId = 0;
 
@@ -68,10 +68,8 @@ void BulletActor::start(float speedRank, float xReverse) {
     m_isAlive = true;
     m_isTop = false;
     m_isVisible = true;
-    m_previousPosition.X = m_bullet->m_position.X;
-    m_previousPosition.Y = m_bullet->m_position.Y;
+    m_previousPosition = m_bullet->m_position;
     m_bullet->setParam(speedRank, xReverse);
-    m_cnt = 0;
     m_shouldBeRemoved = false;
 }
 
@@ -89,17 +87,12 @@ void BulletActor::setTop(BulletMLParser *parser) {
     setInvisible();
 }
 
-void BulletActor::spawnBulletActor(BulletActor *parent) {
-    // @TODO: !!!!!!!!!!!!!!!!!!!!!!!!!!!!! replace -650
-    m_actor = m_gameManager->m_world->SpawnActor<AActor>(m_gameManager->BP_BulletClass,
-        FVector(m_bullet->m_position.X, -650.0, m_bullet->m_position.Y), FRotator::ZeroRotator);
+void BulletActor::spawnBulletActor() {
+    // @TODO: replace -650 when objects are set in test level
+    m_actor = m_gameManager->AddBullet(FVector(m_bullet->m_position.X, -650.0, m_bullet->m_position.Y));
 
-    if (m_actor.IsValid() &&
-        parent->m_actor.IsValid()) {
+    if (m_actor.IsValid()) {
         m_uuid = m_actor->GetUniqueID();
-        //UE_LOG(LogTemp, Warning, TEXT(" Attaching: %s to %s "), *m_actor->GetName(), *parent->m_actor->GetName());
-        m_actor->AttachToActor(parent->m_actor.Get(),
-            FAttachmentTransformRules::KeepWorldTransform);
         m_movement = m_actor->FindComponentByClass<UProjectileMovementComponent>();
     }
 }
@@ -110,7 +103,7 @@ void BulletActor::rewind() {
     //BulletMLRunner *runner = BulletMLRunner_new_parser(m_parser);
     //BulletActorPool::registerFunctions(runner);
     //m_bullet->setRunner(runner);
-    //m_bullet->resetMorph();
+    m_bullet->resetMorph();
 }
 
 void BulletActor::remove() {
@@ -122,16 +115,16 @@ void BulletActor::removeForced() {
     m_isAlive = false;
 
     if (m_actor.IsValid()) {
-        //UE_LOG(LogTemp, Warning, TEXT(" !!! removing: %s "), *m_actor->GetName());
         m_gameManager->m_world->DestroyActor(m_actor.Get());
+        //m_actor->SetActorHiddenInGame(true);
+
         //m_actor->Destroy();
         //m_actor->ConditionalBeginDestroy();
     }
 }
 
 void BulletActor::tick() {
-    m_previousPosition.X = m_bullet->m_position.X;
-    m_previousPosition.Y = m_bullet->m_position.Y;
+    m_previousPosition = m_bullet->m_position;
 
     if (!m_isSimple) {
         m_bullet->tick();
@@ -188,8 +181,6 @@ void BulletActor::tick() {
             }
         }
     }
-
-    m_cnt++;
 }
 
 void BulletActor::resetTotalBulletsSpeed() {

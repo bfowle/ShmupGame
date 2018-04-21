@@ -31,7 +31,6 @@ void Enemy::init(shared_ptr<ActorInitializer> initializer) {
     m_gameManager = enemy->m_gameManager;
 
     m_position = FVector2D();
-
     m_velocity = FVector2D();
     m_velocityCnt = 0;
 
