@@ -12,6 +12,7 @@
 #include "GameFramework/Actor.h"
 #include "GameFramework/Pawn.h"
 #include "Kismet/GameplayStatics.h"
+#include "Misc/Paths.h"
 
 #include "bulletml/bulletml.h"
 #include "bulletml/bulletmlparser-tinyxml.h"
@@ -100,6 +101,12 @@ void AGameManager::AddEnemy(AActor *actor, FString moveFilePath) {
     }
 
     //StageManager::EnemySquadron *squadron = &m_stageManager->m_squadrons[0];
+
+    // @TODO: move this into a helper class
+    int32 found = moveFilePath.Find("BulletML");
+    if (found > -1) {
+        moveFilePath = FPaths::ConvertRelativePathToFull(FPaths::ProjectContentDir()) + moveFilePath.RightChop(found);
+    }
 
     vector<BulletMLParserTinyXML *>::iterator it = find_if(m_barrageManager->m_parser.begin(), m_barrageManager->m_parser.end(),
         [&](BulletMLParserTinyXML *a) { return a->getName() == const_cast<char *>(TCHAR_TO_UTF8(*moveFilePath)); });

@@ -8,7 +8,7 @@
 using namespace std;
 
 void BarrageManager::loadBulletMLFiles() {
-    FString sourceDir = FPaths::ProjectContentDir() + "BulletML";
+    FString sourceDir = FPaths::ConvertRelativePathToFull(FPaths::ProjectContentDir()) + "BulletML";
     FPaths::NormalizeDirectoryName(sourceDir);
 
     IFileManager &fileManager = IFileManager::Get();

@@ -114,13 +114,9 @@ void BulletActor::removeForced() {
     m_bullet->remove();
     m_isAlive = false;
 
-    if (m_actor.IsValid()) {
-        //m_gameManager->m_world->DestroyActor(m_actor.Get());
-        //m_actor->SetActorHiddenInGame(true);
-
-        //m_actor->Destroy();
-        //m_actor->ConditionalBeginDestroy();
-    }
+    //if (m_actor.IsValid()) {
+    //    m_gameManager->m_world->DestroyActor(m_actor.Get());
+    //}
 }
 
 void BulletActor::tick() {
