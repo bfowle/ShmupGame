@@ -99,7 +99,7 @@ public:
 
 private:
     enum {
-        BULLET_MAX = 1024 << 8,
+        BULLET_MAX = 1024, //1024 << 8,
         ENEMY_MAX = 32
     };
 

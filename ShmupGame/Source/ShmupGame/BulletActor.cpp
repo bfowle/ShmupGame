@@ -115,7 +115,7 @@ void BulletActor::removeForced() {
     m_isAlive = false;
 
     if (m_actor.IsValid()) {
-        m_gameManager->m_world->DestroyActor(m_actor.Get());
+        //m_gameManager->m_world->DestroyActor(m_actor.Get());
         //m_actor->SetActorHiddenInGame(true);
 
         //m_actor->Destroy();
