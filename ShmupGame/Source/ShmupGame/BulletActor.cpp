@@ -11,6 +11,8 @@
 #include "GameFramework/Actor.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
+#include "PooledProjectile.h"
+
 #include "bulletml/bulletml.h"
 #include "bulletml/bulletmlparser.h"
 
@@ -93,15 +95,13 @@ void BulletActor::spawnBulletActor() {
 
     if (m_actor.IsValid()) {
         m_uuid = m_actor->GetUniqueID();
-        m_movement = m_actor->FindComponentByClass<UProjectileMovementComponent>();
+        m_movement = m_actor->FindComponentByClass<UPooledProjectile>();
     }
 }
 
 void BulletActor::rewind() {
     m_bullet->remove();
 
-    //BulletMLRunner *runner = BulletMLRunner_new_parser(m_parser);
-    //BulletActorPool::registerFunctions(runner);
     //m_bullet->setRunner(runner);
     m_bullet->resetMorph();
 }
@@ -151,23 +151,23 @@ void BulletActor::tick() {
 
         if (m_actor.IsValid() && 
             m_movement.IsValid() &&
-            m_movement->UpdatedComponent) {
-            FVector vel = (m_movement->UpdatedComponent->GetForwardVector() *
+            m_movement->GetMovementComponent()->UpdatedComponent) {
+            FVector vel = (m_movement->GetMovementComponent()->UpdatedComponent->GetForwardVector() *
                 (sin(m_bullet->m_direction) +
                     m_bullet->m_acceleration.X) * sr *
                     m_bullet->m_xReverse) +
-                (m_movement->UpdatedComponent->GetUpVector() *
+                (m_movement->GetMovementComponent()->UpdatedComponent->GetUpVector() *
                 (cos(m_bullet->m_direction) +
                     m_bullet->m_acceleration.Y) * sr);
             vel.Y = 0;
             if (!vel.IsNearlyZero()) {
                 vel.Normalize();
                 vel *= m_bullet->m_speed *
-                    m_movement->GetMaxSpeed() *
+                    m_movement->GetMovementComponent()->GetMaxSpeed() *
                     m_gameManager->m_deltaSeconds;
-                m_movement->MoveUpdatedComponent(vel, FRotator::ZeroRotator, true);
+                m_movement->GetMovementComponent()->MoveUpdatedComponent(vel, FRotator::ZeroRotator, true);
                 if (m_movement.IsValid()) {
-                    m_movement->UpdateComponentVelocity();
+                    m_movement->GetMovementComponent()->UpdateComponentVelocity();
                 }
             }
 

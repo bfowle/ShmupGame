@@ -16,7 +16,7 @@ public class ShmupGame : ModuleRules {
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
 		PublicDependencyModuleNames.AddRange(new string[] {"Core", "CoreUObject", "Engine", "InputCore"});
-		PrivateDependencyModuleNames.AddRange(new string[] {});
+        PrivateDependencyModuleNames.AddRange(new string[] {"OBJPool"});
 
         PublicAdditionalLibraries.Add(Path.Combine(ThirdPartyPath, "lib", "bulletml", "bulletml.lib"));
         PublicIncludePaths.Add(Path.Combine(ThirdPartyPath, "include"));

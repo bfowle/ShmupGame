@@ -105,7 +105,8 @@ void AGameManager::AddEnemy(AActor *actor, FString moveFilePath) {
     // @TODO: move this into a helper class
     int32 found = moveFilePath.Find("BulletML");
     if (found > -1) {
-        moveFilePath = FPaths::ConvertRelativePathToFull(FPaths::ProjectContentDir()) + moveFilePath.RightChop(found);
+        moveFilePath = FPaths::ConvertRelativePathToFull(FPaths::ProjectContentDir()) +
+            moveFilePath.RightChop(found);
     }
 
     vector<BulletMLParserTinyXML *>::iterator it = find_if(m_barrageManager->m_parser.begin(), m_barrageManager->m_parser.end(),

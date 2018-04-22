@@ -16,7 +16,7 @@ class Ship;
 class BulletCommand;
 class BulletMLParser;
 class BulletMLRunner;
-class UProjectileMovementComponent;
+class UPooledProjectile;
 
 class BulletActorInitializer : public ActorInitializer {
 public:
@@ -83,7 +83,7 @@ private:
     static const float FIELD_SPACE;
 
     TWeakObjectPtr<AActor> m_actor;
-    TWeakObjectPtr<UProjectileMovementComponent> m_movement;
+    TWeakObjectPtr<UPooledProjectile> m_movement;
     std::shared_ptr<Field> m_field;
     std::shared_ptr<Ship> m_ship;
     TWeakObjectPtr<AGameManager> m_gameManager;
