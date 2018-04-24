@@ -91,7 +91,7 @@ void BulletActor::setTop(BulletMLParser *parser) {
 
 void BulletActor::spawnBulletActor() {
     // @TODO: replace -650 when objects are set in test level
-    m_actor = m_gameManager->AddBullet(FVector(m_bullet->m_position.X, -650.0, m_bullet->m_position.Y));
+    m_actor = m_gameManager->AddBullet(FVector(m_bullet->m_position.X, 2502.0, m_bullet->m_position.Y));
 
     if (m_actor.IsValid()) {
         m_uuid = m_actor->GetUniqueID();
