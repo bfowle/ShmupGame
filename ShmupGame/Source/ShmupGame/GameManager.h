@@ -22,6 +22,7 @@ class Ship;
 class ShmupBullet;
 class BulletActorPool;
 class BulletMLParser;
+class UCameraComponent;
 class UInstancedStaticMeshComponent;
 
 UCLASS()
@@ -43,14 +44,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = GameManager)
     void RemoveEnemy(AActor *enemy);
 
-    //UFUNCTION(BlueprintImplementableEvent, Category = GameManager)
-
     UFUNCTION(BlueprintCallable, Category = GameManager)
     void RemoveBullet(AActor *bullet);
     
-    UFUNCTION(BlueprintImplementableEvent, Category = GameManager)
-    void CalculateRemoveFromScreen(int32 InstanceId);
-
     //GameModeBase:
     //  ReplicatedWorldTimeSeconds |
     //  ServerWorldTimeSecondsDelta |
@@ -78,7 +74,7 @@ public:
     void clearBullets();
 
     int32 addBullet(FVector position);
-    FVector updateBullet(int32 instanceId, std::shared_ptr<ShmupBullet> bullet, float speedRank);
+    FVector updateBullet(BulletActor *actor, std::shared_ptr<ShmupBullet> bullet, float speedRank);
 
 private:
     void initShipState();
@@ -92,11 +88,20 @@ private:
     void gameOverTick();
     void pauseTick();
 
+    bool shouldRemoveInstance(FVector v0);
+
+    inline FVector2D calculateScreenBounds(float fieldOfView, float aspectRatio, float depth) {
+        return FVector2D(abs((tan((((M_PI / 180.0) * fieldOfView) / 2.0))) * depth),
+            abs((tan((((M_PI / 180.0) * (fieldOfView / aspectRatio)) / 2.0))) * depth));
+    }
+
 public:
     enum { TITLE, IN_GAME, GAME_OVER, PAUSE };
     enum { PRACTICE, NORMAL, HARD, EXTREME, QUIT };
 
     TWeakObjectPtr<UWorld> m_world;
+    TWeakObjectPtr<AActor> m_cameraActor;
+    TWeakObjectPtr<UCameraComponent> m_cameraComponent;
     TWeakObjectPtr<UInstancedStaticMeshComponent> m_enemyBulletSIM;
 
     int m_state;
@@ -105,7 +110,7 @@ public:
 
 private:
     enum {
-        BULLET_MAX = 1024 << 8,
+        BULLET_MAX = 1024,
         ENEMY_MAX = 32
     };
 

@@ -10,6 +10,7 @@
 #include "ShmupBullet.h"
 
 #include "Engine/World.h"
+#include "Camera/CameraComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/Pawn.h"
@@ -59,6 +60,14 @@ void AGameManager::InitGame(const FString &MapName, const FString &Options, FStr
     // @TODO: change to lambda
     for (TActorIterator<AActor> ActorIter(GetWorld()); ActorIter; ++ActorIter) {
         //UE_LOG(LogTemp, Warning, TEXT(" -- %s -- "), *ActorItr->GetName());
+
+        if (m_cameraActor == nullptr &&
+            ActorIter->GetComponentsByClass(UCameraComponent::StaticClass()).Num()) {
+            m_cameraActor = *ActorIter;
+            m_cameraComponent = dynamic_cast<UCameraComponent *>(
+                ActorIter->GetComponentByClass(UCameraComponent::StaticClass()));
+        }
+
         if (ActorIter->ActorHasTag("SIM_EnemyBullet")) {
             m_enemyBulletSIM = dynamic_cast<UInstancedStaticMeshComponent *>(
                 ActorIter->GetComponentByClass(UInstancedStaticMeshComponent::StaticClass()));
@@ -202,16 +211,29 @@ int32 AGameManager::addBullet(FVector Position) {
     return m_enemyBulletSIM->AddInstanceWorldSpace(FTransform(Position));
 }
 
-FVector AGameManager::updateBullet(int32 instanceId, shared_ptr<ShmupBullet> bullet, float speedRank) {
+FVector AGameManager::updateBullet(BulletActor *actor, shared_ptr<ShmupBullet> bullet, float speedRank) {
     FTransform bulletTransform;
-    m_enemyBulletSIM->GetInstanceTransform(instanceId, bulletTransform, true);
+    if (m_enemyBulletSIM->GetInstanceTransform(actor->m_instanceId, bulletTransform, true)) {
+        FVector pos = bulletTransform.GetLocation() +
+            FVector(
+                (sin(bullet->m_direction) * bullet->m_speed + bullet->m_acceleration.X) * speedRank * bullet->m_xReverse,
+                0,
+                (cos(bullet->m_direction) * bullet->m_speed - bullet->m_acceleration.Z) * speedRank
+            );
 
-    FVector vec = bulletTransform.GetLocation() + 
-        FVector((sin(bullet->m_direction) * bullet->m_speed + bullet->m_acceleration.X) * speedRank * bullet->m_xReverse,
-        0, (cos(bullet->m_direction) * bullet->m_speed - bullet->m_acceleration.Z) * speedRank);
-    m_enemyBulletSIM->UpdateInstanceTransform(instanceId, FTransform(vec), true, true);
+        if (shouldRemoveInstance(pos)) {
+            // @TODO: temporary hack
+            //UE_LOG(LogTemp, Warning, TEXT(" --- Removing: %d "), actor->m_instanceId);
+            //m_enemyBulletSIM->RemoveInstance(actor->m_instanceId);
+            pos = FVector(INT_MIN, INT_MIN, INT_MIN);
+            actor->remove();
+        }
 
-    return vec;
+        m_enemyBulletSIM->UpdateInstanceTransform(actor->m_instanceId, FTransform(pos), true, true);
+
+        return pos;
+    }
+    return FVector::ZeroVector;
 }
 
 void AGameManager::initShipState() {
@@ -273,4 +295,14 @@ void AGameManager::gameOverTick() {
 }
 
 void AGameManager::pauseTick() {
+}
+
+bool AGameManager::shouldRemoveInstance(FVector v0) {
+    FVector delta = v0 - m_cameraActor->GetActorLocation();
+    FVector2D bounds = calculateScreenBounds(m_cameraComponent->FieldOfView, m_cameraComponent->AspectRatio, delta.Y);
+
+    return delta.X < -bounds.X ||
+        delta.Z < -bounds.Y ||
+        delta.X > bounds.X ||
+        delta.Z > bounds.Y;
 }

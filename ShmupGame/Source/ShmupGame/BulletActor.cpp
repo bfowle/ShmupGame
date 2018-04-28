@@ -8,8 +8,6 @@
 #include "Ship.h"
 
 #include "Engine/World.h"
-#include "GameFramework/Actor.h"
-#include "GameFramework/ProjectileMovementComponent.h"
 
 #include "PooledProjectile.h"
 
@@ -127,7 +125,7 @@ void BulletActor::tick() {
     if (m_isVisible) {
         m_totalBulletsSpeed += m_bullet->m_speed * sr;
 
-        m_bullet->m_position = m_gameManager->updateBullet(m_instanceId, m_bullet, sr);
+        m_bullet->m_position = m_gameManager->updateBullet(this, m_bullet, sr);
 
         //if (m_field->checkHit(m_bullet->m_position, FIELD_SPACE)) {
         //    UE_LOG(LogTemp, Warning, TEXT(" __ Bullet :: hit field __ [%s] ... %d "), *m_bullet->m_position.ToString(), m_cnt);

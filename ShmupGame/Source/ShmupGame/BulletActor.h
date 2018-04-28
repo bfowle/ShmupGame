@@ -9,7 +9,6 @@
 #include <array>
 #include <memory>
 
-class AActor;
 class AGameManager;
 class Field;
 class Ship;
@@ -68,7 +67,9 @@ public:
         BULLET_COLOR_NUM = 4
     };
 
+    int32 m_instanceId;
     std::shared_ptr<ShmupBullet> m_bullet;
+
     static float m_totalBulletsSpeed;
 
 private:
@@ -79,7 +80,6 @@ private:
     const float SHIP_HIT_WIDTH;
     static const float FIELD_SPACE;
 
-    int32 m_instanceId;
     std::shared_ptr<Field> m_field;
     std::shared_ptr<Ship> m_ship;
     TWeakObjectPtr<AGameManager> m_gameManager;
