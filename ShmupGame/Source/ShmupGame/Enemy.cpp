@@ -187,7 +187,7 @@ shared_ptr<BulletActor> Enemy::setBullet(const Barrage &barrage, const FVector *
     float by = m_position.Z;
     if (offset) {
         bx += offset->X;
-        by += offset->Y;
+        by += offset->Z;
     }
 
     if (barrage.m_morphCnt > 0) {

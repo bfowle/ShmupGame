@@ -27,7 +27,7 @@ void Bullet::set(BulletActor *actor, BulletCommand *command, float x, float y, f
 
 void Bullet::setBulletManager(BulletManager *manager) {
     m_manager = manager;
-    m_target = FVector();
+    m_target = FVector(0, 0, 0);
 }
 
 void Bullet::addBullet(float direction, float speed) {
