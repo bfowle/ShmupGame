@@ -42,9 +42,14 @@ public:
     void RemoveEnemy(AActor *enemy);
 
     UFUNCTION(BlueprintImplementableEvent, Category = GameManager)
-    AActor *AddBullet(FVector Position);
+    int32 AddBullet(FVector Position);
     UFUNCTION(BlueprintCallable, Category = GameManager)
     void RemoveBullet(AActor *bullet);
+    UFUNCTION(BlueprintImplementableEvent, Category = GameManager)
+    FVector2D UpdateBullet(int32 InstanceId, float Direction, float Speed, FVector2D Acceleration, float SpeedRank, float XReverse);
+
+    UFUNCTION(BlueprintImplementableEvent, Category = GameManager)
+    void CalculateRemoveFromScreen(int32 InstanceId);
 
     //GameModeBase:
     //  ReplicatedWorldTimeSeconds |
@@ -99,7 +104,7 @@ public:
 
 private:
     enum {
-        BULLET_MAX = 1024,
+        BULLET_MAX = 1024 << 8,
         ENEMY_MAX = 32
     };
 

@@ -80,7 +80,7 @@ void Enemy::tick() {
     //EnemyType::m_exists[m_type->m_id] = true;
 
     if (!m_isBoss) {
-        //m_position = m_moveBullet->m_bullet->m_position;
+        m_position = m_moveBullet->m_bullet->m_position;
 
         if (m_actor.IsValid() && 
             m_movement.IsValid() &&
@@ -120,6 +120,10 @@ void Enemy::tick() {
     if (m_topBullet) {
         m_topBullet->m_bullet->m_position = m_position;
     }
+
+    //if (m_actor.IsValid()) {
+    //    m_actor->SetActorLocation(FVector(m_position.X, 2502.0, m_position.Y));
+    //}
 
 #if 0
     m_isDamaged = false;

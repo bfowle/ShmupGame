@@ -82,6 +82,7 @@ private:
     const float SHIP_HIT_WIDTH;
     static const float FIELD_SPACE;
 
+    int32 m_instanceId;
     TWeakObjectPtr<AActor> m_actor;
     TWeakObjectPtr<UPooledProjectile> m_movement;
     std::shared_ptr<Field> m_field;

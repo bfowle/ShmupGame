@@ -109,26 +109,26 @@ void AGameManager::AddEnemy(AActor *actor, FString moveFilePath) {
             moveFilePath.RightChop(found);
     }
 
-    vector<BulletMLParserTinyXML *>::iterator it = find_if(m_barrageManager->m_parser.begin(), m_barrageManager->m_parser.end(),
+    vector<BulletMLParserTinyXML *>::const_iterator it = find_if(m_barrageManager->m_parser.cbegin(), m_barrageManager->m_parser.cend(),
         [&](BulletMLParserTinyXML *a) { return a->getName() == const_cast<char *>(TCHAR_TO_UTF8(*moveFilePath)); });
-    if (it != m_barrageManager->m_parser.end()) {
+    if (it != m_barrageManager->m_parser.cend()) {
         enemy->set(FVector2D(actor->GetActorLocation().X, actor->GetActorLocation().Z), M_PI/*, squadron->m_type*/, (*it));
         enemy->setActor(actor);
     }
 }
 
 void AGameManager::RemoveEnemy(AActor *enemy) {
-    vector<shared_ptr<Actor>>::iterator it = find_if(m_enemies->m_pool.begin(), m_enemies->m_pool.end(),
+    vector<shared_ptr<Actor>>::const_iterator it = find_if(m_enemies->m_pool.cbegin(), m_enemies->m_pool.cend(),
         [&](shared_ptr<Actor> a) { return a->m_uuid == enemy->GetUniqueID(); });
-    if (it != m_enemies->m_pool.end()) {
+    if (it != m_enemies->m_pool.cend()) {
         (*it)->remove();
     }
 }
 
 void AGameManager::RemoveBullet(AActor *bullet) {
-    vector<shared_ptr<Actor>>::iterator it = find_if(m_bullets->m_pool.begin(), m_bullets->m_pool.end(),
+    vector<shared_ptr<Actor>>::const_iterator it = find_if(m_bullets->m_pool.cbegin(), m_bullets->m_pool.cend(),
         [&](shared_ptr<Actor> a) { return a->m_uuid == bullet->GetUniqueID(); });
-    if (it != m_bullets->m_pool.end()) {
+    if (it != m_bullets->m_pool.cend()) {
         (*it)->remove();
     }
 }
@@ -232,8 +232,10 @@ void AGameManager::inGameTick() {
     //m_shots->tick();
     m_enemies->tick();
 
+    //UE_LOG(LogTemp, Warning, TEXT(" **************** IN GAME TICK: START *********************** "));
     BulletActor::resetTotalBulletsSpeed();
     m_bullets->tick();
+    //UE_LOG(LogTemp, Warning, TEXT(" **************** IN GAME TICK: END *********************** "));
 
     // set pause
 }

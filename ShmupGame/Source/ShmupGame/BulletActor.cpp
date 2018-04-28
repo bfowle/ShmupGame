@@ -91,12 +91,14 @@ void BulletActor::setTop(BulletMLParser *parser) {
 
 void BulletActor::spawnBulletActor() {
     // @TODO: replace -650 when objects are set in test level
-    m_actor = m_gameManager->AddBullet(FVector(m_bullet->m_position.X, 2502.0, m_bullet->m_position.Y));
+    m_instanceId = m_gameManager->AddBullet(FVector(m_bullet->m_position.X, 2502.0, m_bullet->m_position.Y));
 
+    /*
     if (m_actor.IsValid()) {
         m_uuid = m_actor->GetUniqueID();
         m_movement = m_actor->FindComponentByClass<UPooledProjectile>();
     }
+    */
 }
 
 void BulletActor::rewind() {
@@ -113,10 +115,6 @@ void BulletActor::remove() {
 void BulletActor::removeForced() {
     m_bullet->remove();
     m_isAlive = false;
-
-    //if (m_actor.IsValid()) {
-    //    m_gameManager->m_world->DestroyActor(m_actor.Get());
-    //}
 }
 
 void BulletActor::tick() {
@@ -140,15 +138,21 @@ void BulletActor::tick() {
 
     //m_bullet->m_position.X += (sin(m_bullet->m_direction) * m_bullet->m_speed + m_bullet->m_acceleration.X) * sr * m_bullet->m_xReverse;
     //m_bullet->m_position.Y += (cos(m_bullet->m_direction) * m_bullet->m_speed - m_bullet->m_acceleration.Y) * sr;
+    //UE_LOG(LogTemp, Warning, TEXT(" %f , %f =====> %s "), m_bullet->m_direction, m_bullet->m_speed, *m_bullet->m_position.ToString());
 
     if (m_isVisible) {
         m_totalBulletsSpeed += m_bullet->m_speed * sr;
+
+        m_bullet->m_position = m_gameManager->UpdateBullet(m_instanceId,
+            m_bullet->m_direction, m_bullet->m_speed,
+            m_bullet->m_acceleration, sr, m_bullet->m_xReverse);
 
         //if (m_field->checkHit(m_bullet->m_position, FIELD_SPACE)) {
         //    UE_LOG(LogTemp, Warning, TEXT(" __ Bullet :: hit field __ [%s] ... %d "), *m_bullet->m_position.ToString(), m_cnt);
         //    removeForced();
         //}
 
+#if 0
         if (m_actor.IsValid() && 
             m_movement.IsValid() &&
             m_movement->GetMovementComponent()->UpdatedComponent) {
@@ -176,6 +180,7 @@ void BulletActor::tick() {
                 m_bullet->m_position.Y = m_actor->GetActorLocation().Z;
             }
         }
+#endif
     }
 }
 

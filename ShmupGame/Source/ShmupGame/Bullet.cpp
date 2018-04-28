@@ -80,7 +80,7 @@ void Bullet::remove() {
 //-----------------------------------------------------------------------------
 
 const float VEL_SS_SDM_RATIO = 62.0 / 100;
-const float VEL_SDM_SS_RATIO = 3.0; // 100.0 / 62;
+const float VEL_SDM_SS_RATIO = 100.0 / 62;
 
 float rtod(float a) {
     return a * 180 / M_PI;

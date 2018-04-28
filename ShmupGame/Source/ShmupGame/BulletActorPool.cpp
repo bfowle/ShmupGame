@@ -66,7 +66,7 @@ void BulletActorPool::addBullet(BulletMLState *state, float x, float y, float di
 
     const vector<BulletMLNode *> &actions = state->getNode();
     vector<BulletMLNode *>::const_iterator iter;
-    for (iter = actions.begin(); iter != actions.end(); iter++) {
+    for (iter = actions.cbegin(); iter != actions.cend(); iter++) {
         const BulletMLNode *action = *iter;
         if (action->findNode(BulletMLNode::fire) ||
             action->findNode(BulletMLNode::fireRef) ||
@@ -77,8 +77,7 @@ void BulletActorPool::addBullet(BulletMLState *state, float x, float y, float di
 
     if (iter != actions.end()) {
         UE_LOG(LogTemp, Warning, TEXT(" -> spawn bullet actor :: TRUE "));
-    }
-    else {
+    } else {
         //UE_LOG(LogTemp, Warning, TEXT(" -> spawn bullet actor :: FALSE "));
     }
 
