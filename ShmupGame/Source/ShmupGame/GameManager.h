@@ -21,6 +21,7 @@ class Field;
 class Ship;
 class BulletActorPool;
 class BulletMLParser;
+class UInstancedStaticMeshComponent;
 
 UCLASS()
 class SHMUPGAME_API AGameManager : public AGameModeBase {
@@ -41,11 +42,12 @@ public:
     UFUNCTION(BlueprintCallable, Category = GameManager)
     void RemoveEnemy(AActor *enemy);
 
-    UFUNCTION(BlueprintImplementableEvent, Category = GameManager)
-    int32 AddBullet(FVector Position);
+    //UFUNCTION(BlueprintImplementableEvent, Category = GameManager)
+
     UFUNCTION(BlueprintCallable, Category = GameManager)
     void RemoveBullet(AActor *bullet);
-    UFUNCTION(BlueprintImplementableEvent, Category = GameManager)
+    
+    int32 AddBullet(FVector Position);
     FVector2D UpdateBullet(int32 InstanceId, float Direction, float Speed, FVector2D Acceleration, float SpeedRank, float XReverse);
 
     UFUNCTION(BlueprintImplementableEvent, Category = GameManager)
@@ -93,8 +95,8 @@ public:
     enum { TITLE, IN_GAME, GAME_OVER, PAUSE };
     enum { PRACTICE, NORMAL, HARD, EXTREME, QUIT };
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = GameManager)
-    TSubclassOf<AActor> BP_BulletClass;
+    //UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = GameManager)
+    UInstancedStaticMeshComponent *SIM_EnemyBullet;
 
     TWeakObjectPtr<UWorld> m_world;
 

@@ -9,10 +9,12 @@
 #include "Ship.h"
 
 #include "Engine/World.h"
+#include "Components/InstancedStaticMeshComponent.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/Pawn.h"
 #include "Kismet/GameplayStatics.h"
 #include "Misc/Paths.h"
+#include "EngineUtils.h"
 
 #include "bulletml/bulletml.h"
 #include "bulletml/bulletmlparser-tinyxml.h"
@@ -52,6 +54,15 @@ void AGameManager::InitGame(const FString &MapName, const FString &Options, FStr
 
     //m_stageManager.reset(new StageManager());
     //m_stageManager->init(m_barrageManager, this);
+
+    // @TODO: change to lambda
+    for (TActorIterator<AActor> ActorIter(GetWorld()); ActorIter; ++ActorIter) {
+        //UE_LOG(LogTemp, Warning, TEXT(" -- %s -- "), *ActorItr->GetName());
+        if (ActorIter->ActorHasTag("SIM_EnemyBullet")) {
+            SIM_EnemyBullet = dynamic_cast<UInstancedStaticMeshComponent *>(
+                ActorIter->GetComponentByClass(UInstancedStaticMeshComponent::StaticClass()));
+        }
+    }
 }
 
 void AGameManager::StartPlay() {
@@ -123,6 +134,32 @@ void AGameManager::RemoveEnemy(AActor *enemy) {
     if (it != m_enemies->m_pool.cend()) {
         (*it)->remove();
     }
+}
+
+int32 AGameManager::AddBullet(FVector Position) {
+    if (!SIM_EnemyBullet) {
+        return -1;
+    }
+
+    return SIM_EnemyBullet->AddInstanceWorldSpace(FTransform(Position));
+}
+
+FVector2D AGameManager::UpdateBullet(int32 InstanceId, float Direction, float Speed, FVector2D Acceleration, float SpeedRank, float XReverse) {
+    if (!SIM_EnemyBullet) {
+        return FVector2D();
+    }
+
+    FTransform bulletTransform;
+    SIM_EnemyBullet->GetInstanceTransform(InstanceId, bulletTransform, true);
+
+    FVector vec((sin(Direction) * Speed + Acceleration.X) * SpeedRank * XReverse,
+        0, (cos(Direction) * Speed - Acceleration.Y) * SpeedRank);
+    FVector vec2 = bulletTransform.GetLocation() + vec;
+    FTransform tf = FTransform(vec2);
+
+    SIM_EnemyBullet->UpdateInstanceTransform(InstanceId, tf, true, true);
+
+    return FVector2D(vec2.X, vec2.Z);
 }
 
 void AGameManager::RemoveBullet(AActor *bullet) {
