@@ -30,18 +30,18 @@ void Enemy::init(shared_ptr<ActorInitializer> initializer) {
     //m_shots = enemy->m_shots;
     m_gameManager = enemy->m_gameManager;
 
-    m_position = FVector2D();
-    m_velocity = FVector2D();
+    m_position = FVector();
+    m_velocity = FVector();
     m_velocityCnt = 0;
 
     //m_fieldLimitX = m_field->m_size.X / 4 * 3;
     //m_fieldLimitY = m_field->m_size.Y / 4 * 3;
 }
 
-void Enemy::set(const FVector2D &position, float direction/*, shared_ptr<EnemyType> type*/, BulletMLParser *moveParser) {
+void Enemy::set(const FVector &position, float direction/*, shared_ptr<EnemyType> type*/, BulletMLParser *moveParser) {
     m_position = position;
 
-    m_moveBullet = m_bullets->addBullet(moveParser, m_position.X, m_position.Y, direction, 0, 0.5, 1, 1);
+    m_moveBullet = m_bullets->addBullet(moveParser, m_position.X, m_position.Z, direction, 0, 0.5, 1, 1);
     if (!m_moveBullet) {
         return;
     }
@@ -61,14 +61,14 @@ void Enemy::set(const FVector2D &position, float direction/*, shared_ptr<EnemyTy
     m_isAlive = true;
 }
 
-void Enemy::setBoss(const FVector2D &p, float direction/*, shared_ptr<EnemyType> type*/) {
+void Enemy::setBoss(const FVector &p, float direction/*, shared_ptr<EnemyType> type*/) {
 }
 
 void Enemy::setActor(TWeakObjectPtr<AActor> actor) {
     m_actor = actor;
-    if (m_moveBullet) {
-        m_moveBullet->setActor(actor);
-    }
+    //if (m_moveBullet) {
+    //    m_moveBullet->setActor(actor);
+    //}
 
     if (m_actor.IsValid()) {
         m_uuid = actor->GetUniqueID();
@@ -82,6 +82,15 @@ void Enemy::tick() {
     if (!m_isBoss) {
         m_position = m_moveBullet->m_bullet->m_position;
 
+        /*
+        FVector vec = m_actor->GetActorLocation() +
+            FVector((sin(m_moveBullet->m_bullet->m_direction) * m_moveBullet->m_bullet->m_speed +
+                m_moveBullet->m_bullet->m_acceleration.X) * m_movement->GetMaxSpeed() * m_moveBullet->m_bullet->m_xReverse,
+            0, (cos(m_moveBullet->m_bullet->m_direction) * m_moveBullet->m_bullet->m_speed -
+                m_moveBullet->m_bullet->m_acceleration.Z) * m_movement->GetMaxSpeed());
+        m_actor->SetActorLocationAndRotation(vec, FRotator::ZeroRotator);
+        */
+
         if (m_actor.IsValid() && 
             m_movement.IsValid() &&
             m_movement->UpdatedComponent) {
@@ -91,7 +100,7 @@ void Enemy::tick() {
                     m_moveBullet->m_bullet->m_xReverse) +
                 (m_movement->UpdatedComponent->GetUpVector() *
                 (cos(m_moveBullet->m_bullet->m_direction) +
-                    m_moveBullet->m_bullet->m_acceleration.Y));
+                    m_moveBullet->m_bullet->m_acceleration.Z));
             vel.Y = 0;
 
             if (!vel.IsNearlyZero()) {
@@ -106,8 +115,7 @@ void Enemy::tick() {
             }
 
             if (m_actor.IsValid()) {
-                m_position.X = m_actor->GetActorLocation().X;
-                m_position.Y = m_actor->GetActorLocation().Z;
+                m_position = m_actor->GetActorLocation();
             }
         }
     } else {
@@ -122,7 +130,7 @@ void Enemy::tick() {
     }
 
     //if (m_actor.IsValid()) {
-    //    m_actor->SetActorLocation(FVector(m_position.X, 2502.0, m_position.Y));
+    //    m_actor->SetActorLocation(FVector(m_position.X, 2502.0, m_position.Z));
     //}
 
 #if 0
@@ -136,7 +144,7 @@ void Enemy::tick() {
         for (int j = 0; j < ft->m_formationSize; ++j) {
             if (formation->m_topBullet[j]) {
                 formation->m_topBullet[j]->m_bullet->m_position.X = m_position.X + ft->m_formationPosition[j].X;
-                formation->m_topBullet[j]->m_bullet->m_position.Y = m_position.Y + ft->m_formationPosition[j].Y;
+                formation->m_topBullet[j]->m_bullet->m_position.Z = m_position.Z + ft->m_formationPosition[j].Z;
             }
         }
     }
@@ -156,7 +164,7 @@ void Enemy::tick() {
         }
         */
 
-        if (m_position.Y < -m_field->m_size.Y / 4) {
+        if (m_position.Z < -m_field->m_size.Y / 4) {
             //removeTopBullets();
         } else {
             controlFireCnt();
@@ -168,7 +176,7 @@ void Enemy::tick() {
 void Enemy::tickBoss() {
 }
 
-shared_ptr<BulletActor> Enemy::setBullet(const Barrage &barrage, const FVector2D *offset, float xReverse) {
+shared_ptr<BulletActor> Enemy::setBullet(const Barrage &barrage, const FVector *offset, float xReverse) {
     if (barrage.m_rank <= 0) {
         shared_ptr<BulletActor> null;
         return null;
@@ -176,7 +184,7 @@ shared_ptr<BulletActor> Enemy::setBullet(const Barrage &barrage, const FVector2D
 
     shared_ptr<BulletActor> bullet;
     float bx = m_position.X;
-    float by = m_position.Y;
+    float by = m_position.Z;
     if (offset) {
         bx += offset->X;
         by += offset->Y;
@@ -196,7 +204,7 @@ shared_ptr<BulletActor> Enemy::setBullet(const Barrage &barrage, const FVector2D
     return bullet;
 }
 
-shared_ptr<BulletActor> Enemy::setBullet(const Barrage &barrage, const FVector2D *offset) {
+shared_ptr<BulletActor> Enemy::setBullet(const Barrage &barrage, const FVector *offset) {
     return setBullet(barrage, offset, 1);
 }
 

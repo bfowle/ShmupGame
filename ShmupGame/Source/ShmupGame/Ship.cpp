@@ -19,10 +19,10 @@ const float Ship::FIELD_SPACE = 1.5;
 void Ship::init(shared_ptr<Field> field, TWeakObjectPtr<AGameManager> gameManager) {
     m_field = field;
     m_gameManager = gameManager;
-    m_position = FVector2D();
-    m_prevPosition = FVector2D();
-    m_velocity = FVector2D();
-    m_firePosition = FVector2D();
+    m_position = FVector();
+    m_prevPosition = FVector();
+    m_velocity = FVector();
+    m_firePosition = FVector();
 
     m_ttlCnt = 0;
     m_fieldLimitX = m_field->m_size.X - FIELD_SPACE;
@@ -31,11 +31,9 @@ void Ship::init(shared_ptr<Field> field, TWeakObjectPtr<AGameManager> gameManage
 
 void Ship::start() {
     m_position.X = 0;
-    m_position.Y = -m_field->m_size.Y / 2;
-    m_prevPosition.X = 0;
-    m_prevPosition.Y = 0;
-    m_velocity.X = 0;
-    m_velocity.Y = 0;
+    m_position.Z = -m_field->m_size.Y / 2;
+    m_prevPosition = FVector(0, 0, 0);
+    m_velocity = FVector(0, 0, 0);
     m_speed = BASE_SPEED;
     m_fireWideDirection = FIRE_WIDE_BASE_DIRECTION;
     m_restart = true;
@@ -79,17 +77,15 @@ void Ship::tick() {
     }
 
     if (m_playerPawn.IsValid()) {
-        m_position.X = m_playerPawn->GetActorLocation().X;
-        m_position.Y = m_playerPawn->GetActorLocation().Z;
+        m_position = m_playerPawn->GetActorLocation();
     }
 
-    m_velocity.X = 0;
-    m_velocity.Y = 0;
+    /*
+    m_velocity = FVector(0, 0, 0);
+    m_prevPosition = m_position;
+    m_position += m_velocity;
+    */
 
-    m_prevPosition.X = m_position.X;
-    m_prevPosition.Y = m_position.Y;
-    m_position.X += m_velocity.X;
-    m_position.Y += m_velocity.Y;
     //m_bank += (m_velocity.X * BANK_BASE - m_bank) * 0.1;
 
     /*

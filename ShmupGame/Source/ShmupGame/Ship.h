@@ -29,7 +29,7 @@ public:
     static bool m_isSlow;
     static const float SIZE;
 
-    FVector2D m_position;
+    FVector m_position;
     bool m_restart;
     int m_cnt;
 
@@ -49,9 +49,9 @@ private:
     TWeakObjectPtr<APawn> m_playerPawn;
     std::shared_ptr<Field> m_field;
     TWeakObjectPtr<AGameManager> m_gameManager;
-    FVector2D m_prevPosition;
-    FVector2D m_velocity;
-    FVector2D m_firePosition;
+    FVector m_prevPosition;
+    FVector m_velocity;
+    FVector m_firePosition;
 
     float m_baseSpeed, m_slowSpeed;
     float m_speed;

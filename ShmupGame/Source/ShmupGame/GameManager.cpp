@@ -7,6 +7,7 @@
 #include "Enemy.h"
 #include "Field.h"
 #include "Ship.h"
+#include "ShmupBullet.h"
 
 #include "Engine/World.h"
 #include "Components/InstancedStaticMeshComponent.h"
@@ -59,7 +60,7 @@ void AGameManager::InitGame(const FString &MapName, const FString &Options, FStr
     for (TActorIterator<AActor> ActorIter(GetWorld()); ActorIter; ++ActorIter) {
         //UE_LOG(LogTemp, Warning, TEXT(" -- %s -- "), *ActorItr->GetName());
         if (ActorIter->ActorHasTag("SIM_EnemyBullet")) {
-            SIM_EnemyBullet = dynamic_cast<UInstancedStaticMeshComponent *>(
+            m_enemyBulletSIM = dynamic_cast<UInstancedStaticMeshComponent *>(
                 ActorIter->GetComponentByClass(UInstancedStaticMeshComponent::StaticClass()));
         }
     }
@@ -102,7 +103,7 @@ void AGameManager::Tick(float DeltaSeconds) {
 }
 
 void AGameManager::AddShot(const FVector &position, float direction) {
-    UE_LOG(LogTemp, Warning, TEXT("FIRING SHOT: %s | %f"), *position.ToString(), direction);
+    //UE_LOG(LogTemp, Warning, TEXT("FIRING SHOT: %s | %f"), *position.ToString(), direction);
 }
 
 void AGameManager::AddEnemy(AActor *actor, FString moveFilePath) {
@@ -123,7 +124,7 @@ void AGameManager::AddEnemy(AActor *actor, FString moveFilePath) {
     vector<BulletMLParserTinyXML *>::const_iterator it = find_if(m_barrageManager->m_parser.cbegin(), m_barrageManager->m_parser.cend(),
         [&](BulletMLParserTinyXML *a) { return a->getName() == const_cast<char *>(TCHAR_TO_UTF8(*moveFilePath)); });
     if (it != m_barrageManager->m_parser.cend()) {
-        enemy->set(FVector2D(actor->GetActorLocation().X, actor->GetActorLocation().Z), M_PI/*, squadron->m_type*/, (*it));
+        enemy->set(actor->GetActorLocation(), M_PI/*, squadron->m_type*/, (*it));
         enemy->setActor(actor);
     }
 }
@@ -134,32 +135,6 @@ void AGameManager::RemoveEnemy(AActor *enemy) {
     if (it != m_enemies->m_pool.cend()) {
         (*it)->remove();
     }
-}
-
-int32 AGameManager::AddBullet(FVector Position) {
-    if (!SIM_EnemyBullet) {
-        return -1;
-    }
-
-    return SIM_EnemyBullet->AddInstanceWorldSpace(FTransform(Position));
-}
-
-FVector2D AGameManager::UpdateBullet(int32 InstanceId, float Direction, float Speed, FVector2D Acceleration, float SpeedRank, float XReverse) {
-    if (!SIM_EnemyBullet) {
-        return FVector2D();
-    }
-
-    FTransform bulletTransform;
-    SIM_EnemyBullet->GetInstanceTransform(InstanceId, bulletTransform, true);
-
-    FVector vec((sin(Direction) * Speed + Acceleration.X) * SpeedRank * XReverse,
-        0, (cos(Direction) * Speed - Acceleration.Y) * SpeedRank);
-    FVector vec2 = bulletTransform.GetLocation() + vec;
-    FTransform tf = FTransform(vec2);
-
-    SIM_EnemyBullet->UpdateInstanceTransform(InstanceId, tf, true, true);
-
-    return FVector2D(vec2.X, vec2.Z);
 }
 
 void AGameManager::RemoveBullet(AActor *bullet) {
@@ -223,6 +198,22 @@ void AGameManager::clearBullets() {
     }
 }
 
+int32 AGameManager::addBullet(FVector Position) {
+    return m_enemyBulletSIM->AddInstanceWorldSpace(FTransform(Position));
+}
+
+FVector AGameManager::updateBullet(int32 instanceId, shared_ptr<ShmupBullet> bullet, float speedRank) {
+    FTransform bulletTransform;
+    m_enemyBulletSIM->GetInstanceTransform(instanceId, bulletTransform, true);
+
+    FVector vec = bulletTransform.GetLocation() + 
+        FVector((sin(bullet->m_direction) * bullet->m_speed + bullet->m_acceleration.X) * speedRank * bullet->m_xReverse,
+        0, (cos(bullet->m_direction) * bullet->m_speed - bullet->m_acceleration.Z) * speedRank);
+    m_enemyBulletSIM->UpdateInstanceTransform(instanceId, FTransform(vec), true, true);
+
+    return vec;
+}
+
 void AGameManager::initShipState() {
     m_shipsRemaining = 2;
     m_score = 0;
@@ -269,10 +260,8 @@ void AGameManager::inGameTick() {
     //m_shots->tick();
     m_enemies->tick();
 
-    //UE_LOG(LogTemp, Warning, TEXT(" **************** IN GAME TICK: START *********************** "));
     BulletActor::resetTotalBulletsSpeed();
     m_bullets->tick();
-    //UE_LOG(LogTemp, Warning, TEXT(" **************** IN GAME TICK: END *********************** "));
 
     // set pause
 }

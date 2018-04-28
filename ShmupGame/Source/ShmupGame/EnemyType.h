@@ -38,13 +38,13 @@ public:
     };
 
     std::array<Barrage, BARRAGE_PATTERN_MAX> m_barrage;
-    std::array<FVector2D, WING_FORMATION_MAX> m_formationPosition;
-    std::array<FVector2D, WING_SHAPE_POINT_NUM> m_wingShapePosition;
+    std::array<FVector, WING_FORMATION_MAX> m_formationPosition;
+    std::array<FVector, WING_SHAPE_POINT_NUM> m_wingShapePosition;
     int m_formationSize;
     int m_shield;
 
-    FVector2D m_collisionPosition;
-    FVector2D m_collisionSize;
+    FVector m_collisionPosition;
+    FVector m_collisionSize;
     bool m_xReverseAlternate;
 };
 

@@ -76,7 +76,7 @@ void BulletActorPool::addBullet(BulletMLState *state, float x, float y, float di
     }
 
     if (iter != actions.end()) {
-        UE_LOG(LogTemp, Warning, TEXT(" -> spawn bullet actor :: TRUE "));
+        //UE_LOG(LogTemp, Warning, TEXT(" -> spawn bullet actor :: TRUE "));
     } else {
         //UE_LOG(LogTemp, Warning, TEXT(" -> spawn bullet actor :: FALSE "));
     }

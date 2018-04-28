@@ -19,6 +19,7 @@ class BarrageManager;
 class Enemy;
 class Field;
 class Ship;
+class ShmupBullet;
 class BulletActorPool;
 class BulletMLParser;
 class UInstancedStaticMeshComponent;
@@ -47,9 +48,6 @@ public:
     UFUNCTION(BlueprintCallable, Category = GameManager)
     void RemoveBullet(AActor *bullet);
     
-    int32 AddBullet(FVector Position);
-    FVector2D UpdateBullet(int32 InstanceId, float Direction, float Speed, FVector2D Acceleration, float SpeedRank, float XReverse);
-
     UFUNCTION(BlueprintImplementableEvent, Category = GameManager)
     void CalculateRemoveFromScreen(int32 InstanceId);
 
@@ -79,6 +77,9 @@ public:
     void shipDestroyed();
     void clearBullets();
 
+    int32 addBullet(FVector position);
+    FVector updateBullet(int32 instanceId, std::shared_ptr<ShmupBullet> bullet, float speedRank);
+
 private:
     void initShipState();
     void startInGame();
@@ -95,10 +96,8 @@ public:
     enum { TITLE, IN_GAME, GAME_OVER, PAUSE };
     enum { PRACTICE, NORMAL, HARD, EXTREME, QUIT };
 
-    //UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = GameManager)
-    UInstancedStaticMeshComponent *SIM_EnemyBullet;
-
     TWeakObjectPtr<UWorld> m_world;
+    TWeakObjectPtr<UInstancedStaticMeshComponent> m_enemyBulletSIM;
 
     int m_state;
     int m_difficulty;
@@ -111,7 +110,7 @@ private:
     };
 
     Random m_random;
-    TWeakObjectPtr<APawn> m_player;
+    //TWeakObjectPtr<APawn> m_player;
 
     std::shared_ptr<Field> m_field;
     std::shared_ptr<Ship> m_ship;

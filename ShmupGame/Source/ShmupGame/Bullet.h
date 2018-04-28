@@ -49,8 +49,8 @@ public:
 public:
     int m_id;
 
-    static FVector2D m_target;
-    FVector2D m_position, m_acceleration;
+    static FVector m_target;
+    FVector m_position, m_acceleration;
     float m_direction, m_speed, m_rank;
 
 protected:

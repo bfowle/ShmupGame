@@ -4,16 +4,17 @@
 
 #include "bulletml/bulletml.h"
 
-FVector2D Bullet::m_target;
+FVector Bullet::m_target;
 Random Bullet::m_random;
 BulletManager *Bullet::m_manager = nullptr;
 
 void Bullet::set(BulletActor *actor, float x, float y, float direction, float speed, float rank) {
     m_actor = actor;
     m_position.X = x;
-    m_position.Y = y;
+    m_position.Y = 2502.0; // @TODO: hardcode this to 0 eventually
+    m_position.Z = y;
     m_acceleration.X = 0;
-    m_acceleration.Y = 0;
+    m_acceleration.Z = 0;
     m_direction = direction;
     m_speed = speed;
     m_rank = rank;
@@ -26,15 +27,15 @@ void Bullet::set(BulletActor *actor, BulletCommand *command, float x, float y, f
 
 void Bullet::setBulletManager(BulletManager *manager) {
     m_manager = manager;
-    m_target = FVector2D(0, 0);
+    m_target = FVector();
 }
 
 void Bullet::addBullet(float direction, float speed) {
-    m_manager->addBullet(m_position.X, m_position.Y, direction, speed, m_actor);
+    m_manager->addBullet(m_position.X, m_position.Z, direction, speed, m_actor);
 }
 
 void Bullet::addBullet(BulletMLState *state, float direction, float speed) {
-    m_manager->addBullet(state, m_position.X, m_position.Y, direction, speed, m_actor);
+    m_manager->addBullet(state, m_position.X, m_position.Z, direction, speed, m_actor);
 }
 
 int Bullet::getTurn() {
@@ -111,7 +112,7 @@ double BulletCommand::getBulletDirection() {
 
 double BulletCommand::getAimDirection() {
     return rtod(/*M_PI - */atan2(Bullet::m_target.X - m_bullet->m_position.X,
-        Bullet::m_target.Y - m_bullet->m_position.Y));
+        Bullet::m_target.Z - m_bullet->m_position.Z));
 }
 
 double BulletCommand::getBulletSpeed() {
@@ -155,7 +156,7 @@ void BulletCommand::doAccelX(double accelX) {
 }
 
 void BulletCommand::doAccelY(double accelY) {
-    m_bullet->m_acceleration.Y = accelY * VEL_SDM_SS_RATIO;
+    m_bullet->m_acceleration.Z = accelY * VEL_SDM_SS_RATIO;
 }
 
 double BulletCommand::getBulletSpeedX() {
@@ -163,7 +164,7 @@ double BulletCommand::getBulletSpeedX() {
 }
 
 double BulletCommand::getBulletSpeedY() {
-    return m_bullet->m_acceleration.Y * VEL_SS_SDM_RATIO;
+    return m_bullet->m_acceleration.Z * VEL_SS_SDM_RATIO;
 }
 
 double BulletCommand::getRand() {

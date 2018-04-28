@@ -44,8 +44,8 @@ public:
     std::shared_ptr<Actor> newActor();
 
     void init(std::shared_ptr<ActorInitializer> initializer);
-    void set(const FVector2D &position, float direction, BulletMLParser *parser);
-    void setBoss(const FVector2D &p, float direction);
+    void set(const FVector &position, float direction, BulletMLParser *parser);
+    void setBoss(const FVector &p, float direction);
     void setActor(TWeakObjectPtr<AActor> actor);
     void tick();
     void tickBoss();
@@ -59,8 +59,8 @@ private:
         bool m_isDamaged;
     };
 
-    std::shared_ptr<BulletActor> setBullet(const Barrage &barrage, const FVector2D *offset, float xReverse);
-    std::shared_ptr<BulletActor> setBullet(const Barrage &barrage, const FVector2D *offset);
+    std::shared_ptr<BulletActor> setBullet(const Barrage &barrage, const FVector *offset, float xReverse);
+    std::shared_ptr<BulletActor> setBullet(const Barrage &barrage, const FVector *offset);
     void removeFormation(EnemyFormation *formation, const EnemyFormationType &ft);
     void remove();
 
@@ -68,7 +68,7 @@ public:
     static const float FIELD_SPACE;
 
     TWeakObjectPtr<AActor> m_actor;
-    FVector2D m_position;
+    FVector m_position;
     std::shared_ptr<EnemyType> m_type;
     std::array<EnemyFormation, EnemyType::FORMATION_MAX> m_formation;
     int m_shield;
@@ -91,7 +91,7 @@ private:
 
     // enemy
     bool m_isDamaged;
-    FVector2D m_velocity;
+    FVector m_velocity;
     int m_velocityCnt;
 
     // boss

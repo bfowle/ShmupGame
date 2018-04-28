@@ -38,7 +38,7 @@ void BulletActor::init(shared_ptr<ActorInitializer> initializer) {
 
     //UE_LOG(LogTemp, Warning, TEXT(" BulletActor::init! %d"), m_nextId);
     m_bullet.reset(new ShmupBullet(m_nextId));
-    m_previousPosition = FVector2D();
+    m_previousPosition = FVector();
     ++m_nextId;
 }
 
@@ -75,10 +75,6 @@ void BulletActor::start(float speedRank, float xReverse) {
     m_shouldBeRemoved = false;
 }
 
-void BulletActor::setActor(TWeakObjectPtr<AActor> actor) {
-    m_actor = actor;
-}
-
 void BulletActor::setInvisible() {
     m_isVisible = false;
 }
@@ -90,15 +86,7 @@ void BulletActor::setTop(BulletMLParser *parser) {
 }
 
 void BulletActor::spawnBulletActor() {
-    // @TODO: replace -650 when objects are set in test level
-    m_instanceId = m_gameManager->AddBullet(FVector(m_bullet->m_position.X, 2502.0, m_bullet->m_position.Y));
-
-    /*
-    if (m_actor.IsValid()) {
-        m_uuid = m_actor->GetUniqueID();
-        m_movement = m_actor->FindComponentByClass<UPooledProjectile>();
-    }
-    */
+    m_instanceId = m_gameManager->addBullet(m_bullet->m_position);
 }
 
 void BulletActor::rewind() {
@@ -136,51 +124,15 @@ void BulletActor::tick() {
 
     float sr = m_bullet->m_speedRank;
 
-    //m_bullet->m_position.X += (sin(m_bullet->m_direction) * m_bullet->m_speed + m_bullet->m_acceleration.X) * sr * m_bullet->m_xReverse;
-    //m_bullet->m_position.Y += (cos(m_bullet->m_direction) * m_bullet->m_speed - m_bullet->m_acceleration.Y) * sr;
-    //UE_LOG(LogTemp, Warning, TEXT(" %f , %f =====> %s "), m_bullet->m_direction, m_bullet->m_speed, *m_bullet->m_position.ToString());
-
     if (m_isVisible) {
         m_totalBulletsSpeed += m_bullet->m_speed * sr;
 
-        m_bullet->m_position = m_gameManager->UpdateBullet(m_instanceId,
-            m_bullet->m_direction, m_bullet->m_speed,
-            m_bullet->m_acceleration, sr, m_bullet->m_xReverse);
+        m_bullet->m_position = m_gameManager->updateBullet(m_instanceId, m_bullet, sr);
 
         //if (m_field->checkHit(m_bullet->m_position, FIELD_SPACE)) {
         //    UE_LOG(LogTemp, Warning, TEXT(" __ Bullet :: hit field __ [%s] ... %d "), *m_bullet->m_position.ToString(), m_cnt);
         //    removeForced();
         //}
-
-#if 0
-        if (m_actor.IsValid() && 
-            m_movement.IsValid() &&
-            m_movement->GetMovementComponent()->UpdatedComponent) {
-            FVector vel = (m_movement->GetMovementComponent()->UpdatedComponent->GetForwardVector() *
-                (sin(m_bullet->m_direction) +
-                    m_bullet->m_acceleration.X) * sr *
-                    m_bullet->m_xReverse) +
-                (m_movement->GetMovementComponent()->UpdatedComponent->GetUpVector() *
-                (cos(m_bullet->m_direction) +
-                    m_bullet->m_acceleration.Y) * sr);
-            vel.Y = 0;
-            if (!vel.IsNearlyZero()) {
-                vel.Normalize();
-                vel *= m_bullet->m_speed *
-                    m_movement->GetMovementComponent()->GetMaxSpeed() *
-                    m_gameManager->m_deltaSeconds;
-                m_movement->GetMovementComponent()->MoveUpdatedComponent(vel, FRotator::ZeroRotator, true);
-                if (m_movement.IsValid()) {
-                    m_movement->GetMovementComponent()->UpdateComponentVelocity();
-                }
-            }
-
-            if (m_actor.IsValid()) {
-                m_bullet->m_position.X = m_actor->GetActorLocation().X;
-                m_bullet->m_position.Y = m_actor->GetActorLocation().Z;
-            }
-        }
-#endif
     }
 }
 

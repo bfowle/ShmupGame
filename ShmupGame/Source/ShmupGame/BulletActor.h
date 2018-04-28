@@ -16,7 +16,6 @@ class Ship;
 class BulletCommand;
 class BulletMLParser;
 class BulletMLRunner;
-class UPooledProjectile;
 
 class BulletActorInitializer : public ActorInitializer {
 public:
@@ -50,7 +49,6 @@ public:
     void set(BulletCommand *command, float x, float y, float direction, float speed, float rank, float speedRank, float xReverse);
     void set(BulletCommand *command, float x, float y, float direction, float speed, float rank, float speedRank, float xReverse, std::array<BulletMLParser *, MorphBullet::MORPH_MAX> morph, int morphSize, int morphIdx, int morphCnt);
     void set(float x, float y, float direction, float speed, float rank, float speedRank, float xReverse);
-    void setActor(TWeakObjectPtr<AActor> actor);
     void setInvisible();
     void setTop(BulletMLParser *parser);
     void spawnBulletActor();
@@ -63,7 +61,6 @@ public:
 private:
     void start(float speedRank, float xReverse);
     void removeForced();
-    //void checkShipHit();
 
 public:
     enum {
@@ -83,8 +80,6 @@ private:
     static const float FIELD_SPACE;
 
     int32 m_instanceId;
-    TWeakObjectPtr<AActor> m_actor;
-    TWeakObjectPtr<UPooledProjectile> m_movement;
     std::shared_ptr<Field> m_field;
     std::shared_ptr<Ship> m_ship;
     TWeakObjectPtr<AGameManager> m_gameManager;
@@ -95,7 +90,7 @@ private:
     bool m_isTop;
     bool m_isVisible;
 
-    FVector2D m_previousPosition;
+    FVector m_previousPosition;
     bool m_shouldBeRemoved;
 };
 
