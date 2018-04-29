@@ -53,13 +53,13 @@ public:
     void spawnBulletActor();
     void rewind();
     void remove();
+    void removeForced();
     void tick();
 
     static void resetTotalBulletsSpeed();
 
 private:
     void start(float speedRank, float xReverse);
-    void removeForced();
 
 public:
     enum {
@@ -67,7 +67,6 @@ public:
         BULLET_COLOR_NUM = 4
     };
 
-    int32 m_instanceId;
     std::shared_ptr<ShmupBullet> m_bullet;
 
     static float m_totalBulletsSpeed;

@@ -50,11 +50,11 @@ void Bullet::tick() {
     //UE_LOG(LogTemp, Warning, TEXT("  -- Bullet::tick [%d, (%f, %f)] :: [%s]"), m_runner->getTurn(),
     //    m_direction, m_speed, (isEnd() ? TEXT("Y") : TEXT("N")));
 
-    if (m_command.get() != 0) {
+    if (m_command.get() != nullptr) {
         m_command->run();
 
         if (m_command->isEnd()) {
-            m_command.reset(0);
+            m_command.reset(nullptr);
             //endBullet();
         }
     }
@@ -73,8 +73,8 @@ void Bullet::kill() {
 }
 
 void Bullet::remove() {
-    if (m_command.get() != 0) {
-        m_command.reset(0);
+    if (m_command.get() != nullptr) {
+        m_command.reset(nullptr);
     }
 }
 

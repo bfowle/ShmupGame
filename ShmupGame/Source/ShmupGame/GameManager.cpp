@@ -69,7 +69,7 @@ void AGameManager::InitGame(const FString &MapName, const FString &Options, FStr
         }
 
         if (ActorIter->ActorHasTag("SIM_EnemyBullet")) {
-            m_enemyBulletSIM = dynamic_cast<UInstancedStaticMeshComponent *>(
+            m_enemyBulletISM = dynamic_cast<UInstancedStaticMeshComponent *>(
                 ActorIter->GetComponentByClass(UInstancedStaticMeshComponent::StaticClass()));
         }
     }
@@ -146,14 +146,6 @@ void AGameManager::RemoveEnemy(AActor *enemy) {
     }
 }
 
-void AGameManager::RemoveBullet(AActor *bullet) {
-    vector<shared_ptr<Actor>>::const_iterator it = find_if(m_bullets->m_pool.cbegin(), m_bullets->m_pool.cend(),
-        [&](shared_ptr<Actor> a) { return a->m_uuid == bullet->GetUniqueID(); });
-    if (it != m_bullets->m_pool.cend()) {
-        (*it)->remove();
-    }
-}
-
 void AGameManager::close() {
     m_barrageManager->unloadBulletMLFiles();
 }
@@ -208,13 +200,16 @@ void AGameManager::clearBullets() {
 }
 
 int32 AGameManager::addBullet(FVector Position) {
-    return m_enemyBulletSIM->AddInstanceWorldSpace(FTransform(Position));
+    return m_enemyBulletISM->AddInstanceWorldSpace(FTransform(Position));
 }
 
 FVector AGameManager::updateBullet(BulletActor *actor, shared_ptr<ShmupBullet> bullet, float speedRank) {
+    int32 instanceId = actor->m_instanceId;
+    FVector pos = FVector::ZeroVector;
+
     FTransform bulletTransform;
-    if (m_enemyBulletSIM->GetInstanceTransform(actor->m_instanceId, bulletTransform, true)) {
-        FVector pos = bulletTransform.GetLocation() +
+    if (m_enemyBulletISM->GetInstanceTransform(instanceId, bulletTransform, true)) {
+        pos = bulletTransform.GetLocation() +
             FVector(
                 (sin(bullet->m_direction) * bullet->m_speed + bullet->m_acceleration.X) * speedRank * bullet->m_xReverse,
                 0,
@@ -222,18 +217,38 @@ FVector AGameManager::updateBullet(BulletActor *actor, shared_ptr<ShmupBullet> b
             );
 
         if (shouldRemoveInstance(pos)) {
-            // @TODO: temporary hack
-            //UE_LOG(LogTemp, Warning, TEXT(" --- Removing: %d "), actor->m_instanceId);
-            //m_enemyBulletSIM->RemoveInstance(actor->m_instanceId);
+            actor->removeForced();
+#if 0
+            m_enemyBulletISM->RemoveInstance(instanceId);
+
+            if (instanceId < m_enemyBulletISM->GetInstanceCount()) {
+                /*
+                // get bullet actor with instanceId as the last index
+                vector<shared_ptr<Actor>>::const_iterator it = find_if(m_bullets->m_pool.cbegin(), m_bullets->m_pool.cend(),
+                    [&](shared_ptr<Actor> a) { return static_pointer_cast<BulletActor>(a)->m_instanceId == m_enemyBulletISM->GetInstanceCount(); });
+                // set m_instanceId to current instanceId
+                if (it != m_bullets->m_pool.cend()) {
+                    (*it)->m_instanceId = instanceId;
+                }
+                */
+
+                for_each(m_bullets->m_pool.cbegin(), m_bullets->m_pool.cend(), [&](shared_ptr<Actor> a) {
+                    shared_ptr<BulletActor> b = static_pointer_cast<BulletActor>(a);
+                    if (b->m_instanceId > -1 && b->m_instanceId > instanceId) {
+                        --b->m_instanceId;
+                    }
+                });
+            }
+#else
             pos = FVector(INT_MIN, INT_MIN, INT_MIN);
-            actor->remove();
+            m_enemyBulletISM->UpdateInstanceTransform(instanceId, FTransform(pos), true, true);
+#endif
+        } else {
+            m_enemyBulletISM->UpdateInstanceTransform(instanceId, FTransform(pos), true, true);
         }
-
-        m_enemyBulletSIM->UpdateInstanceTransform(actor->m_instanceId, FTransform(pos), true, true);
-
-        return pos;
     }
-    return FVector::ZeroVector;
+
+    return pos;
 }
 
 void AGameManager::initShipState() {

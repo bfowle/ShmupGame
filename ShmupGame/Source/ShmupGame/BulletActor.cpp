@@ -8,6 +8,7 @@
 #include "Ship.h"
 
 #include "Engine/World.h"
+#include "Misc/Guid.h"
 
 #include "PooledProjectile.h"
 
@@ -100,7 +101,10 @@ void BulletActor::remove() {
 
 void BulletActor::removeForced() {
     m_bullet->remove();
+
     m_isAlive = false;
+    m_isVisible = false;
+    m_instanceId = INT_MIN;
 }
 
 void BulletActor::tick() {

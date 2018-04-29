@@ -43,9 +43,6 @@ public:
     void AddEnemy(AActor *enemy, FString moveFilePath);
     UFUNCTION(BlueprintCallable, Category = GameManager)
     void RemoveEnemy(AActor *enemy);
-
-    UFUNCTION(BlueprintCallable, Category = GameManager)
-    void RemoveBullet(AActor *bullet);
     
     //GameModeBase:
     //  ReplicatedWorldTimeSeconds |
@@ -102,7 +99,7 @@ public:
     TWeakObjectPtr<UWorld> m_world;
     TWeakObjectPtr<AActor> m_cameraActor;
     TWeakObjectPtr<UCameraComponent> m_cameraComponent;
-    TWeakObjectPtr<UInstancedStaticMeshComponent> m_enemyBulletSIM;
+    TWeakObjectPtr<UInstancedStaticMeshComponent> m_enemyBulletISM;
 
     int m_state;
     int m_difficulty;
@@ -110,7 +107,7 @@ public:
 
 private:
     enum {
-        BULLET_MAX = 1024,
+        BULLET_MAX = 1024, // << 8,
         ENEMY_MAX = 32
     };
 

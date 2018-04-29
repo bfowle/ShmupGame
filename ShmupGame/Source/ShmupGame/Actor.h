@@ -20,6 +20,7 @@ public:
 
 public:
     uint32 m_uuid;
+    int32 m_instanceId;
     bool m_isAlive;
 };
 

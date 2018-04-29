@@ -82,15 +82,6 @@ void Enemy::tick() {
     if (!m_isBoss) {
         m_position = m_moveBullet->m_bullet->m_position;
 
-        /*
-        FVector vec = m_actor->GetActorLocation() +
-            FVector((sin(m_moveBullet->m_bullet->m_direction) * m_moveBullet->m_bullet->m_speed +
-                m_moveBullet->m_bullet->m_acceleration.X) * m_movement->GetMaxSpeed() * m_moveBullet->m_bullet->m_xReverse,
-            0, (cos(m_moveBullet->m_bullet->m_direction) * m_moveBullet->m_bullet->m_speed -
-                m_moveBullet->m_bullet->m_acceleration.Z) * m_movement->GetMaxSpeed());
-        m_actor->SetActorLocationAndRotation(vec, FRotator::ZeroRotator);
-        */
-
         if (m_actor.IsValid() && 
             m_movement.IsValid() &&
             m_movement->UpdatedComponent) {
