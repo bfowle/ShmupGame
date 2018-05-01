@@ -68,7 +68,7 @@ void AGameManager::InitGame(const FString &MapName, const FString &Options, FStr
                 ActorIter->GetComponentByClass(UCameraComponent::StaticClass()));
         }
 
-        if (ActorIter->ActorHasTag("SIM_EnemyBullet")) {
+        if (ActorIter->ActorHasTag("ISM_EnemyBullet")) {
             m_enemyBulletISM = dynamic_cast<UInstancedStaticMeshComponent *>(
                 ActorIter->GetComponentByClass(UInstancedStaticMeshComponent::StaticClass()));
         }
