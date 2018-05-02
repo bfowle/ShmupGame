@@ -43,7 +43,10 @@ public:
     void AddEnemy(AActor *enemy, FString moveFilePath);
     UFUNCTION(BlueprintCallable, Category = GameManager)
     void RemoveEnemy(AActor *enemy);
-    
+
+    UFUNCTION(BlueprintCallable, Category = GameManager)
+    FVector ClampToScreen(FVector position);
+
     //GameModeBase:
     //  ReplicatedWorldTimeSeconds |
     //  ServerWorldTimeSecondsDelta |
@@ -85,7 +88,7 @@ private:
     void gameOverTick();
     void pauseTick();
 
-    bool shouldRemoveInstance(FVector v0);
+    bool shouldRemoveInstance(FVector position);
 
     inline FVector2D calculateScreenBounds(float fieldOfView, float aspectRatio, float depth) {
         return FVector2D(abs((tan((((M_PI / 180.0) * fieldOfView) / 2.0))) * depth),

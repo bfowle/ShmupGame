@@ -146,6 +146,18 @@ void AGameManager::RemoveEnemy(AActor *enemy) {
     }
 }
 
+FVector AGameManager::ClampToScreen(FVector position) {
+    FVector v0 = m_cameraActor->GetActorLocation();
+    FVector v1 = position - v0;
+    FVector2D bounds = calculateScreenBounds(m_cameraComponent->FieldOfView, m_cameraComponent->AspectRatio, v1.Y);
+
+    return FVector(
+        v0.X + FMath::Clamp(v1.X, -bounds.X, bounds.X),
+        position.Y,
+        v0.Z + FMath::Clamp(v1.Z, -bounds.Y, bounds.Y)
+    );
+}
+
 void AGameManager::close() {
     m_barrageManager->unloadBulletMLFiles();
 }
@@ -312,8 +324,8 @@ void AGameManager::gameOverTick() {
 void AGameManager::pauseTick() {
 }
 
-bool AGameManager::shouldRemoveInstance(FVector v0) {
-    FVector delta = v0 - m_cameraActor->GetActorLocation();
+bool AGameManager::shouldRemoveInstance(FVector position) {
+    FVector delta = position - m_cameraActor->GetActorLocation();
     FVector2D bounds = calculateScreenBounds(m_cameraComponent->FieldOfView, m_cameraComponent->AspectRatio, delta.Y);
 
     return delta.X < -bounds.X ||
