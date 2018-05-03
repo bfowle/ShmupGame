@@ -18,7 +18,6 @@
 using namespace std;
 
 const float BulletActor::FIELD_SPACE = 15.0;
-float BulletActor::m_totalBulletsSpeed;
 int BulletActor::m_nextId = 0;
 
 shared_ptr<Actor> BulletActor::newActor() {
@@ -127,8 +126,6 @@ void BulletActor::tick() {
     float sr = m_bullet->m_speedRank;
 
     if (m_isVisible) {
-        m_totalBulletsSpeed += m_bullet->m_speed * sr;
-
         m_bullet->m_position = m_gameManager->updateBullet(this, m_bullet, sr);
 
         //if (m_field->checkHit(m_bullet->m_position, FIELD_SPACE)) {
@@ -136,8 +133,4 @@ void BulletActor::tick() {
         //    removeForced();
         //}
     }
-}
-
-void BulletActor::resetTotalBulletsSpeed() {
-    m_totalBulletsSpeed = 0;
 }

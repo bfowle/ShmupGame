@@ -56,8 +56,6 @@ public:
     void removeForced();
     void tick();
 
-    static void resetTotalBulletsSpeed();
-
 private:
     void start(float speedRank, float xReverse);
 
@@ -68,8 +66,6 @@ public:
     };
 
     std::shared_ptr<ShmupBullet> m_bullet;
-
-    static float m_totalBulletsSpeed;
 
 private:
     enum {

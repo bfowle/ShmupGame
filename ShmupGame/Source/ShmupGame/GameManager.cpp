@@ -57,6 +57,8 @@ void AGameManager::InitGame(const FString &MapName, const FString &Options, FStr
     //m_stageManager.reset(new StageManager());
     //m_stageManager->init(m_barrageManager, this);
 
+    m_viewport = m_world->GetGameViewport()->Viewport;
+
     // @TODO: change to lambda
     for (TActorIterator<AActor> ActorIter(GetWorld()); ActorIter; ++ActorIter) {
         //UE_LOG(LogTemp, Warning, TEXT(" -- %s -- "), *ActorItr->GetName());
@@ -149,7 +151,8 @@ void AGameManager::RemoveEnemy(AActor *enemy) {
 FVector AGameManager::ClampToScreen(FVector position) {
     FVector v0 = m_cameraActor->GetActorLocation();
     FVector v1 = position - v0;
-    FVector2D bounds = calculateScreenBounds(m_cameraComponent->FieldOfView, m_cameraComponent->AspectRatio, v1.Y);
+    //FVector2D bounds = calculateScreenBounds(m_cameraComponent->FieldOfView, m_cameraComponent->AspectRatio, v1.Y);
+    FVector2D bounds = m_viewport->GetSizeXY();
 
     return FVector(
         v0.X + FMath::Clamp(v1.X, -bounds.X, bounds.X),
@@ -307,10 +310,14 @@ void AGameManager::inGameTick() {
     m_field->tick();
     m_ship->tick();
     //m_shots->tick();
-    m_enemies->tick();
 
-    BulletActor::resetTotalBulletsSpeed();
-    m_bullets->tick();
+    m_deltaOffset += m_deltaSeconds;
+    if (m_deltaOffset > 0.01) {
+        m_enemies->tick();
+        m_bullets->tick();
+
+        m_deltaOffset = 0;
+    }
 
     // set pause
 }
@@ -326,7 +333,8 @@ void AGameManager::pauseTick() {
 
 bool AGameManager::shouldRemoveInstance(FVector position) {
     FVector delta = position - m_cameraActor->GetActorLocation();
-    FVector2D bounds = calculateScreenBounds(m_cameraComponent->FieldOfView, m_cameraComponent->AspectRatio, delta.Y);
+    //FVector2D bounds = calculateScreenBounds(m_cameraComponent->FieldOfView, m_viewport->GetDesiredAspectRatio(), delta.Y);
+    FVector2D bounds = m_viewport->GetSizeXY();
 
     return delta.X < -bounds.X ||
         delta.Z < -bounds.Y ||

@@ -80,16 +80,8 @@ void Bullet::remove() {
 
 //-----------------------------------------------------------------------------
 
-const float VEL_SS_SDM_RATIO = 62.0 / 100;
-const float VEL_SDM_SS_RATIO = 100.0 / 62;
-
-float rtod(float a) {
-    return a * 180 / M_PI;
-}
-
-float dtor(float a) {
-    return a * M_PI / 180;
-}
+const float VEL_SS_SDM_RATIO = 62.0 / 200;
+const float VEL_SDM_SS_RATIO = 200.0 / 62;
 
 BulletCommand::BulletCommand(BulletMLParser *parser, Bullet *bullet) :
     BulletMLRunner(parser),
@@ -111,7 +103,7 @@ double BulletCommand::getBulletDirection() {
 }
 
 double BulletCommand::getAimDirection() {
-    return rtod(/*M_PI - */atan2(Bullet::m_target.X - m_bullet->m_position.X,
+    return rtod(atan2(Bullet::m_target.X - m_bullet->m_position.X,
         Bullet::m_target.Z - m_bullet->m_position.Z));
 }
 

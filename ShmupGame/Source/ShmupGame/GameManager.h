@@ -1,8 +1,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Tickable.h"
 #include "GameFramework/GameModeBase.h"
+#include "Tickable.h"
+#include "UnrealClient.h"
 
 #include "ActorPool.h"
 #include "EnemyType.h"
@@ -90,10 +91,12 @@ private:
 
     bool shouldRemoveInstance(FVector position);
 
+    /*
     inline FVector2D calculateScreenBounds(float fieldOfView, float aspectRatio, float depth) {
         return FVector2D(abs((tan((((M_PI / 180.0) * fieldOfView) / 2.0))) * depth),
             abs((tan((((M_PI / 180.0) * (fieldOfView / aspectRatio)) / 2.0))) * depth));
     }
+    */
 
 public:
     enum { TITLE, IN_GAME, GAME_OVER, PAUSE };
@@ -106,16 +109,17 @@ public:
 
     int m_state;
     int m_difficulty;
-    float m_deltaSeconds;
+    float m_deltaSeconds, m_deltaOffset;
 
 private:
     enum {
-        BULLET_MAX = 1024, // << 8,
+        BULLET_MAX = 2048,
         ENEMY_MAX = 32
     };
 
     Random m_random;
     //TWeakObjectPtr<APawn> m_player;
+    FViewport *m_viewport;
 
     std::shared_ptr<Field> m_field;
     std::shared_ptr<Ship> m_ship;
