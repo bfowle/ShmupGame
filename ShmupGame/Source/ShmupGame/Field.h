@@ -9,7 +9,7 @@ class AGameManager;
 
 class Field {
 public:
-    void init();
+    void init(FVector2D size);
     void tick();
     bool checkHit(const FVector2D &position);
     bool checkHit(const FVector2D &position, float space);

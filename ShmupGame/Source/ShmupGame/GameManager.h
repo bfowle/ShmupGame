@@ -24,6 +24,7 @@ class ShmupBullet;
 class BulletActorPool;
 class BulletMLParser;
 class UCameraComponent;
+class UGameViewportClient;
 class UInstancedStaticMeshComponent;
 
 UCLASS()
@@ -74,7 +75,8 @@ public:
     void shipDestroyed();
     void clearBullets();
 
-    int32 addBullet(FVector position);
+    int32 addBullet(std::shared_ptr<ShmupBullet> bullet);
+    void removeBullet(std::shared_ptr<ShmupBullet> bullet, int32 instanceId);
     FVector updateBullet(BulletActor *actor, std::shared_ptr<ShmupBullet> bullet, float speedRank);
 
 private:
@@ -90,6 +92,7 @@ private:
     void pauseTick();
 
     bool shouldRemoveInstance(FVector position);
+    TWeakObjectPtr<UInstancedStaticMeshComponent> findISM(std::shared_ptr<ShmupBullet> bullet);
 
     /*
     inline FVector2D calculateScreenBounds(float fieldOfView, float aspectRatio, float depth) {
@@ -105,7 +108,8 @@ public:
     TWeakObjectPtr<UWorld> m_world;
     TWeakObjectPtr<AActor> m_cameraActor;
     TWeakObjectPtr<UCameraComponent> m_cameraComponent;
-    TWeakObjectPtr<UInstancedStaticMeshComponent> m_enemyBulletISM;
+    TWeakObjectPtr<UInstancedStaticMeshComponent> m_enemyBulletOrange;
+    TWeakObjectPtr<UInstancedStaticMeshComponent> m_enemyBulletPink;
 
     int m_state;
     int m_difficulty;
@@ -119,7 +123,7 @@ private:
 
     Random m_random;
     //TWeakObjectPtr<APawn> m_player;
-    FViewport *m_viewport;
+    UGameViewportClient *m_viewport;
 
     std::shared_ptr<Field> m_field;
     std::shared_ptr<Ship> m_ship;

@@ -41,7 +41,7 @@ void Enemy::init(shared_ptr<ActorInitializer> initializer) {
 void Enemy::set(const FVector &position, float direction/*, shared_ptr<EnemyType> type*/, BulletMLParser *moveParser) {
     m_position = position;
 
-    m_moveBullet = m_bullets->addBullet(moveParser, m_position.X, m_position.Z, direction, 0, 0.5, 1, 1);
+    m_moveBullet = m_bullets->addBullet(moveParser, m_position.X, m_position.Z, direction, 0, 0.5, 1.0, 1.0);
     if (!m_moveBullet) {
         return;
     }
@@ -66,9 +66,6 @@ void Enemy::setBoss(const FVector &p, float direction/*, shared_ptr<EnemyType> t
 
 void Enemy::setActor(TWeakObjectPtr<AActor> actor) {
     m_actor = actor;
-    //if (m_moveBullet) {
-    //    m_moveBullet->setActor(actor);
-    //}
 
     if (m_actor.IsValid()) {
         m_uuid = actor->GetUniqueID();
@@ -119,10 +116,6 @@ void Enemy::tick() {
     if (m_topBullet) {
         m_topBullet->m_bullet->m_position = m_position;
     }
-
-    //if (m_actor.IsValid()) {
-    //    m_actor->SetActorLocation(FVector(m_position.X, 2502.0, m_position.Z));
-    //}
 
 #if 0
     m_isDamaged = false;

@@ -4,8 +4,8 @@
 
 using namespace std;
 
-void Field::init() {
-    m_size = FVector2D(800, 800);
+void Field::init(FVector2D size) {
+    m_size = size;
 }
 
 void Field::tick() {

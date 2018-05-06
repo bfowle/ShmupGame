@@ -5,7 +5,11 @@
 
 class ShmupBullet : public MorphBullet {
 public:
-    explicit ShmupBullet(int id) : MorphBullet(id) {};
+    explicit ShmupBullet(int id) :
+        MorphBullet(id) {
+    };
+
+    enum { ORANGE, PINK };
 
 private:
     ShmupBullet(const ShmupBullet &other);
@@ -17,6 +21,7 @@ public:
 public:
     float m_speedRank;
     float m_xReverse;
+    int m_color;
 };
 
 #endif

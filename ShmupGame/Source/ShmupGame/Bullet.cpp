@@ -80,17 +80,19 @@ void Bullet::remove() {
 
 //-----------------------------------------------------------------------------
 
-const float VEL_SS_SDM_RATIO = 62.0 / 200;
-const float VEL_SDM_SS_RATIO = 200.0 / 62;
+const float VEL_SS_SDM_RATIO = 62.0 / 300;
+const float VEL_SDM_SS_RATIO = 300.0 / 62;
 
 BulletCommand::BulletCommand(BulletMLParser *parser, Bullet *bullet) :
     BulletMLRunner(parser),
     m_bullet(bullet) {
+    //m_bullet->m_isVisible = false;
 }
 
 BulletCommand::BulletCommand(BulletMLParser *parser, BulletMLNode *node, Bullet *bullet) :
     BulletMLRunner(parser),
     m_bullet(bullet) {
+    //m_bullet->m_isVisible = true;
 }
 
 BulletCommand::BulletCommand(BulletMLState *state, Bullet *bullet) :

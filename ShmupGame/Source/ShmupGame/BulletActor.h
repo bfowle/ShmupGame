@@ -50,7 +50,7 @@ public:
     void set(float x, float y, float direction, float speed, float rank, float speedRank, float xReverse);
     void setInvisible();
     void setTop(BulletMLParser *parser);
-    void spawnBulletActor();
+    void spawnBulletActor(int color);
     void rewind();
     void remove();
     void removeForced();
@@ -66,6 +66,7 @@ public:
     };
 
     std::shared_ptr<ShmupBullet> m_bullet;
+    bool m_isVisible;
 
 private:
     enum {
@@ -83,7 +84,6 @@ private:
     static int m_nextId;
     bool m_isSimple;
     bool m_isTop;
-    bool m_isVisible;
 
     FVector m_previousPosition;
     bool m_shouldBeRemoved;

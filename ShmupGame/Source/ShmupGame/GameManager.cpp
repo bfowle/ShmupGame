@@ -9,14 +9,15 @@
 #include "Ship.h"
 #include "ShmupBullet.h"
 
-#include "Engine/World.h"
 #include "Camera/CameraComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
+#include "Engine/GameViewportClient.h"
+#include "Engine/World.h"
+#include "EngineUtils.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/Pawn.h"
 #include "Kismet/GameplayStatics.h"
 #include "Misc/Paths.h"
-#include "EngineUtils.h"
 
 #include "bulletml/bulletml.h"
 #include "bulletml/bulletmlparser-tinyxml.h"
@@ -36,9 +37,12 @@ void AGameManager::InitGame(const FString &MapName, const FString &Options, FStr
 
     m_random = Random();
     m_world = GetWorld();
+    m_viewport = m_world->GetGameViewport();
+    FVector2D size;
+    m_viewport->GetViewportSize(size);
 
     m_field.reset(new Field());
-    m_field->init();
+    m_field->init(size);
 
     m_ship.reset(new Ship());
     m_ship->init(m_field, this);
@@ -57,8 +61,6 @@ void AGameManager::InitGame(const FString &MapName, const FString &Options, FStr
     //m_stageManager.reset(new StageManager());
     //m_stageManager->init(m_barrageManager, this);
 
-    m_viewport = m_world->GetGameViewport()->Viewport;
-
     // @TODO: change to lambda
     for (TActorIterator<AActor> ActorIter(GetWorld()); ActorIter; ++ActorIter) {
         //UE_LOG(LogTemp, Warning, TEXT(" -- %s -- "), *ActorItr->GetName());
@@ -70,8 +72,12 @@ void AGameManager::InitGame(const FString &MapName, const FString &Options, FStr
                 ActorIter->GetComponentByClass(UCameraComponent::StaticClass()));
         }
 
-        if (ActorIter->ActorHasTag("ISM_EnemyBullet")) {
-            m_enemyBulletISM = dynamic_cast<UInstancedStaticMeshComponent *>(
+        if (ActorIter->ActorHasTag("ISM_EnemyBulletOrange")) {
+            m_enemyBulletOrange = dynamic_cast<UInstancedStaticMeshComponent *>(
+                ActorIter->GetComponentByClass(UInstancedStaticMeshComponent::StaticClass()));
+        }
+        if (ActorIter->ActorHasTag("ISM_EnemyBulletPink")) {
+            m_enemyBulletPink = dynamic_cast<UInstancedStaticMeshComponent *>(
                 ActorIter->GetComponentByClass(UInstancedStaticMeshComponent::StaticClass()));
         }
     }
@@ -152,12 +158,13 @@ FVector AGameManager::ClampToScreen(FVector position) {
     FVector v0 = m_cameraActor->GetActorLocation();
     FVector v1 = position - v0;
     //FVector2D bounds = calculateScreenBounds(m_cameraComponent->FieldOfView, m_cameraComponent->AspectRatio, v1.Y);
-    FVector2D bounds = m_viewport->GetSizeXY();
+    FVector2D size;
+    m_viewport->GetViewportSize(size);
 
     return FVector(
-        v0.X + FMath::Clamp(v1.X, -bounds.X, bounds.X),
+        v0.X + FMath::Clamp(v1.X, -size.X, size.X),
         position.Y,
-        v0.Z + FMath::Clamp(v1.Z, -bounds.Y, bounds.Y)
+        v0.Z + FMath::Clamp(v1.Z, -size.Y, size.Y)
     );
 }
 
@@ -214,16 +221,23 @@ void AGameManager::clearBullets() {
     }
 }
 
-int32 AGameManager::addBullet(FVector Position) {
-    return m_enemyBulletISM->AddInstanceWorldSpace(FTransform(Position));
+int32 AGameManager::addBullet(shared_ptr<ShmupBullet> bullet) {
+    return findISM(bullet)->AddInstanceWorldSpace(FTransform(bullet->m_position));
+}
+
+void AGameManager::removeBullet(shared_ptr<ShmupBullet> bullet, int32 instanceId) {
+    findISM(bullet)->UpdateInstanceTransform(instanceId,
+        FTransform(FVector(INT_MIN, INT_MIN, INT_MIN)));
 }
 
 FVector AGameManager::updateBullet(BulletActor *actor, shared_ptr<ShmupBullet> bullet, float speedRank) {
     int32 instanceId = actor->m_instanceId;
     FVector pos = FVector::ZeroVector;
 
+    TWeakObjectPtr<UInstancedStaticMeshComponent> ism = findISM(bullet);
+
     FTransform bulletTransform;
-    if (m_enemyBulletISM->GetInstanceTransform(instanceId, bulletTransform, true)) {
+    if (ism->GetInstanceTransform(instanceId, bulletTransform, true)) {
         pos = bulletTransform.GetLocation() +
             FVector(
                 (sin(bullet->m_direction) * bullet->m_speed + bullet->m_acceleration.X) * speedRank * bullet->m_xReverse,
@@ -256,11 +270,10 @@ FVector AGameManager::updateBullet(BulletActor *actor, shared_ptr<ShmupBullet> b
             }
 #else
             pos = FVector(INT_MIN, INT_MIN, INT_MIN);
-            m_enemyBulletISM->UpdateInstanceTransform(instanceId, FTransform(pos), true, true);
 #endif
-        } else {
-            m_enemyBulletISM->UpdateInstanceTransform(instanceId, FTransform(pos), true, true);
         }
+
+        ism->UpdateInstanceTransform(instanceId, FTransform(pos), true, true);
     }
 
     return pos;
@@ -334,10 +347,21 @@ void AGameManager::pauseTick() {
 bool AGameManager::shouldRemoveInstance(FVector position) {
     FVector delta = position - m_cameraActor->GetActorLocation();
     //FVector2D bounds = calculateScreenBounds(m_cameraComponent->FieldOfView, m_viewport->GetDesiredAspectRatio(), delta.Y);
-    FVector2D bounds = m_viewport->GetSizeXY();
+    FVector2D size;
+    m_viewport->GetViewportSize(size);
 
-    return delta.X < -bounds.X ||
-        delta.Z < -bounds.Y ||
-        delta.X > bounds.X ||
-        delta.Z > bounds.Y;
+    return delta.X < -size.X ||
+        delta.X > size.X ||
+        delta.Z < -size.Y ||
+        delta.Z > size.Y;
+}
+
+TWeakObjectPtr<UInstancedStaticMeshComponent> AGameManager::findISM(shared_ptr<ShmupBullet> bullet) {
+    switch (bullet->m_color) {
+    case ShmupBullet::PINK:
+        return m_enemyBulletPink;
+    default:
+    case ShmupBullet::ORANGE:
+        return m_enemyBulletOrange;
+    }
 }

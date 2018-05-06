@@ -41,7 +41,7 @@ void BulletActorPool::addBullet(float x, float y, float direction, float speed, 
         bullet->set(x, y, direction, speed, bullet->m_bullet->m_rank,
             rb->m_speedRank, rb->m_xReverse);
     }
-    bullet->spawnBulletActor();
+    bullet->spawnBulletActor(ShmupBullet::ORANGE);
 }
 
 // called via bulletml createBullet
@@ -51,7 +51,7 @@ void BulletActorPool::addBullet(BulletMLState *state, float x, float y, float di
         return;
     }
 
-    ShmupBullet *rb = static_cast<ShmupBullet *>(parent->m_bullet.get());
+    shared_ptr<ShmupBullet> rb = static_pointer_cast<ShmupBullet>(parent->m_bullet);
     //UE_LOG(LogTemp, Warning, TEXT(" BulletActorPool::addBullet[createBullet] -> %f, %f "), x, y);
     BulletCommand *bc = new BulletCommand(state, bullet->m_bullet.get());
     if (rb->m_isMorph) {
@@ -66,24 +66,21 @@ void BulletActorPool::addBullet(BulletMLState *state, float x, float y, float di
 
     /*
     const vector<BulletMLNode *> &actions = state->getNode();
-    vector<BulletMLNode *>::const_iterator iter;
-    for (iter = actions.cbegin(); iter != actions.cend(); iter++) {
-        const BulletMLNode *action = *iter;
-        if (action->findNode(BulletMLNode::fire) ||
-            action->findNode(BulletMLNode::fireRef) ||
-            action->findNode(BulletMLNode::actionRef)) {
-            break;
-        }
+    vector<BulletMLNode *>::const_iterator it = find_if(actions.cbegin(), actions.cend(),
+        [&](BulletMLNode *action) {
+            return action->findNode(BulletMLNode::fire) ||
+                action->findNode(BulletMLNode::fireRef) ||
+                action->findNode(BulletMLNode::actionRef);
+        });
+    if (it != actions.cend()) {
+        UE_LOG(LogTemp, Warning, TEXT(" -> spawn bullet actor :: TRUE "));
     }
-
-    if (iter != actions.end()) {
-        //UE_LOG(LogTemp, Warning, TEXT(" -> spawn bullet actor :: TRUE "));
     } else {
         //UE_LOG(LogTemp, Warning, TEXT(" -> spawn bullet actor :: FALSE "));
     }
     */
 
-    bullet->spawnBulletActor();
+    bullet->spawnBulletActor(ShmupBullet::PINK);
 }
 
 // called via enemy move bullet

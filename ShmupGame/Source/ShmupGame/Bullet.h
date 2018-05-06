@@ -104,11 +104,11 @@ private:
     Bullet *m_bullet;
 };
 
-constexpr float rtod(float a) noexcept {
+constexpr float rtod(float a) {
     return a * 180 / M_PI;
 }
 
-constexpr float dtor(float a) noexcept {
+constexpr float dtor(float a) {
     return a * M_PI / 180;
 }
 

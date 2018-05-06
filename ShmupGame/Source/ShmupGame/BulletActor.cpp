@@ -83,8 +83,10 @@ void BulletActor::setTop(BulletMLParser *parser) {
     setInvisible();
 }
 
-void BulletActor::spawnBulletActor() {
-    m_instanceId = m_gameManager->addBullet(m_bullet->m_position);
+void BulletActor::spawnBulletActor(int color) {
+    m_bullet->m_color = color;
+
+    m_instanceId = m_gameManager->addBullet(m_bullet);
 }
 
 void BulletActor::rewind() {
@@ -100,6 +102,8 @@ void BulletActor::remove() {
 
 void BulletActor::removeForced() {
     m_bullet->remove();
+
+    m_gameManager->removeBullet(m_bullet, m_instanceId);
 
     m_isAlive = false;
     m_isVisible = false;
