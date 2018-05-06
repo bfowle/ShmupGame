@@ -9,7 +9,7 @@ public:
         MorphBullet(id) {
     };
 
-    enum { ORANGE, PINK };
+    enum { ORANGE, PINK, BLUE };
 
 private:
     ShmupBullet(const ShmupBullet &other);

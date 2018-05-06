@@ -110,6 +110,7 @@ public:
     TWeakObjectPtr<UCameraComponent> m_cameraComponent;
     TWeakObjectPtr<UInstancedStaticMeshComponent> m_enemyBulletOrange;
     TWeakObjectPtr<UInstancedStaticMeshComponent> m_enemyBulletPink;
+    TWeakObjectPtr<UInstancedStaticMeshComponent> m_enemyBulletBlue;
 
     int m_state;
     int m_difficulty;

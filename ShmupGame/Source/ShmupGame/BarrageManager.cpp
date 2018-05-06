@@ -19,6 +19,8 @@ void BarrageManager::loadBulletMLFiles() {
         //UE_LOG(LogTemp, Warning, TEXT(" parsing: %s"), *files[i]);
         BulletMLParserTinyXML *parser = new BulletMLParserTinyXML(const_cast<char *>(TCHAR_TO_UTF8(*files[i])));
         parser->parse();
+        //const std::vector<BulletMLNode *> actions = parser->getTopActions();
+        //UE_LOG(LogTemp, Warning, TEXT("  - actions: %d"), actions.size());
         m_parser.push_back(parser);
     }
 }

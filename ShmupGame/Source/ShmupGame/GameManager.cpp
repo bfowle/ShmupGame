@@ -80,6 +80,10 @@ void AGameManager::InitGame(const FString &MapName, const FString &Options, FStr
             m_enemyBulletPink = dynamic_cast<UInstancedStaticMeshComponent *>(
                 ActorIter->GetComponentByClass(UInstancedStaticMeshComponent::StaticClass()));
         }
+        if (ActorIter->ActorHasTag("ISM_EnemyBulletBlue")) {
+            m_enemyBulletBlue = dynamic_cast<UInstancedStaticMeshComponent *>(
+                ActorIter->GetComponentByClass(UInstancedStaticMeshComponent::StaticClass()));
+        }
     }
 }
 
@@ -222,12 +226,21 @@ void AGameManager::clearBullets() {
 }
 
 int32 AGameManager::addBullet(shared_ptr<ShmupBullet> bullet) {
-    return findISM(bullet)->AddInstanceWorldSpace(FTransform(bullet->m_position));
+    TWeakObjectPtr<UInstancedStaticMeshComponent> ism = findISM(bullet);
+    if (ism == nullptr) {
+        return -1;
+    }
+
+    return ism->AddInstanceWorldSpace(FTransform(bullet->m_position));
 }
 
 void AGameManager::removeBullet(shared_ptr<ShmupBullet> bullet, int32 instanceId) {
-    findISM(bullet)->UpdateInstanceTransform(instanceId,
-        FTransform(FVector(INT_MIN, INT_MIN, INT_MIN)));
+    TWeakObjectPtr<UInstancedStaticMeshComponent> ism = findISM(bullet);
+    if (ism == nullptr) {
+        return;
+    }
+
+    ism->UpdateInstanceTransform(instanceId, FTransform(FVector(INT_MIN, INT_MIN, INT_MIN)));
 }
 
 FVector AGameManager::updateBullet(BulletActor *actor, shared_ptr<ShmupBullet> bullet, float speedRank) {
@@ -235,6 +248,9 @@ FVector AGameManager::updateBullet(BulletActor *actor, shared_ptr<ShmupBullet> b
     FVector pos = FVector::ZeroVector;
 
     TWeakObjectPtr<UInstancedStaticMeshComponent> ism = findISM(bullet);
+    if (ism == nullptr) {
+        return FVector::ZeroVector;
+    }
 
     FTransform bulletTransform;
     if (ism->GetInstanceTransform(instanceId, bulletTransform, true)) {
@@ -358,10 +374,13 @@ bool AGameManager::shouldRemoveInstance(FVector position) {
 
 TWeakObjectPtr<UInstancedStaticMeshComponent> AGameManager::findISM(shared_ptr<ShmupBullet> bullet) {
     switch (bullet->m_color) {
-    case ShmupBullet::PINK:
-        return m_enemyBulletPink;
-    default:
     case ShmupBullet::ORANGE:
         return m_enemyBulletOrange;
+    case ShmupBullet::PINK:
+        return m_enemyBulletPink;
+    case ShmupBullet::BLUE:
+        return m_enemyBulletBlue;
+    default:
+        return nullptr;
     }
 }

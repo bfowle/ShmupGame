@@ -53,6 +53,17 @@ void BulletActorPool::addBullet(BulletMLState *state, float x, float y, float di
 
     shared_ptr<ShmupBullet> rb = static_pointer_cast<ShmupBullet>(parent->m_bullet);
     //UE_LOG(LogTemp, Warning, TEXT(" BulletActorPool::addBullet[createBullet] -> %f, %f "), x, y);
+
+    // do this before creating a new BulletCommand, as state is deleted
+    const vector<BulletMLNode *> &actions = state->getNode();
+    vector<BulletMLNode * >::const_iterator it = find_if(actions.cbegin(), actions.cend(),
+        [&](BulletMLNode *action) {
+        return action->findNode(BulletMLNode::fire) ||
+            action->findNode(BulletMLNode::fireRef) ||
+            action->findNode(BulletMLNode::actionRef);
+    });
+    int bt = it != actions.cend() ? ShmupBullet::BLUE : ShmupBullet::PINK;
+
     BulletCommand *bc = new BulletCommand(state, bullet->m_bullet.get());
     if (rb->m_isMorph) {
         bullet->set(bc, x, y, direction, speed, bullet->m_bullet->m_rank,
@@ -63,24 +74,7 @@ void BulletActorPool::addBullet(BulletMLState *state, float x, float y, float di
         bullet->set(bc, x, y, direction, speed, bullet->m_bullet->m_rank,
             rb->m_speedRank, rb->m_xReverse);
     }
-
-    /*
-    const vector<BulletMLNode *> &actions = state->getNode();
-    vector<BulletMLNode *>::const_iterator it = find_if(actions.cbegin(), actions.cend(),
-        [&](BulletMLNode *action) {
-            return action->findNode(BulletMLNode::fire) ||
-                action->findNode(BulletMLNode::fireRef) ||
-                action->findNode(BulletMLNode::actionRef);
-        });
-    if (it != actions.cend()) {
-        UE_LOG(LogTemp, Warning, TEXT(" -> spawn bullet actor :: TRUE "));
-    }
-    } else {
-        //UE_LOG(LogTemp, Warning, TEXT(" -> spawn bullet actor :: FALSE "));
-    }
-    */
-
-    bullet->spawnBulletActor(ShmupBullet::PINK);
+    bullet->spawnBulletActor(bt);
 }
 
 // called via enemy move bullet
